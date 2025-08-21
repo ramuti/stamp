@@ -1,0 +1,7 @@
+body { font-family: sans-serif; padding: 10px; }
+.card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; display: flex; align-items: center; }
+.card img { margin-right: 10px; transition: transform 0.3s; }
+.stamp-animate { transform: scale(1.5); }
+#notice { background: yellow; padding: 5px; margin: 5px 0; display:none; }
+.admin-box { border: 1px dashed #666; padding: 5px; margin:5px 0; }
+button { margin-left: 5px; }
