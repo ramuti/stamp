@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード - ユーザー</title>
+<title>スタンプカード</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body onload="initUserUI()">
+<body>
 
-<div id="nameDialog" class="dialog">
+<div id="usernameDialog" class="noticePopup">
   <h3>Twitterの名前を入力してください</h3>
-  <input type="text" id="userNameInput" placeholder="名前">
-  <button onclick="saveUserName()">OK</button>
+  <input type="text" id="userNameInput">
+  <br><button onclick="setUserName()">OK</button>
 </div>
 
-<div id="userUI" style="display:none;">
-  <h2 id="userTitle"></h2>
+<div id="mainUserContent" style="display:none;">
+  <h2 id="displayUserName"></h2>
 
-  <div class="addCardSection">
+  <div>
     <input type="text" id="addCardPass" placeholder="スタンプ追加パス">
-    <button onclick="addCardByPass()">カード追加</button>
+    <button onclick="addCardByPass()">追加</button>
   </div>
 
   <div id="cardsContainer" class="cardsContainer"></div>
@@ -29,11 +29,6 @@
 
   <h3>更新履歴</h3>
   <div id="updateLog" class="updateLog"></div>
-</div>
-
-<div id="noticePopup" class="noticePopup">
-  <span id="noticeText"></span>
-  <button onclick="closeNotice()">閉じる</button>
 </div>
 
 <script src="script.js"></script>
