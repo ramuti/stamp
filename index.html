@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード ユーザー</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>スタンプカード（ユーザー）</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="user">
 
 <!-- 名前入力モーダル -->
-<div id="nameModal" class="modal">
-  <div class="modal-content">
+<div id="nameModal" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
     <h2>Twitterの名前を入力してください</h2>
     <input type="text" id="userNameInput" placeholder="名前">
-    <button id="setNameBtn">OK</button>
+    <div style="margin-top:12px">
+      <button id="setNameBtn">OK</button>
+    </div>
   </div>
 </div>
 
-<!-- 上部バー -->
-<div class="top-bar">
-  <h1 id="cardTitle"></h1>
-  <button id="debugNameBtn">名前入力</button>
-</div>
+<header class="top-bar">
+  <h1 id="cardTitle">スタンプカード</h1>
+  <div>
+    <button id="debugNameBtn">名前入力</button>
+  </div>
+</header>
 
-<!-- カード追加 -->
-<div class="card-add">
-  <input type="text" id="addCardPass" placeholder="スタンプ追加パス">
-  <button id="addCardBtn">カード追加</button>
-</div>
+<main>
+  <section class="card-add">
+    <input id="addCardPass" placeholder="スタンプ追加パスを入力">
+    <button id="addCardBtn">カード追加</button>
+  </section>
 
-<!-- ユーザーのカード -->
-<div id="userCards" class="cards"></div>
+  <section id="userCards" class="cards"></section>
 
-<h2>スタンプ履歴</h2>
-<ul id="stampHistory"></ul>
+  <section class="history">
+    <h2>スタンプ履歴</h2>
+    <ul id="stampHistory"></ul>
+  </section>
 
-<h2>更新履歴</h2>
-<div id="updateLogs" class="updates"></div>
+  <section class="updates">
+    <h2>更新履歴</h2>
+    <div id="updateLogs" class="updates-list"></div>
+  </section>
+</main>
 
 <script src="script.js"></script>
 </body>
