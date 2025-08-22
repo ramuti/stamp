@@ -9,7 +9,7 @@
   <!-- 名前入力ダイアログ -->
   <div id="nameModal" class="modal">
     <div class="modal-content">
-      <h2>お名前を入力してください</h2>
+      <h2>Twitterの名前を入力してください</h2>
       <input type="text" id="userNameInput" placeholder="お名前">
       <button id="setNameBtn">OK</button>
     </div>
@@ -18,8 +18,14 @@
   <!-- ユーザー画面 -->
   <div class="container">
     <h1 id="cardTitle">スタンプカード</h1>
-    <div id="stampCards"></div>
-    <button id="createCardBtn">スタンプカードを作成</button>
+
+    <div class="section-box">
+      <h2>カード追加</h2>
+      <input type="text" id="cardPassInput" placeholder="スタンプ追加パス">
+      <button id="addCardBtn">追加</button>
+    </div>
+
+    <div id="userCards"></div>
   </div>
 
   <script src="script.js"></script>
