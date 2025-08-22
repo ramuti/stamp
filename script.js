@@ -71,8 +71,7 @@ function initUser() {
     for (let i = 0; i < card.slots; i++) {
       const slot = document.createElement("div");
       slot.className = "stamp-slot";
-      // スタンプ押されてたら色を付ける
-      if (userStampHistory.some(s => s.cardId===card.id && s.slot===i)) slot.classList.add("stamp-filled");
+      if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) slot.classList.add("stamp-filled");
       div.appendChild(slot);
     }
     const serial = document.createElement("div");
@@ -83,4 +82,55 @@ function initUser() {
     const btn = document.createElement("button");
     btn.textContent = "スタンプを押す";
     btn.onclick = () => {
-      const keyword = prompt("合
+      const keyword = prompt("合言葉を入力してください");
+      if (!keyword) return;
+      const keywordObj = keywords.find(k => k.cardId === card.id && k.word === keyword && k.active);
+      if (!keywordObj) { alert("合言葉が違うか無効です"); return; }
+
+      // 次に押すスタンプ枠番号
+      let nextSlot = 0;
+      while(userStampHistory.some(s => s.cardId===card.id && s.slot===nextSlot)) nextSlot++;
+      if(nextSlot >= card.slots) {
+        alert(card.maxNotifyMsg || "スタンプがMAXです");
+        return;
+      }
+
+      userStampHistory.push({cardId: card.id, slot: nextSlot, keyword: keyword, date: new Date().toLocaleString()});
+      saveAll();
+      renderUserCards(); // 再描画
+      alert(card.notifyMsg || "スタンプを押したよ");
+      updateHistory();
+    };
+    div.appendChild(btn);
+    userCards.appendChild(div);
+  }
+
+  function renderUserCards() {
+    userCards.innerHTML = "";
+    userAddedCards.forEach(id => {
+      const card = cards.find(c => c.id === id);
+      if(card) renderUserCard(card);
+    });
+  }
+
+  function updateHistory() {
+    historyList.innerHTML = "";
+    userStampHistory.forEach(h => {
+      const card = cards.find(c => c.id===h.cardId);
+      if(card){
+        const li = document.createElement("li");
+        li.textContent = `${card.name}  ${h.date} に押しました`;
+        historyList.appendChild(li);
+      }
+    });
+    updateLogs.innerHTML = "";
+    updates.forEach(u => {
+      const div = document.createElement("div");
+      div.textContent = u;
+      updateLogs.appendChild(div);
+    });
+  }
+
+  renderUserCards();
+  updateHistory();
+}
