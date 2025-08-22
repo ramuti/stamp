@@ -1,64 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>管理者画面</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>管理者画面</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
+    <h1>管理者画面</h1>
 
-<h2>カード作成</h2>
-<div class="adminCardBox">
-  <div class="adminRow">
-    <label>カード名</label>
-    <input type="text" id="cardTitle">
-  </div>
-  <div class="adminRow">
-    <label>追加パス</label>
-    <input type="text" id="cardPass">
-  </div>
-  <div class="adminRow">
-    <label>枠数</label>
-    <input type="number" id="cardSlots" min="1">
-  </div>
-  <div class="adminRow">
-    <label>通知文</label>
-    <input type="text" id="notifyText" placeholder="スタンプを押したよ">
-  </div>
-  <div class="adminRow">
-    <label>MAX通知文</label>
-    <input type="text" id="maxNotifyText" placeholder="スタンプがMAXになりました">
-  </div>
-  <div class="adminRow">
-    <label>背景画像</label>
-    <input type="file" id="bgImageInput">
-  </div>
-  <div class="adminRow">
-    <label>スタンプ画像</label>
-    <input type="file" id="stampImageInput">
-  </div>
-  <button id="createCardBtn">カード作成</button>
-</div>
+    <!-- 合言葉管理 -->
+    <h2>合言葉管理</h2>
+    <input type="text" id="keywordInput" placeholder="合言葉を入力">
+    <button id="addKeywordBtn">合言葉追加</button>
+    <ul id="keywordList"></ul>
 
-<h2>カード一覧</h2>
-<div id="cardsList" class="adminCardBox"></div>
+    <!-- スタンプカード管理 -->
+    <h2>スタンプカード管理</h2>
+    <ul id="adminStampCards"></ul>
+  </div>
 
-<h2>スタンプ合言葉管理</h2>
-<div class="adminCardBox">
-  <select id="selectCard"></select>
-  <input type="text" id="stampSecretInput" placeholder="合言葉">
-  <button id="addSecretBtn">作成</button>
-  <div id="secretList"></div>
-</div>
-
-<h2>更新履歴管理</h2>
-<div class="adminCardBox">
-  <input type="text" id="updateInput" placeholder="更新内容を入力">
-  <button id="addUpdateBtn">追加</button>
-  <div id="updateList" class="updateList"></div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
