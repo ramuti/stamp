@@ -32,7 +32,7 @@ function showUserNameDialog() {
 }
 
 function renderUserTitle(){
-  document.getElementById("userTitle").textContent = `${currentUser}のスタンプカード`;
+  document.getElementById("userTitle").textContent = `${currentUser} のスタンプカード`;
 }
 
 function renderUserCards(){
@@ -106,33 +106,47 @@ function pressStamp(cardIdx){
 function renderAdminCards(){
   const container = document.getElementById("cardsList");
   const select = document.getElementById("selectCard");
+  const secretList = document.getElementById("secretList");
   container.innerHTML="";
   select.innerHTML="";
+  secretList.innerHTML="";
   cards.forEach((card, idx)=>{
     // カード一覧
     const div = document.createElement("div");
     div.className="adminCardBox";
-    div.innerHTML=`${card.title} / ${card.pass} / ${card.slots}`;
-    const del = document.createElement("button");
-    del.textContent="削除";
-    del.onclick=()=>{
-      cards.splice(idx,1);
-      localStorage.setItem("cards", JSON.stringify(cards));
-      delete secrets[card.title];
-      localStorage.setItem("secrets", JSON.stringify(secrets));
-      renderAdminCards();
-    };
-    div.appendChild(del);
+    div.innerHTML=`<strong>${card.title}</strong> 枠:${card.slots} 追加パス:${card.pass} <button onclick="deleteCard(${idx})">消去</button>`;
     container.appendChild(div);
-
     // セレクトオプション
     const opt = document.createElement("option");
     opt.value=card.title;
     opt.textContent=card.title;
     select.appendChild(opt);
+    // 合言葉一覧
+    (secrets[card.title]||[]).forEach((s,i)=>{
+      const sdiv = document.createElement("div");
+      sdiv.textContent=`${card.title} : ${s.secret} 状態:${s.enabled?"有効":"無効"}`;
+      const toggleBtn = document.createElement("button");
+      toggleBtn.textContent="切替";
+      toggleBtn.onclick=()=>{ s.enabled=!s.enabled; localStorage.setItem("secrets", JSON.stringify(secrets)); renderAdminCards(); };
+      const delBtn = document.createElement("button");
+      delBtn.textContent="消去";
+      delBtn.onclick=()=>{ secrets[card.title].splice(i,1); localStorage.setItem("secrets", JSON.stringify(secrets)); renderAdminCards(); };
+      sdiv.appendChild(toggleBtn);
+      sdiv.appendChild(delBtn);
+      secretList.appendChild(sdiv);
+    });
   });
 }
 
+function deleteCard(idx){
+  if(confirm("削除しますか？")){
+    cards.splice(idx,1);
+    localStorage.setItem("cards", JSON.stringify(cards));
+    renderAdminCards();
+  }
+}
+
+// カード作成
 document.getElementById("createCardBtn").onclick=()=>{
   const title=document.getElementById("cardTitle").value.trim();
   const pass=document.getElementById("cardPass").value.trim();
@@ -158,6 +172,7 @@ document.getElementById("addSecretBtn").onclick=()=>{
   alert("作成しました");
 };
 
+// 更新履歴
 document.getElementById("addUpdateBtn")?.onclick=()=>{
   const text = document.getElementById("updateInput").value.trim();
   if(!text) return;
@@ -169,7 +184,6 @@ document.getElementById("addUpdateBtn")?.onclick=()=>{
 
 function renderAdminUpdates(){
   const list = document.getElementById("updateList");
-  if(!list) return;
   list.innerHTML="";
   updates.forEach(u=>{
     const div=document.createElement("div");
