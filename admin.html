@@ -9,54 +9,57 @@
 <body>
 
 <h2>カード作成</h2>
-<div class="adminRow">
-  <label>カード名</label>
-  <input type="text" id="cardTitle">
+<div class="adminCardBox">
+  <div class="adminRow">
+    <label>カード名</label>
+    <input type="text" id="cardTitle">
+  </div>
+  <div class="adminRow">
+    <label>追加パス</label>
+    <input type="text" id="cardPass">
+  </div>
+  <div class="adminRow">
+    <label>枠数</label>
+    <input type="number" id="cardSlots" min="1">
+  </div>
+  <div class="adminRow">
+    <label>通知文</label>
+    <input type="text" id="notifyText" placeholder="スタンプを押したよ">
+  </div>
+  <div class="adminRow">
+    <label>MAX通知文</label>
+    <input type="text" id="maxNotifyText" placeholder="スタンプがMAXになりました">
+  </div>
+  <div class="adminRow">
+    <label>背景画像</label>
+    <input type="file" id="bgImageInput">
+  </div>
+  <div class="adminRow">
+    <label>スタンプ画像</label>
+    <input type="file" id="stampImageInput">
+  </div>
+  <button id="createCardBtn">カード作成</button>
 </div>
-<div class="adminRow">
-  <label>追加パス</label>
-  <input type="text" id="cardPass">
-</div>
-<div class="adminRow">
-  <label>枠数</label>
-  <input type="number" id="cardSlots" min="1">
-</div>
-<div class="adminRow">
-  <label>通知文</label>
-  <input type="text" id="notifyText" placeholder="スタンプを押したよ">
-</div>
-<div class="adminRow">
-  <label>MAX通知文</label>
-  <input type="text" id="maxNotifyText" placeholder="スタンプがMAXになりました スクショして管理者にお知らせしましょう">
-</div>
-<div class="adminRow">
-  <label>背景画像</label>
-  <input type="file" id="bgImageInput">
-</div>
-<div class="adminRow">
-  <label>スタンプ画像</label>
-  <input type="file" id="stampImageInput">
-</div>
-<button id="createCardBtn">カード作成</button>
 
 <h2>カード一覧</h2>
-<div id="cardsList"></div>
+<div id="cardsList" class="adminCardBox"></div>
 
 <h2>スタンプ合言葉管理</h2>
-<div class="adminRow">
+<div class="adminCardBox">
   <select id="selectCard"></select>
   <input type="text" id="stampSecretInput" placeholder="合言葉">
   <button id="addSecretBtn">作成</button>
   <button id="toggleSecretBtn">有効/無効切替</button>
-  <button id="deleteSecretBtn">削除</button>
+  <button id="deleteSecretBtn">消去</button>
+  <div id="secretsList"></div>
 </div>
 
 <h2>更新履歴管理</h2>
-<div class="adminRow">
+<div class="adminCardBox">
   <input type="text" id="updateInput" placeholder="更新内容を入力">
   <button id="addUpdateBtn">追加</button>
+  <div id="updateList" class="updateList"></div>
 </div>
-<div id="updateList" class="updateList"></div>
 
 <script src="script.js"></script>
 </body>
