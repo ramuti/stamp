@@ -1,3 +1,4 @@
+// バージョン v4
 let userName = localStorage.getItem("userName") || "";
 let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let keywords = JSON.parse(localStorage.getItem("keywords")) || [];
@@ -115,11 +116,12 @@ function initUser() {
     });
   }
 
-  // --- リロード時にユーザーが追加したカードを描画 ---
+  // リロード時に追加済みカードだけ描画
   userAddedCards.forEach(cardId => {
-    const card = cards.find(c => c.id===cardId);
-    if(card) renderUserCard(card);
+    const card = cards.find(c => c.id === cardId);
+    if (card) renderUserCard(card);
   });
+
   updateHistory();
 }
 
@@ -149,7 +151,7 @@ function initAdmin() {
       delBtn.textContent = "消去";
       delBtn.onclick = () => {
         cards = cards.filter(x => x.id!==c.id);
-        userAddedCards = userAddedCards.filter(id=>id!==c.id);
+        userAddedCards = userAddedCards.filter(x=>x!==c.id); // ユーザー側も消える
         saveAll();
         refreshCardList();
       };
