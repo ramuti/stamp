@@ -2,31 +2,35 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード - ユーザー</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body onload="initUserUI();">
+<body onload="initUserUI()">
 
-<!-- 初回ダイアログ -->
 <div id="nameDialog" class="dialog">
   <h3>Twitterの名前を入力してください</h3>
   <input type="text" id="userNameInput" placeholder="名前">
   <button onclick="saveUserName()">OK</button>
 </div>
 
-<!-- ユーザー画面 -->
 <div id="userUI" style="display:none;">
   <h2 id="userTitle"></h2>
 
-  <div>
+  <div class="addCardSection">
     <input type="text" id="addCardPass" placeholder="スタンプ追加パス">
     <button onclick="addCardByPass()">追加</button>
   </div>
 
   <div id="cardsContainer" class="cardsContainer"></div>
+
+  <h3>スタンプ履歴</h3>
+  <div id="stampHistory" class="stampHistory"></div>
+
+  <h3>更新履歴</h3>
+  <div id="updateLog" class="updateLog"></div>
 </div>
 
-<!-- 通知ポップアップ -->
 <div id="noticePopup" class="noticePopup">
   <span id="noticeText"></span>
   <button onclick="closeNotice()">閉じる</button>
