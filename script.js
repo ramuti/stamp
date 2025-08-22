@@ -3,6 +3,7 @@ let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let keywords = JSON.parse(localStorage.getItem("keywords")) || [];
 let updates = JSON.parse(localStorage.getItem("updates")) || [];
 let userStampHistory = JSON.parse(localStorage.getItem("userStampHistory")) || [];
+let userAddedCards = JSON.parse(localStorage.getItem("userAddedCards")) || [];
 
 function saveAll() {
   localStorage.setItem("userName", userName);
@@ -10,6 +11,7 @@ function saveAll() {
   localStorage.setItem("keywords", JSON.stringify(keywords));
   localStorage.setItem("updates", JSON.stringify(updates));
   localStorage.setItem("userStampHistory", JSON.stringify(userStampHistory));
+  localStorage.setItem("userAddedCards", JSON.stringify(userAddedCards));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -54,7 +56,9 @@ function initUser() {
     if (!pass) { alert("追加パスを入力してください"); return; }
     const card = cards.find(c => c.addPass === pass);
     if (!card) { alert("パスが間違っています"); return; }
-    if (!userCards.querySelector(`[data-id='${card.id}']`)) {
+    if (!userAddedCards.includes(card.id)) {
+      userAddedCards.push(card.id);
+      saveAll();
       renderUserCard(card);
     } else { alert("すでに追加済みです"); }
   };
@@ -112,7 +116,7 @@ function initUser() {
   }
 
   cards.forEach(c => {
-    if (c.added) renderUserCard(c);
+    if (userAddedCards.includes(c.id)) renderUserCard(c);
   });
   updateHistory();
 }
@@ -143,6 +147,7 @@ function initAdmin() {
       delBtn.textContent = "消去";
       delBtn.onclick = () => {
         cards = cards.filter(x => x.id!==c.id);
+        userAddedCards = userAddedCards.filter(id=>id!==c.id);
         saveAll();
         refreshCardList();
       };
@@ -170,8 +175,7 @@ function initAdmin() {
       slots: Number(cardSlots.value),
       notifyMsg: notifyMsg.value.trim(),
       maxNotifyMsg: maxNotifyMsg.value.trim(),
-      addPass: addPass.value.trim(),
-      added: false
+      addPass: addPass.value.trim()
     };
     cards.push(newCard);
     saveAll();
