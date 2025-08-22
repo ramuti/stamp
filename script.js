@@ -1,113 +1,66 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #ffe6f0;
-  margin: 0;
-  padding: 0;
+let userName = localStorage.getItem("userName") || "";
+let cards = JSON.parse(localStorage.getItem("cards")) || [];
+let keywords = JSON.parse(localStorage.getItem("keywords")) || [];
+let updates = JSON.parse(localStorage.getItem("updates")) || [];
+
+function saveAll() {
+  localStorage.setItem("userName", userName);
+  localStorage.setItem("cards", JSON.stringify(cards));
+  localStorage.setItem("keywords", JSON.stringify(keywords));
+  localStorage.setItem("updates", JSON.stringify(updates));
 }
 
-.container {
-  margin: 20px auto;
-  width: 90%;
-  max-width: 600px;
-}
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("setNameBtn")) initUser();
+  if (document.getElementById("createCardBtn")) initAdmin();
+});
 
-h1, h2 {
-  color: #333;
-}
+function initUser() {
+  const nameModal = document.getElementById("nameModal");
+  const setNameBtn = document.getElementById("setNameBtn");
+  const userNameInput = document.getElementById("userNameInput");
+  const cardTitle = document.getElementById("cardTitle");
+  const addCardBtn = document.getElementById("addCardBtn");
+  const addCardPass = document.getElementById("addCardPass");
+  const userCards = document.getElementById("userCards");
+  const historyList = document.getElementById("stampHistory");
+  const updateLogs = document.getElementById("updateLogs");
 
-button {
-  margin: 5px;
-  padding: 8px 16px;
-  background-color: #ff99cc;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #ff6699;
-}
+  if (!userName) {
+    nameModal.style.display = "flex";
+  } else {
+    cardTitle.textContent = `${userName}のスタンプカード`;
+  }
 
-input, select, textarea {
-  width: 90%;
-  padding: 8px;
-  margin: 5px 0 15px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
+  setNameBtn.onclick = () => {
+    if (userNameInput.value.trim()) {
+      userName = userNameInput.value.trim();
+      saveAll();
+      cardTitle.textContent = `${userName}のスタンプカード`;
+      nameModal.style.display = "none";
+    }
+  };
 
-ul {
-  list-style: none;
-  padding: 0;
-}
+  addCardBtn.onclick = () => {
+    const pass = addCardPass.value.trim();
+    const card = cards.find(c => c.addPass === pass);
+    if (card) {
+      alert("カードを追加しました！");
+      renderUserCards();
+    } else {
+      alert("パスが間違っています");
+    }
+  };
 
-li {
-  margin: 5px 0;
-  padding: 8px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.card-box {
-  background: #fff;
-  border: 2px solid #ff99cc;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 15px 0;
-  text-align: left;
-}
-
-.card {
-  border: 2px solid #333;
-  margin: 10px 0;
-  padding: 10px;
-  background: #fff;
-  position: relative;
-}
-
-.stamp-slot {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  margin: 5px;
-  border: 1px solid #333;
-  background: #fff;
-}
-
-.serial {
-  position: absolute;
-  bottom: 5px;
-  right: 10px;
-  font-size: 12px;
-  color: #666;
-}
-
-.log-box {
-  max-height: 150px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
-}
-
-.modal {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  z-index: 1000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.5);
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  width: 80%;
-  max-width: 400px;
-}
+  function renderUserCards() {
+    userCards.innerHTML = "";
+    cards.forEach((c, i) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `<h3>${c.name}</h3>`;
+      for (let j = 0; j < c.slots; j++) {
+        const slot = document.createElement("div");
+        slot.className = "stamp-slot";
+        div.appendChild(slot);
+        if ((c.stamps || []).includes(j)) {
+          slot.style.background = `url(${c
