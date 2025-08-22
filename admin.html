@@ -10,55 +10,57 @@
     <h1>管理者画面</h1>
 
     <!-- カード作成 -->
-    <div class="section-box">
+    <div class="card-box">
       <h2>カード作成</h2>
       <label>カード名</label>
-      <input type="text" id="cardNameInput"><br>
+      <input type="text" id="cardName">
+
       <label>枠数</label>
-      <input type="number" id="cardSlotsInput" min="1"><br>
+      <input type="number" id="cardSlots" min="1" value="10">
+
       <label>通知文</label>
-      <input type="text" id="notifyMsgInput" value="スタンプを押したよ"><br>
-      <label>MAX時通知文</label>
-      <input type="text" id="maxMsgInput" value="スタンプがMAXになりました スクショして管理者にお知らせしましょう"><br>
+      <input type="text" id="notifyMsg" value="スタンプを押したよ">
+
+      <label>MAX通知文</label>
+      <input type="text" id="maxNotifyMsg" value="スタンプがMAXになりました スクショして管理者にお知らせしましょう">
+
       <label>追加パス</label>
-      <input type="text" id="cardPassAdminInput"><br>
+      <input type="text" id="addPass">
+
       <label>背景画像</label>
-      <input type="file" id="bgImgInput" accept="image/*"><br>
+      <input type="file" id="bgImage">
+
       <label>スタンプ画像</label>
-      <input type="file" id="stampImgInput" accept="image/*"><br>
+      <input type="file" id="stampImage">
+
       <button id="createCardBtn">カード作成</button>
     </div>
 
-    <!-- プレビュー -->
-    <div class="section-box">
-      <h2>プレビュー</h2>
-      <div id="cardPreview"></div>
-    </div>
-
     <!-- カード一覧 -->
-    <div class="section-box">
+    <div class="card-box">
       <h2>カード一覧</h2>
-      <ul id="adminCardList"></ul>
+      <ul id="adminCards"></ul>
     </div>
 
     <!-- 合言葉管理 -->
-    <div class="section-box">
+    <div class="card-box">
       <h2>スタンプ合言葉管理</h2>
       <label>対象カード</label>
-      <select id="keywordCardSelect"></select><br>
+      <select id="keywordCardSelect"></select>
+
       <label>合言葉</label>
-      <input type="text" id="keywordInput"><br>
+      <input type="text" id="keywordInput">
+
       <button id="addKeywordBtn">作成</button>
-      <h3>───合言葉一覧───</h3>
       <ul id="keywordList"></ul>
     </div>
 
     <!-- 更新履歴 -->
-    <div class="section-box">
+    <div class="card-box">
       <h2>更新履歴管理</h2>
-      <textarea id="historyInput" rows="3" placeholder="2025/08/21 ○○を修正しました"></textarea><br>
-      <button id="addHistoryBtn">追加</button>
-      <ul id="historyList"></ul>
+      <textarea id="updateInput" rows="3" placeholder="例: 2025/08/21 ○○を修正しました"></textarea>
+      <button id="addUpdateBtn">追加</button>
+      <div id="adminUpdateLogs" class="log-box"></div>
     </div>
   </div>
 
