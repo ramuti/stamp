@@ -3,64 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード管理者</title>
+<title>管理者画面</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body class="adminBody">
+<body>
 
-<div class="adminContainer">
+<h2>カード作成</h2>
+<div class="adminRow">
+  <label>カード名</label>
+  <input type="text" id="cardTitle">
+</div>
+<div class="adminRow">
+  <label>追加パス</label>
+  <input type="text" id="cardPass">
+</div>
+<div class="adminRow">
+  <label>枠数</label>
+  <input type="number" id="cardSlots" min="1">
+</div>
+<div class="adminRow">
+  <label>通知文</label>
+  <input type="text" id="notifyText" placeholder="スタンプを押したよ">
+</div>
+<div class="adminRow">
+  <label>MAX通知文</label>
+  <input type="text" id="maxNotifyText" placeholder="スタンプがMAXになりました スクショして管理者にお知らせしましょう">
+</div>
+<div class="adminRow">
+  <label>背景画像</label>
+  <input type="file" id="bgImageInput">
+</div>
+<div class="adminRow">
+  <label>スタンプ画像</label>
+  <input type="file" id="stampImageInput">
+</div>
+<button id="createCardBtn">カード作成</button>
 
-  <h2>カード作成</h2>
-  <div class="adminSection">
-    <label>カード名</label>
-    <input type="text" id="cardTitle">
+<h2>カード一覧</h2>
+<div id="cardsList"></div>
 
-    <label>追加パス</label>
-    <input type="text" id="cardPass">
-
-    <label>スタンプ枠数</label>
-    <input type="number" id="cardSlots" min="1" value="5">
-
-    <label>通知文</label>
-    <input type="text" id="notifyText" placeholder="スタンプを押したよ">
-
-    <label>MAX通知文</label>
-    <input type="text" id="maxNotifyText" placeholder="スタンプがMAXになりました…">
-
-    <label>背景画像</label>
-    <input type="file" id="bgImageInput" accept="image/*">
-
-    <label>スタンプ画像</label>
-    <input type="file" id="stampImageInput" accept="image/*">
-
-    <button id="createCardBtn">カード作成</button>
-  </div>
-
-  <h2>作成済カード一覧</h2>
-  <div class="cardsContainer" id="cardsList"></div>
-
-  <h2>スタンプ合言葉管理</h2>
-  <div class="adminSection">
-    <label>対象カード</label>
-    <select id="selectCard"></select>
-
-    <label>合言葉</label>
-    <input type="text" id="stampSecretInput">
-
-    <button id="addSecretBtn">追加</button>
-    <button id="toggleSecretBtn">有効/無効切替</button>
-    <button id="deleteSecretBtn">削除</button>
-  </div>
-
-  <h2>更新履歴管理</h2>
-  <div class="adminSection">
-    <textarea id="updateInput" placeholder="更新内容を入力"></textarea>
-    <button id="addUpdateBtn">追加</button>
-    <div class="updateHistory" id="updateList"></div>
-  </div>
-
+<h2>スタンプ合言葉管理</h2>
+<div class="adminRow">
+  <select id="selectCard"></select>
+  <input type="text" id="stampSecretInput" placeholder="合言葉">
+  <button id="addSecretBtn">作成</button>
+  <button id="toggleSecretBtn">有効/無効切替</button>
+  <button id="deleteSecretBtn">削除</button>
 </div>
 
-<script src="admin.js"></script>
+<h2>更新履歴管理</h2>
+<div class="adminRow">
+  <input type="text" id="updateInput" placeholder="更新内容を入力">
+  <button id="addUpdateBtn">追加</button>
+</div>
+<div id="updateList" class="updateList"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
