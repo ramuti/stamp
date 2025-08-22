@@ -3,54 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード 管理者 v3</title>
+<title>管理者画面</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>カード作成</h1>
+<div class="container">
 
-<div class="admin-section">
-  <label>カード名</label>
-  <input type="text" id="cardName">
-</div>
-<div class="admin-section">
-  <label>枠数</label>
-  <input type="number" id="cardSlots">
-</div>
-<div class="admin-section">
-  <label>通知文</label>
-  <input type="text" id="notifyMsg">
-</div>
-<div class="admin-section">
-  <label>MAX時通知文</label>
-  <input type="text" id="maxNotifyMsg">
-</div>
-<div class="admin-section">
-  <label>追加パス</label>
-  <input type="text" id="addPass">
-</div>
-<button id="createCardBtn">カード作成</button>
+  <h1>管理者画面</h1>
 
-<h2>作成済カード一覧</h2>
-<ul id="adminCards"></ul>
+  <!-- カード作成 -->
+  <div class="card-create">
+    <div class="card-input">
+      <label>カード名</label>
+      <input type="text" id="cardTitle">
+    </div>
+    <div class="card-input">
+      <label>枠数</label>
+      <input type="number" id="cardFrames">
+    </div>
+    <div class="card-input">
+      <label>追加パス</label>
+      <input type="text" id="cardPass">
+    </div>
+    <button id="createCardBtn">作成</button>
+  </div>
 
-<h2>スタンプ合言葉管理</h2>
-<div class="admin-section">
-  <label>対象カード</label>
-  <select id="keywordCardSelect"></select>
+  <!-- カード一覧 -->
+  <h2>カード一覧</h2>
+  <div id="cardList"></div>
+
+  <!-- スタンプ合言葉管理 -->
+  <h2>スタンプ合言葉管理</h2>
+  <div class="stamp-key-manage">
+    <select id="targetCard"></select>
+    <input type="text" id="stampKeyInput" placeholder="合言葉">
+    <button id="addStampKeyBtn">決定</button>
+  </div>
+  <div id="stampKeyList"></div>
+
+  <!-- 更新履歴 -->
+  <h2>更新履歴</h2>
+  <textarea id="updateInput" placeholder="更新内容を入力"></textarea>
+  <button id="updateBtn">更新</button>
+
 </div>
-<div class="admin-section">
-  <label>合言葉</label>
-  <input type="text" id="keywordInput" placeholder="合言葉">
-</div>
-<button id="addKeywordBtn">追加</button>
-<ul id="keywordList"></ul>
-
-<h2>更新履歴</h2>
-<input type="text" id="updateInput" placeholder="更新内容">
-<button id="addUpdateBtn">追加</button>
-<div id="adminUpdateLogs" class="updates"></div>
-
 <script src="script.js"></script>
 </body>
 </html>
