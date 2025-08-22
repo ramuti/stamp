@@ -1,69 +1,49 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>管理者画面</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタンプカード 管理者</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>管理者画面</h1>
+<h1>カード作成</h1>
+<div class="admin-section">
+  <label>カード名</label>
+  <input type="text" id="cardName">
+</div>
+<div class="admin-section">
+  <label>枠数</label>
+  <input type="number" id="cardSlots">
+</div>
+<div class="admin-section">
+  <label>通知文</label>
+  <input type="text" id="notifyMsg">
+</div>
+<div class="admin-section">
+  <label>MAX時通知文</label>
+  <input type="text" id="maxNotifyMsg">
+</div>
+<div class="admin-section">
+  <label>追加パス</label>
+  <input type="text" id="addPass">
+</div>
+<button id="createCardBtn">カード作成</button>
 
-    <!-- カード作成 -->
-    <div class="card-box">
-      <h2>カード作成</h2>
-      <label>カード名</label>
-      <input type="text" id="cardName">
+<h2>作成済カード一覧</h2>
+<ul id="adminCards"></ul>
 
-      <label>枠数</label>
-      <input type="number" id="cardSlots" min="1" value="10">
+<h2>スタンプ合言葉管理</h2>
+<select id="keywordCardSelect"></select>
+<input type="text" id="keywordInput" placeholder="合言葉">
+<button id="addKeywordBtn">追加</button>
+<ul id="keywordList"></ul>
 
-      <label>通知文</label>
-      <input type="text" id="notifyMsg" value="スタンプを押したよ">
+<h2>更新履歴</h2>
+<input type="text" id="updateInput" placeholder="更新内容">
+<button id="addUpdateBtn">追加</button>
+<div id="adminUpdateLogs" class="updates"></div>
 
-      <label>MAX通知文</label>
-      <input type="text" id="maxNotifyMsg" value="スタンプがMAXになりました スクショして管理者にお知らせしましょう">
-
-      <label>追加パス</label>
-      <input type="text" id="addPass">
-
-      <label>背景画像</label>
-      <input type="file" id="bgImage">
-
-      <label>スタンプ画像</label>
-      <input type="file" id="stampImage">
-
-      <button id="createCardBtn">カード作成</button>
-    </div>
-
-    <!-- カード一覧 -->
-    <div class="card-box">
-      <h2>カード一覧</h2>
-      <ul id="adminCards"></ul>
-    </div>
-
-    <!-- 合言葉管理 -->
-    <div class="card-box">
-      <h2>スタンプ合言葉管理</h2>
-      <label>対象カード</label>
-      <select id="keywordCardSelect"></select>
-
-      <label>合言葉</label>
-      <input type="text" id="keywordInput">
-
-      <button id="addKeywordBtn">作成</button>
-      <ul id="keywordList"></ul>
-    </div>
-
-    <!-- 更新履歴 -->
-    <div class="card-box">
-      <h2>更新履歴管理</h2>
-      <textarea id="updateInput" rows="3" placeholder="例: 2025/08/21 ○○を修正しました"></textarea>
-      <button id="addUpdateBtn">追加</button>
-      <div id="adminUpdateLogs" class="log-box"></div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
