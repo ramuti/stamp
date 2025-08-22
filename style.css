@@ -56,12 +56,17 @@ body {
   display:inline-block;
   line-height:40px;
   vertical-align:middle;
+  position: relative;
 }
 
 .stamp-icon {
   width:40px;
   height:40px;
   display:none;
+  position:absolute;
+  top:0;
+  left:0;
+  transition: transform 0.3s ease;
 }
 
 button { margin-top:10px; cursor:pointer; }
