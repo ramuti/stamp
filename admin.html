@@ -3,43 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード - 管理者</title>
+<title>管理者画面</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body onload="loadAdminUI()">
+<body>
 
-<h2>管理者画面</h2>
+<h2>カード作成</h2>
+<label>カード題名：<input type="text" id="cardName"></label>
+<label>枠数：<input type="number" id="cardMax" min="1" value="5"></label>
+<label>通知文：<input type="text" id="cardNotice" placeholder="スタンプを押したよ"></label>
+<label>MAX時通知文：<input type="text" id="cardNoticeMax" placeholder="スタンプがMAXになりました"></label>
+<label>カード追加パス：<input type="text" id="cardAddPass"></label>
+<label>背景画像パス：<input type="text" id="cardBg"></label>
+<label>スタンプ画像パス：<input type="text" id="cardIcon"></label>
+<button onclick="createCard()">作成</button>
 
-<section>
-  <h3>カード作成</h3>
-  <label>カード題名: <input id="newCardName"></label>
-  <label>枠数: <input type="number" id="newCardMax" value="5"></label>
-  <label>通知文: <input id="newCardNotice" value="スタンプを押しました！"></label>
-  <label>MAX通知文: <input id="newCardMaxMsg" value="スタンプがMAXになりました スクショして管理者にお知らせしましょう"></label>
-  <label>追加パス: <input id="newCardPass"></label>
-  <label>背景画像URL: <input id="newCardBG" placeholder="images/base.png"></label>
-  <label>スタンプ画像URL: <input id="newCardIcon" placeholder="images/stamp.png"></label>
-  <button onclick="createCard()">カード作成</button>
-</section>
+<h3>カード一覧</h3>
+<div id="cardsAdminList" class="cardsContainer"></div>
 
-<section>
-  <h3>カード一覧</h3>
-  <div id="cardsAdminList"></div>
-</section>
+<h3>スタンプ合言葉管理</h3>
+<label>対象カード：
+<select id="selectCardForSecret"></select>
+</label>
+<label>合言葉：<input type="text" id="newSecret"></label>
+<button onclick="createSecret()">作成</button>
+<div id="secretList"></div>
 
-<section>
-  <h3>スタンプ合言葉管理</h3>
-  <select id="selectCardForSecret"></select>
-  <input type="text" id="newSecret" placeholder="合言葉">
-  <button onclick="createSecret()">作成</button>
-  <div id="secretList"></div>
-</section>
-
-<section>
-  <h3>更新履歴入力</h3>
-  <input type="text" id="updateInput" placeholder="更新内容">
-  <button onclick="addUpdate()">追加</button>
-</section>
+<h3>更新履歴管理</h3>
+<textarea id="updateInput" rows="3" cols="40" placeholder="2025/08/21 ○○を修正しました"></textarea>
+<button onclick="addUpdate()">追加</button>
 
 <script src="script.js"></script>
 </body>
