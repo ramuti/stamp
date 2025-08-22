@@ -51,11 +51,12 @@ function renderUserCards(){
 
     div.innerHTML=`<h3>${card.name}</h3><div class="stampRow">${stampsHtml}</div>
       <button onclick="stampCard('${cid}')">スタンプを押す</button>
-      <div style="position:absolute;bottom:5px;right:5px;font-size:12px;">${card.serial[data.userName]}</div>`;
+      <div style="position:absolute;bottom:5px;right:5px;font-size:14px;">${card.serial[data.userName]}</div>`;
     container.appendChild(div);
   }
 }
 
+// カード追加（合言葉）
 function addCardByPass(){
   const pass=document.getElementById('addCardPass').value.trim();
   if(!pass) return alert('追加パスを入力');
@@ -155,6 +156,7 @@ function loadAdminUI(){
   renderSecrets();
 }
 
+// カード作成
 function createCard(){
   const name=document.getElementById('newCardName').value.trim();
   const max=parseInt(document.getElementById('newCardMax').value);
