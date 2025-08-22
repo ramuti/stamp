@@ -31,7 +31,7 @@ function initUser() {
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
-  const debugNameBtn = document.getElementById("debugNameBtn"); // デバッグ用
+  const debugNameBtn = document.getElementById("debugNameBtn"); 
 
   function showNameModal() {
     userNameInput.value = userName;
@@ -56,7 +56,7 @@ function initUser() {
 
   addCardBtn.onclick = () => {
     const pass = addCardPass.value.trim();
-    if (!pass) { alert("追加パスを入力してください"); return; } // パス必須チェック
+    if (!pass) { alert("追加パスを入力してください"); return; } // パス必須
     const card = cards.find(c => c.addPass === pass);
     if (!card) { alert("パスが間違っています"); return; }
     renderUserCards();
@@ -83,18 +83,20 @@ function initUser() {
         if (targetKeyword) {
           const historyKey = `${c.id}_${kw}`;
           if (userStampHistory.includes(historyKey)) { alert("もう押してあるよ"); return; }
-          userStampHistory.push(historyKey);
+          userStampHistory.push(`${new Date().toLocaleString()} : ${c.name}にスタンプ`);
           saveAll();
           alert("スタンプを押したよ");
           renderUserCards();
           renderHistory();
-        } else alert("無効な合言葉です");
+        } else alert("無効の合言葉だよ");
       };
       div.appendChild(btn);
+
       const serial = document.createElement("div");
       serial.className = "serial";
-      serial.textContent = String(i + 1).padStart(5, "0");
+      serial.textContent = String(i+1).padStart(5,'0');
       div.appendChild(serial);
+
       userCards.appendChild(div);
     });
   }
@@ -106,9 +108,9 @@ function initUser() {
       li.textContent = h;
       historyList.appendChild(li);
     });
+    updateLogs.innerHTML = updates.join("<br>");
   }
 
-  updateLogs.innerHTML = updates.join("<br>");
   renderUserCards();
   renderHistory();
 }
@@ -207,7 +209,8 @@ function initAdmin() {
 
   addUpdateBtn.onclick = () => {
     if (!updateInput.value.trim()) return;
-    updates.push(updateInput.value.trim());
+    const now = new Date();
+    updates.push(`${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} ${updateInput.value.trim()}`);
     saveAll();
     renderUpdates();
   };
