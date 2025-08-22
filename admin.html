@@ -2,30 +2,32 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>管理者画面</title>
+<title>スタンプカード - 管理者</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body onload="initAdminUI();">
+<body onload="loadAdminUI();">
 
 <h2>管理者画面</h2>
 
 <h3>カード作成</h3>
-<label>カード名: <input id="newCardName"></label>
-<label>枠数: <input id="newCardMax" type="number" value="5"></label>
+<label>カード題名: <input id="newCardName"></label>
+<label>枠数: <input type="number" id="newCardMax" value="5"></label>
 <label>通知文: <input id="newCardNotice" value="スタンプを押しました！"></label>
 <label>MAX通知文: <input id="newCardMaxMsg" value="スタンプがMAXになりました"></label>
-<label>追加パス: <input id="newCardAddPass"></label>
-<label>背景画像: <input type="file" id="newCardBG" accept="image/*"></label>
-<label>スタンプ画像: <input type="file" id="newCardIcon" accept="image/*"></label>
+<label>追加パス: <input id="newCardPass"></label>
+<label>背景画像URL: <input id="newCardBG" placeholder="images/base.png"></label>
+<label>スタンプ画像URL: <input id="newCardIcon" placeholder="images/stamp.png"></label>
 <button onclick="createCard()">カード作成</button>
 
 <h3>カード一覧</h3>
 <div id="cardsAdminList"></div>
 
 <h3>スタンプ合言葉管理</h3>
-<select id="selectCardForSecret"></select>
-<input type="text" id="newSecretWord" placeholder="合言葉">
-<button onclick="createSecret()">作成</button>
+<div>
+  <select id="selectCardForSecret"></select>
+  <input type="text" id="newSecret" placeholder="合言葉">
+  <button onclick="createSecret()">作成</button>
+</div>
 <div id="secretList"></div>
 
 <script src="script.js"></script>
