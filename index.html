@@ -2,30 +2,43 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>スタンプカード</title>
+  <title>スタンプカード - ユーザー</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 名前入力ダイアログ -->
+  <!-- 初回名前入力 -->
   <div id="nameModal" class="modal">
     <div class="modal-content">
       <h2>Twitterの名前を入力してください</h2>
-      <input type="text" id="userNameInput" placeholder="お名前">
+      <input type="text" id="userNameInput" placeholder="名前を入力">
       <button id="setNameBtn">OK</button>
     </div>
   </div>
 
-  <!-- ユーザー画面 -->
   <div class="container">
     <h1 id="cardTitle">スタンプカード</h1>
 
-    <div class="section-box">
-      <h2>カード追加</h2>
-      <input type="text" id="cardPassInput" placeholder="スタンプ追加パス">
+    <!-- カード追加 -->
+    <div class="card-box">
+      <label>スタンプ追加パス</label>
+      <input type="text" id="addCardPass" placeholder="追加パスを入力">
       <button id="addCardBtn">追加</button>
     </div>
 
+    <!-- カード表示 -->
     <div id="userCards"></div>
+
+    <!-- 履歴 -->
+    <div class="card-box">
+      <h2>スタンプ履歴</h2>
+      <ul id="stampHistory"></ul>
+    </div>
+
+    <!-- 更新履歴 -->
+    <div class="card-box">
+      <h2>更新履歴</h2>
+      <div id="updateLogs" class="log-box"></div>
+    </div>
   </div>
 
   <script src="script.js"></script>
