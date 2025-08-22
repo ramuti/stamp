@@ -1,7 +1,59 @@
-body { font-family: sans-serif; padding: 10px; }
-.card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; display: flex; align-items: center; }
-.card img { margin-right: 10px; transition: transform 0.3s; }
-.stamp-animate { transform: scale(1.5); }
-#notice { background: yellow; padding: 5px; margin: 5px 0; display:none; }
-.admin-box { border: 1px dashed #666; padding: 5px; margin:5px 0; }
-button { margin-left: 5px; }
+body {
+  background-color: pink;
+  font-family: sans-serif;
+  margin:0;
+  padding:0;
+}
+
+.dialog {
+  position: fixed;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -50%);
+  background:white;
+  padding:20px;
+  border:1px solid #ccc;
+  display:none;
+  z-index:1000;
+}
+
+#cardsContainer, #cardsAdminList {
+  display:flex;
+  flex-wrap: wrap;
+  gap:10px;
+  margin-top:20px;
+}
+
+.card {
+  border:1px solid #888;
+  padding:10px;
+  width:200px;
+  position:relative;
+  text-align:center;
+}
+
+.stamp-row {
+  display:flex;
+  justify-content:center;
+  gap:5px;
+  margin-top:5px;
+}
+
+.stamp-box {
+  width:30px;
+  height:30px;
+  border:1px solid #333;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.stamp-icon {
+  width:100%;
+  height:100%;
+  transition: transform 0.3s;
+}
+
+.stamp-icon.animate {
+  transform: scale(1.5);
+}
