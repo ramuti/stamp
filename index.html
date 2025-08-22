@@ -1,39 +1,28 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタンプカード</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- 名前入力ダイアログ -->
-<div id="userNameDialog" class="dialog">
-  <div class="dialogContent">
-    <label>Twitterの名前を入力してください</label><br>
-    <input type="text" id="userNameInput" placeholder="名前を入力">
-    <button id="okUserName">OK</button>
+  <!-- ユーザー名入力ダイアログ -->
+  <div id="nameModal" class="modal">
+    <div class="modal-content">
+      <h2>名前を入力してください</h2>
+      <input type="text" id="userNameInput" placeholder="名前を入力">
+      <button id="saveNameBtn">OK</button>
+    </div>
   </div>
-</div>
 
-<!-- ユーザー画面 -->
-<div id="userHeader">
-  <h2 id="userTitle"></h2>
-</div>
+  <!-- ユーザー画面 -->
+  <div class="user-container">
+    <h1 id="userTitle">スタンプカード</h1>
+    <button id="createCardBtn">カードを作成</button>
+    <div id="cardsContainer"></div>
+  </div>
 
-<div id="cardAddArea" class="userCardBox">
-  <input type="text" id="userAddPass" placeholder="スタンプ追加パス">
-  <button id="userAddCardBtn">追加</button>
-</div>
-
-<div id="userCards"></div>
-
-<div id="userUpdateArea" class="userCardBox">
-  <h3>更新履歴</h3>
-  <div id="userUpdateList" class="updateList"></div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
