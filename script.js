@@ -1,105 +1,117 @@
-// ----------------------
-// データ管理用
-// ----------------------
+// ========== 共通データ ==========
 let userName = localStorage.getItem("userName") || "";
 let stampCards = JSON.parse(localStorage.getItem("stampCards")) || [];
 let keywords = JSON.parse(localStorage.getItem("keywords")) || [];
 
-// ----------------------
-// DOM取得
-// ----------------------
-const userNameDialog = document.getElementById("userNameDialog");
-const userNameInput = document.getElementById("userNameInput");
-const setNameBtn = document.getElementById("setNameBtn");
-const userTitle = document.getElementById("userTitle");
+// ========== ユーザー画面 ==========
+window.addEventListener("DOMContentLoaded", () => {
+  const nameModal = document.getElementById("nameModal");
+  const setNameBtn = document.getElementById("setNameBtn");
+  const userNameInput = document.getElementById("userNameInput");
+  const cardTitle = document.getElementById("cardTitle");
+  const createCardBtn = document.getElementById("createCardBtn");
+  const stampCardsDiv = document.getElementById("stampCards");
 
-const createCardBtn = document.getElementById("createCardBtn");
-const cardList = document.getElementById("cardList");
-
-// ----------------------
-// 初期表示処理
-// ----------------------
-window.onload = function () {
-  // 名前が未設定なら入力ダイアログを表示
-  if (!userName) {
-    userNameDialog.style.display = "block";
-  } else {
-    userTitle.textContent = `${userName}のスタンプカード`;
+  // 名前入力
+  if (nameModal && !userName) {
+    nameModal.style.display = "flex";
   }
-  renderCards();
-};
 
-// ----------------------
-// 名前設定
-// ----------------------
-setNameBtn.addEventListener("click", () => {
-  const name = userNameInput.value.trim();
-  if (name) {
-    userName = name;
-    localStorage.setItem("userName", userName);
-    userTitle.textContent = `${userName}のスタンプカード`;
-    userNameDialog.style.display = "none"; // OKで閉じる
-  } else {
-    alert("名前を入力してください");
-  }
-});
-
-// ----------------------
-// カード作成
-// ----------------------
-createCardBtn.addEventListener("click", () => {
-  const newCard = {
-    id: Date.now(),
-    stamps: []
-  };
-  stampCards.push(newCard);
-  localStorage.setItem("stampCards", JSON.stringify(stampCards));
-  renderCards();
-});
-
-// ----------------------
-// カード描画
-// ----------------------
-function renderCards() {
-  cardList.innerHTML = "";
-  stampCards.forEach((card) => {
-    const cardDiv = document.createElement("div");
-    cardDiv.className = "stamp-card";
-
-    // スタンプを表示
-    for (let i = 0; i < 10; i++) {
-      const stamp = document.createElement("span");
-      stamp.className = "stamp";
-      if (card.stamps.includes(i)) {
-        stamp.textContent = "★"; // 押されたスタンプ
-      } else {
-        stamp.textContent = "☆"; // 空のスタンプ
+  if (setNameBtn) {
+    setNameBtn.addEventListener("click", () => {
+      const name = userNameInput.value.trim();
+      if (name) {
+        userName = name;
+        localStorage.setItem("userName", userName);
+        cardTitle.textContent = `${userName}のスタンプカード`;
+        nameModal.style.display = "none";
       }
-      cardDiv.appendChild(stamp);
-    }
+    });
+  }
 
-    // 削除ボタン
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "削除";
-    deleteBtn.onclick = () => {
-      deleteCard(card.id);
-    };
-    cardDiv.appendChild(deleteBtn);
+  if (cardTitle && userName) {
+    cardTitle.textContent = `${userName}のスタンプカード`;
+  }
 
-    cardList.appendChild(cardDiv);
-  });
-}
+  // カード作成
+  if (createCardBtn) {
+    createCardBtn.addEventListener("click", () => {
+      const newCard = { id: Date.now(), stamps: 0 };
+      stampCards.push(newCard);
+      localStorage.setItem("stampCards", JSON.stringify(stampCards));
+      renderCards();
+    });
+  }
 
-// ----------------------
-// カード削除
-// ----------------------
-function deleteCard(id) {
-  stampCards = stampCards.filter((c) => c.id !== id);
-  localStorage.setItem("stampCards", JSON.stringify(stampCards));
-
-  // 合言葉管理からも削除
-  keywords = keywords.filter((k) => k.cardId !== id);
-  localStorage.setItem("keywords", JSON.stringify(keywords));
+  function renderCards() {
+    if (!stampCardsDiv) return;
+    stampCardsDiv.innerHTML = "";
+    stampCards.forEach(card => {
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "card";
+      cardDiv.textContent = `カードID: ${card.id} / スタンプ数: ${card.stamps}`;
+      stampCardsDiv.appendChild(cardDiv);
+    });
+  }
 
   renderCards();
-}
+});
+
+// ========== 管理者画面 ==========
+window.addEventListener("DOMContentLoaded", () => {
+  const keywordInput = document.getElementById("keywordInput");
+  const addKeywordBtn = document.getElementById("addKeywordBtn");
+  const keywordList = document.getElementById("keywordList");
+  const adminStampCards = document.getElementById("adminStampCards");
+
+  if (addKeywordBtn) {
+    addKeywordBtn.addEventListener("click", () => {
+      const keyword = keywordInput.value.trim();
+      if (keyword) {
+        keywords.push(keyword);
+        localStorage.setItem("keywords", JSON.stringify(keywords));
+        keywordInput.value = "";
+        renderKeywords();
+      }
+    });
+  }
+
+  function renderKeywords() {
+    if (!keywordList) return;
+    keywordList.innerHTML = "";
+    keywords.forEach((kw, index) => {
+      const li = document.createElement("li");
+      li.textContent = kw;
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "削除";
+      delBtn.onclick = () => {
+        keywords.splice(index, 1);
+        localStorage.setItem("keywords", JSON.stringify(keywords));
+        renderKeywords();
+      };
+      li.appendChild(delBtn);
+      keywordList.appendChild(li);
+    });
+  }
+
+  function renderAdminCards() {
+    if (!adminStampCards) return;
+    adminStampCards.innerHTML = "";
+    stampCards.forEach((card, index) => {
+      const li = document.createElement("li");
+      li.textContent = `カードID: ${card.id} / スタンプ数: ${card.stamps}`;
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "削除";
+      delBtn.onclick = () => {
+        stampCards.splice(index, 1);
+        localStorage.setItem("stampCards", JSON.stringify(stampCards));
+        renderAdminCards();
+      };
+      li.appendChild(delBtn);
+      adminStampCards.appendChild(li);
+    });
+  }
+
+  renderKeywords();
+  renderAdminCards();
+});
