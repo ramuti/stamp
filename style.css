@@ -58,15 +58,18 @@ body {
   width:50px;
   height:50px;
   margin:3px;
-  border:1px solid #000;
-  background:#fff;
+  border:2px solid #000; /* 枠を強調 */
+  background:#fff;       /* デフォルト白 */
   vertical-align:middle;
   transition: all 0.3s ease;
+  box-sizing:border-box;
 }
 
+/* 押されたとき */
 .stamp-slot.active {
-  background-color: #ff9999; /* スタンプ押下時の色 */
-  transform: scale(1.3); /* 拡大アニメーション */
+  background-color: #ff9999; /* 赤に色付け */
+  border-color:#000;          /* 枠線は消さない */
+  transform: scale(1.3);
   animation: stampAnim 0.4s forwards;
 }
 
