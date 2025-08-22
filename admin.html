@@ -9,19 +9,22 @@
 
 <h2>管理者画面</h2>
 
+<!-- カード作成 -->
 <h3>カード作成</h3>
 <label>カード題名: <input id="newCardName"></label>
 <label>枠数: <input type="number" id="newCardMax" value="5"></label>
 <label>通知文: <input id="newCardNotice" value="スタンプを押しました！"></label>
-<label>MAX通知文: <input id="newCardMaxMsg" value="スタンプがMAXになりました"></label>
+<label>MAX通知文: <input id="newCardMaxMsg" value="スタンプがMAXになりました スクショして管理者にお知らせしましょう"></label>
 <label>追加パス: <input id="newCardPass"></label>
 <label>背景画像URL: <input id="newCardBG" placeholder="images/base.png"></label>
 <label>スタンプ画像URL: <input id="newCardIcon" placeholder="images/stamp.png"></label>
 <button onclick="createCard()">カード作成</button>
 
+<!-- カード一覧 -->
 <h3>カード一覧</h3>
 <div id="cardsAdminList"></div>
 
+<!-- スタンプ合言葉管理 -->
 <h3>スタンプ合言葉管理</h3>
 <div>
   <select id="selectCardForSecret"></select>
@@ -29,6 +32,11 @@
   <button onclick="createSecret()">作成</button>
 </div>
 <div id="secretList"></div>
+
+<!-- 更新履歴管理 -->
+<h3>更新履歴入力</h3>
+<input type="text" id="updateInput" placeholder="更新内容">
+<button onclick="addUpdate()">追加</button>
 
 <script src="script.js"></script>
 </body>
