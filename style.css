@@ -1,72 +1,70 @@
 body {
+  background-color: #ffe4e1; /* 薄ピンク */
   font-family: sans-serif;
-  background-color: #ffe6f0;
-  margin: 0;
-  padding: 0;
+  text-align: center;
 }
 
 .dialog {
   position: fixed;
-  top:50%;
-  left:50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
-  z-index:100;
-  box-shadow:0 0 10px rgba(0,0,0,0.3);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 100;
 }
 
-.notice {
-  position: fixed;
-  top:50%;
-  left:50%;
-  transform: translate(-50%, -50%);
-  background: #fff4e6;
-  padding: 20px;
-  border-radius: 10px;
-  text-align:center;
-  z-index:200;
-  box-shadow:0 0 10px rgba(0,0,0,0.5);
+.cardsContainer, #cardsAdminList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .card {
   width: 300px;
-  margin: 20px auto;
+  background-size: cover;
+  margin: 10px;
   padding: 10px;
-  border-radius: 10px;
+  position: relative;
+  border-radius: 8px;
   text-align: center;
-  background: white;
-  position: relative;
 }
 
-.stamp-box {
-  display:flex;
-  flex-wrap: wrap;
+.stampRow {
+  display: flex;
   justify-content: center;
-  gap:5px;
-  margin-top:10px;
+  margin-top: 5px;
 }
 
-.stamp-box span {
-  width:40px;
-  height:40px;
-  border:1px solid #ccc;
-  display:inline-block;
-  line-height:40px;
-  vertical-align:middle;
+.stampBox {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #888;
+  margin: 2px;
   position: relative;
 }
 
-.stamp-icon {
-  width:40px;
-  height:40px;
-  display:none;
-  position:absolute;
-  top:0;
-  left:0;
-  transition: transform 0.3s ease;
+.stampBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s;
 }
 
-button { margin-top:10px; cursor:pointer; }
+.noticePopup {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background:white;
+  border: 2px solid #888;
+  padding: 20px;
+  display:none;
+  z-index: 200;
+  border-radius: 8px;
+}
+
+.noticePopup button {
+  margin-top: 10px;
+}
