@@ -3,34 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード</title>
+<title>スタンプカードユーザー</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="userBody">
 
-<div id="usernameDialog" class="noticePopup">
-  <h3>Twitterの名前を入力してください</h3>
-  <input type="text" id="userNameInput">
-  <br><button onclick="setUserName()">OK</button>
-</div>
+<div class="userContainer">
 
-<div id="mainUserContent" style="display:none;">
-  <h2 id="displayUserName"></h2>
-
-  <div>
-    <input type="text" id="addCardPass" placeholder="スタンプ追加パス">
-    <button onclick="addCardByPass()">追加</button>
+  <div id="userNameDialog" class="dialogOverlay">
+    <div class="dialogBox">
+      <p>Twitterの名前を入力してください</p>
+      <input type="text" id="userNameInput">
+      <button id="okUserName">OK</button>
+    </div>
   </div>
 
-  <div id="cardsContainer" class="cardsContainer"></div>
+  <h2 id="userTitle"></h2>
 
-  <h3>スタンプ履歴</h3>
-  <div id="stampHistory" class="stampHistory"></div>
+  <div class="adminSection">
+    <label>カード追加用パス</label>
+    <input type="text" id="addCardPass">
+    <button id="addCardBtn">カード追加</button>
+  </div>
 
-  <h3>更新履歴</h3>
-  <div id="updateLog" class="updateLog"></div>
+  <div class="cardsContainer" id="userCards"></div>
+
+  <h2>スタンプ履歴</h2>
+  <div class="stampHistory" id="stampHistory"></div>
+
+  <h2>更新履歴</h2>
+  <div class="updateHistory" id="userUpdateList"></div>
+
 </div>
 
-<script src="script.js"></script>
+<script src="user.js"></script>
 </body>
 </html>
