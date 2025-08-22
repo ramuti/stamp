@@ -1,7 +1,7 @@
 /* --- 基本 --- */
 body {
-  background-color: #ffe6e6; /* 薄ピンク */
-  font-family: 'Arial', sans-serif;
+  background-color: #ffe6e6;
+  font-family: sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -16,16 +16,15 @@ body {
   height: 100%;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
   background: #fff;
-  padding: 25px;
-  border-radius: 15px; /* 角丸 */
+  padding: 20px;
+  border-radius: 5px;
   text-align: center;
   max-width: 90%;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 /* --- 上部バー --- */
@@ -33,14 +32,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background: #ffd6d6; /* 少し濃いピンク */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 10px;
 }
 
 /* --- カード追加 --- */
 .card-add {
-  padding: 12px;
+  padding: 10px;
   text-align: center;
 }
 
@@ -48,92 +45,62 @@ body {
 .cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
-  padding-bottom: 20px;
 }
 
 .card {
-  border: 2px solid #ffb6b6;
-  border-radius: 12px;
-  padding: 15px;
-  background: #fff0f5; /* 薄いラベンダーピンク */
-  width: 280px;
+  border: 2px solid #000;
+  padding: 10px;
+  background: #fff;
+  width: 260px;
   text-align: center;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-.card h3 {
-  font-size: 1.3em;
-  margin-bottom: 10px;
-}
-
-/* --- スタンプ枠 --- */
 .stamp-slot {
   display: inline-block;
   width: 50px;
   height: 50px;
-  margin: 4px;
-  border: 2px dashed #ff9f9f; /* 可愛い枠線 */
+  margin: 3px;
+  border: 1px solid #000;
   background: #fff;
-  border-radius: 8px;
   vertical-align: middle;
 }
 
-/* --- シリアル番号 --- */
 .serial {
   text-align: right;
   font-size: 0.9em;
-  color: #555;
 }
 
 /* --- 管理者セクション --- */
 .admin-section {
-  margin: 12px 0;
-  border: 1px solid #ffb6b6;
-  padding: 8px;
-  border-radius: 8px;
-  background: #fff0f5;
+  margin: 10px 0;
+  border: 1px solid #000;
+  padding: 5px;
 }
 
 /* --- 更新履歴 --- */
 .updates {
-  max-height: 220px;
+  max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #ffb6b6;
-  padding: 8px;
-  border-radius: 8px;
-  background: #fffaf0;
+  border: 1px solid #000;
+  padding: 5px;
 }
 
 /* --- ボタン・入力 --- */
 button {
   cursor: pointer;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background-color: #ff9f9f;
-  color: #fff;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-button:hover {
-  background-color: #ff7f7f;
+  padding: 5px 10px;
 }
 
 input {
-  padding: 8px;
+  padding: 5px;
   width: 90%;
   font-size: 1em;
-  border: 1px solid #ffb6b6;
-  border-radius: 6px;
 }
 
-/* --- カードタイトル --- */
+/* --- タイトル --- */
 #cardTitle {
-  font-size: 1.3em;
+  font-size: 1.2em;
   text-align: center;
-  color: #d9534f;
-  margin-bottom: 8px;
 }
