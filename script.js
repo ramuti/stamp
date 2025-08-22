@@ -1,3 +1,4 @@
+// ----- ユーザー情報 -----
 let userName = localStorage.getItem("userName") || "";
 let cards = JSON.parse(localStorage.getItem("cards")) || [];
 let keywords = JSON.parse(localStorage.getItem("keywords")) || [];
@@ -10,11 +11,12 @@ function saveAll() {
   localStorage.setItem("updates", JSON.stringify(updates));
 }
 
+// ----- 初期化 -----
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("setNameBtn")) initUser();
-  if (document.getElementById("createCardBtn")) initAdmin();
 });
 
+// ----- ユーザー画面初期化 -----
 function initUser() {
   const nameModal = document.getElementById("nameModal");
   const setNameBtn = document.getElementById("setNameBtn");
@@ -26,21 +28,27 @@ function initUser() {
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
 
+  // すでに名前があればモーダル非表示
   if (!userName) {
     nameModal.style.display = "flex";
   } else {
     cardTitle.textContent = `${userName}のスタンプカード`;
   }
 
+  // 名前OKボタン
   setNameBtn.onclick = () => {
-    if (userNameInput.value.trim()) {
-      userName = userNameInput.value.trim();
+    const inputVal = userNameInput.value.trim();
+    if (inputVal) {
+      userName = inputVal;
       saveAll();
       cardTitle.textContent = `${userName}のスタンプカード`;
       nameModal.style.display = "none";
+    } else {
+      alert("名前を入力してください");
     }
   };
 
+  // カード追加
   addCardBtn.onclick = () => {
     const pass = addCardPass.value.trim();
     const card = cards.find(c => c.addPass === pass);
@@ -52,6 +60,7 @@ function initUser() {
     }
   };
 
+  // カード表示関数
   function renderUserCards() {
     userCards.innerHTML = "";
     cards.forEach((c, i) => {
@@ -62,5 +71,22 @@ function initUser() {
         const slot = document.createElement("div");
         slot.className = "stamp-slot";
         div.appendChild(slot);
-        if ((c.stamps || []).includes(j)) {
-          slot.style.background = `url(${c
+      }
+      const serial = document.createElement("div");
+      serial.className = "serial";
+      serial.textContent = String(i + 1).padStart(5, "0");
+      div.appendChild(serial);
+      userCards.appendChild(div);
+    });
+  }
+
+  renderUserCards();
+
+  // 更新履歴表示
+  updateLogs.innerHTML = "";
+  updates.forEach(u => {
+    const div = document.createElement("div");
+    div.textContent = u;
+    updateLogs.appendChild(div);
+  });
+}
