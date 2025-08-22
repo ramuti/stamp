@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード ユーザー v4</title>
+<title>スタンプカード ユーザー v8</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- 名前入力モーダル -->
 <div id="nameModal" class="modal">
   <div class="modal-content">
     <h2>Twitterの名前を入力してください</h2>
@@ -16,16 +17,19 @@
   </div>
 </div>
 
+<!-- 上部バー -->
 <div class="top-bar">
   <h1 id="cardTitle"></h1>
   <button id="debugNameBtn">名前入力</button>
 </div>
 
+<!-- カード追加 -->
 <div class="card-add">
   <input type="text" id="addCardPass" placeholder="スタンプ追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
 
+<!-- カード表示 -->
 <div id="userCards" class="cards"></div>
 
 <h2>スタンプ履歴</h2>
