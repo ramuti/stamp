@@ -3,46 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>管理者画面</title>
+<title>スタンプカード管理者</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="adminBody">
 
 <div class="adminContainer">
 
   <h2>カード作成</h2>
   <div class="adminSection">
-    <label>カード題名：<input type="text" id="cardName"></label>
-    <label>枠数：<input type="number" id="cardMax" min="1" value="5"></label>
-    <label>通知文：<input type="text" id="cardNotice" placeholder="スタンプを押したよ"></label>
-    <label>MAX時通知文：<input type="text" id="cardNoticeMax" placeholder="スタンプがMAXになりました"></label>
-    <label>カード追加パス：<input type="text" id="cardAddPass"></label>
-    <label>背景画像パス：<input type="text" id="cardBg"></label>
-    <label>スタンプ画像パス：<input type="text" id="cardIcon"></label>
-    <button onclick="createCard()">作成</button>
+    <label>カード名</label>
+    <input type="text" id="cardTitle">
+
+    <label>追加パス</label>
+    <input type="text" id="cardPass">
+
+    <label>スタンプ枠数</label>
+    <input type="number" id="cardSlots" min="1" value="5">
+
+    <label>通知文</label>
+    <input type="text" id="notifyText" placeholder="スタンプを押したよ">
+
+    <label>MAX通知文</label>
+    <input type="text" id="maxNotifyText" placeholder="スタンプがMAXになりました…">
+
+    <label>背景画像</label>
+    <input type="file" id="bgImageInput" accept="image/*">
+
+    <label>スタンプ画像</label>
+    <input type="file" id="stampImageInput" accept="image/*">
+
+    <button id="createCardBtn">カード作成</button>
   </div>
 
-  <h3>カード一覧</h3>
-  <div id="cardsAdminList" class="cardsContainer"></div>
+  <h2>作成済カード一覧</h2>
+  <div class="cardsContainer" id="cardsList"></div>
 
-  <h3>スタンプ合言葉管理</h3>
+  <h2>スタンプ合言葉管理</h2>
   <div class="adminSection">
-    <label>対象カード：
-      <select id="selectCardForSecret"></select>
-    </label>
-    <label>合言葉：<input type="text" id="newSecret"></label>
-    <button onclick="createSecret()">作成</button>
+    <label>対象カード</label>
+    <select id="selectCard"></select>
+
+    <label>合言葉</label>
+    <input type="text" id="stampSecretInput">
+
+    <button id="addSecretBtn">追加</button>
+    <button id="toggleSecretBtn">有効/無効切替</button>
+    <button id="deleteSecretBtn">削除</button>
   </div>
-  <div id="secretList" class="secretList"></div>
 
-  <h3>更新履歴管理</h3>
+  <h2>更新履歴管理</h2>
   <div class="adminSection">
-    <textarea id="updateInput" rows="3" placeholder="2025/08/21 ○○を修正しました"></textarea>
-    <button onclick="addUpdate()">追加</button>
+    <textarea id="updateInput" placeholder="更新内容を入力"></textarea>
+    <button id="addUpdateBtn">追加</button>
+    <div class="updateHistory" id="updateList"></div>
   </div>
 
 </div>
 
-<script src="script.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>
