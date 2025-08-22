@@ -15,7 +15,6 @@ function initUserUI(){
     renderUserCards();
   }
 }
-
 function saveUserName(){
   const name=document.getElementById('userNameInput').value.trim();
   if(!name){ alert('名前を入力'); return; }
@@ -42,11 +41,13 @@ function renderUserCards(){
 
     let stampsHtml='';
     for(let i=0;i<card.max;i++){
-      stampsHtml+=`<div class="stampBox">${card.stamped && card.stamped[data.userName] && card.stamped[data.userName].includes(i)?'<img src="'+card.icon+'">':''}</div>`;
+      const stamped=(card.stamped && card.stamped[data.userName] && card.stamped[data.userName].includes(i));
+      stampsHtml+=`<div class="stampBox">${stamped?'<img src="'+card.icon+'">':''}</div>`;
     }
+
     div.innerHTML=`<h3>${card.name}</h3><div class="stampRow">${stampsHtml}</div>
       <button onclick="stampCard('${cid}')">スタンプを押す</button>
-      <div style="position:absolute;bottom:5px;right:5px;font-size:12px;">${card.serial}</div>
+      <div style="position:absolute;bottom:5px;right:5px;font-size:12px;">${card.serial[data.userName]}</div>
     `;
     container.appendChild(div);
   }
@@ -61,7 +62,11 @@ function addCardByPass(){
     const card = data.cards[cid];
     if(card.addPass===pass){
       card.addedUsers = card.addedUsers||[];
-      if(!card.addedUsers.includes(data.userName)) card.addedUsers.push(data.userName);
+      if(!card.addedUsers.includes(data.userName)){
+        card.addedUsers.push(data.userName);
+        card.serial = card.serial||{};
+        card.serial[data.userName] = String(Math.floor(Math.random()*99999)).padStart(5,'0');
+      }
       saveData(data);
       renderUserCards();
       found=true;
@@ -71,45 +76,57 @@ function addCardByPass(){
   if(!found) alert('カード追加パスが違います');
 }
 
-// ===== スタンプ =====
+// ===== スタンプ押下 =====
 function stampCard(cid){
   const data=getData();
   const card=data.cards[cid];
   const secret=prompt('スタンプ合言葉を入力してください');
   if(!secret) return;
-
   if(!data.secrets || !data.secrets[secret]){
     showNotice('スタンプ合言葉が違うみたい');
     return;
   }
-  if(data.secrets[secret].cardId!==cid){
-    showNotice('スタンプ合言葉が違うみたい');
+  const s=data.secrets[secret];
+  if(!s.active){
+    showNotice('無効の合言葉だよ');
+    return;
+  }
+  if(s.cardId!==cid){
+    showNotice('無効の合言葉だよ');
     return;
   }
   card.stamped=card.stamped||{};
   card.stamped[data.userName]=card.stamped[data.userName]||[];
-  if(card.stamped[data.userName].length>=card.max || card.stamped[data.userName].includes(0)){
+  if(card.stamped[data.userName].length>=card.max){
+    showNotice(card.maxMsg||'MAXに達しました');
+    return;
+  }
+  if(card.stamped[data.userName].includes(card.stamped[data.userName].length)){
     showNotice('もう押してあるよ');
     return;
   }
 
-  // スタンプ追加
-  card.stamped[data.userName].push(card.stamped[data.userName].length);
+  const idx=card.stamped[data.userName].length;
+  card.stamped[data.userName].push(idx);
   saveData(data);
   showNotice(card.notice||'スタンプを押しました！');
 
+  // 再描画＋アニメ
   renderUserCards();
+  const stampBoxes=document.querySelectorAll('.cardsContainer .card .stampBox img');
+  if(stampBoxes[idx]){
+    stampBoxes[idx].style.transform='scale(1.5)';
+    setTimeout(()=>{stampBoxes[idx].style.transform='scale(1)';},300);
+  }
 }
 
 // ===== 通知 =====
-function showNotice(msg){
-  const el=document.getElementById('noticePopup');
-  document.getElementById('noticeText').textContent=msg;
-  el.style.display='block';
+function showNotice(text){
+  const popup=document.getElementById('noticePopup');
+  document.getElementById('noticeText').textContent=text;
+  popup.style.display='block';
 }
-function closeNotice(){
-  document.getElementById('noticePopup').style.display='none';
-}
+function closeNotice(){ document.getElementById('noticePopup').style.display='none'; }
 
 // ===== 管理者画面 =====
 function loadAdminUI(){
@@ -133,7 +150,7 @@ function createCard(){
 
   const data=getData();
   const id='c'+Date.now();
-  data.cards[id]={id,name,max,notice,maxMsg,addPass,bg,icon,addedUsers:[],serial:String(Math.floor(Math.random()*99999)).padStart(5,'0'),stamped:{}};
+  data.cards[id]={id,name,max,notice,maxMsg,addPass,bg,icon,addedUsers:[],serial:{},stamped:{}};
   saveData(data);
   loadAdminUI();
 }
@@ -205,4 +222,17 @@ function deleteSecret(sec){
   delete data.secrets[sec];
   saveData(data);
   renderSecrets();
+}
+
+// 更新履歴
+function addUpdate(){
+  const text=document.getElementById('updateInput').value.trim();
+  if(!text) return;
+  const data=getData();
+  if(!data.updates) data.updates=[];
+  const today=new Date();
+  const dstr=`${today.getFullYear()}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getDate().toString().padStart(2,'0')} ${text}`;
+  data.updates.push(dstr);
+  saveData(data);
+  document.getElementById('updateInput').value='';
 }
