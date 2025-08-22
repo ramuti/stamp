@@ -5,34 +5,29 @@
 <title>管理者画面</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body onload="loadAdminUI()">
+<body onload="initAdminUI();">
 
 <h2>管理者画面</h2>
 
-<!-- カード作成 -->
-<div>
-  <h3>カード作成</h3>
-  <label>カード名: <input id="newCardName"></label>
-  <label>枠数: <input id="newCardMax" type="number" value="5"></label>
-  <label>追加パス: <input id="newCardPass"></label>
-  <label>通知文: <input id="newCardNotice"></label>
-  <label>MAX通知文: <input id="newCardMaxMsg"></label>
-  <label>背景画像: <input type="file" id="newCardBG" accept="image/*"></label>
-  <label>スタンプ画像: <input type="file" id="newCardIcon" accept="image/*"></label>
-  <button onclick="createCard()">カード作成</button>
-</div>
+<h3>カード作成</h3>
+<label>カード名: <input id="newCardName"></label>
+<label>枠数: <input id="newCardMax" type="number" value="5"></label>
+<label>通知文: <input id="newCardNotice" value="スタンプを押しました！"></label>
+<label>MAX通知文: <input id="newCardMaxMsg" value="スタンプがMAXになりました"></label>
+<label>追加パス: <input id="newCardAddPass"></label>
+<label>背景画像: <input type="file" id="newCardBG" accept="image/*"></label>
+<label>スタンプ画像: <input type="file" id="newCardIcon" accept="image/*"></label>
+<button onclick="createCard()">カード作成</button>
 
 <h3>カード一覧</h3>
 <div id="cardsAdminList"></div>
 
-<h3>スタンプ合言葉</h3>
-<div>
-  <select id="selectCardForPass"></select>
-  <input type="text" id="newStampPass" placeholder="合言葉">
-  <button onclick="createStampPass()">作成</button>
-</div>
-<div id="stampPassList"></div>
+<h3>スタンプ合言葉管理</h3>
+<select id="selectCardForSecret"></select>
+<input type="text" id="newSecretWord" placeholder="合言葉">
+<button onclick="createSecret()">作成</button>
+<div id="secretList"></div>
 
-<script src="script.js"></script>
+<script src="script_admin.js"></script>
 </body>
 </html>
