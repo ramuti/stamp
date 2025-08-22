@@ -8,30 +8,40 @@
 </head>
 <body>
 
-<h2>カード作成</h2>
-<label>カード題名：<input type="text" id="cardName"></label>
-<label>枠数：<input type="number" id="cardMax" min="1" value="5"></label>
-<label>通知文：<input type="text" id="cardNotice" placeholder="スタンプを押したよ"></label>
-<label>MAX時通知文：<input type="text" id="cardNoticeMax" placeholder="スタンプがMAXになりました"></label>
-<label>カード追加パス：<input type="text" id="cardAddPass"></label>
-<label>背景画像パス：<input type="text" id="cardBg"></label>
-<label>スタンプ画像パス：<input type="text" id="cardIcon"></label>
-<button onclick="createCard()">作成</button>
+<div class="adminContainer">
 
-<h3>カード一覧</h3>
-<div id="cardsAdminList" class="cardsContainer"></div>
+  <h2>カード作成</h2>
+  <div class="adminSection">
+    <label>カード題名：<input type="text" id="cardName"></label>
+    <label>枠数：<input type="number" id="cardMax" min="1" value="5"></label>
+    <label>通知文：<input type="text" id="cardNotice" placeholder="スタンプを押したよ"></label>
+    <label>MAX時通知文：<input type="text" id="cardNoticeMax" placeholder="スタンプがMAXになりました"></label>
+    <label>カード追加パス：<input type="text" id="cardAddPass"></label>
+    <label>背景画像パス：<input type="text" id="cardBg"></label>
+    <label>スタンプ画像パス：<input type="text" id="cardIcon"></label>
+    <button onclick="createCard()">作成</button>
+  </div>
 
-<h3>スタンプ合言葉管理</h3>
-<label>対象カード：
-<select id="selectCardForSecret"></select>
-</label>
-<label>合言葉：<input type="text" id="newSecret"></label>
-<button onclick="createSecret()">作成</button>
-<div id="secretList"></div>
+  <h3>カード一覧</h3>
+  <div id="cardsAdminList" class="cardsContainer"></div>
 
-<h3>更新履歴管理</h3>
-<textarea id="updateInput" rows="3" cols="40" placeholder="2025/08/21 ○○を修正しました"></textarea>
-<button onclick="addUpdate()">追加</button>
+  <h3>スタンプ合言葉管理</h3>
+  <div class="adminSection">
+    <label>対象カード：
+      <select id="selectCardForSecret"></select>
+    </label>
+    <label>合言葉：<input type="text" id="newSecret"></label>
+    <button onclick="createSecret()">作成</button>
+  </div>
+  <div id="secretList" class="secretList"></div>
+
+  <h3>更新履歴管理</h3>
+  <div class="adminSection">
+    <textarea id="updateInput" rows="3" placeholder="2025/08/21 ○○を修正しました"></textarea>
+    <button onclick="addUpdate()">追加</button>
+  </div>
+
+</div>
 
 <script src="script.js"></script>
 </body>
