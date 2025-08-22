@@ -8,6 +8,7 @@
 </head>
 <body>
 <h1>カード作成</h1>
+
 <div class="admin-section">
   <label>カード名</label>
   <input type="text" id="cardName">
@@ -34,8 +35,14 @@
 <ul id="adminCards"></ul>
 
 <h2>スタンプ合言葉管理</h2>
-<select id="keywordCardSelect"></select>
-<input type="text" id="keywordInput" placeholder="合言葉">
+<div class="admin-section">
+  <label>対象カード</label>
+  <select id="keywordCardSelect"></select>
+</div>
+<div class="admin-section">
+  <label>合言葉</label>
+  <input type="text" id="keywordInput" placeholder="合言葉">
+</div>
 <button id="addKeywordBtn">追加</button>
 <ul id="keywordList"></ul>
 
