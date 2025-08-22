@@ -7,25 +7,29 @@
 </head>
 <body onload="initUserUI();">
 
+<!-- 名前入力ダイアログ -->
 <div id="userDialog" class="dialog">
   <h3>Twitterの名前を入力してください</h3>
   <input type="text" id="userNameInput" placeholder="名前">
   <button onclick="saveUserName()">OK</button>
 </div>
 
+<!-- カード追加パス入力ダイアログ -->
 <div id="addCardDialog" class="dialog" style="display:none;">
   <h3>カード追加パスを入力</h3>
-  <input type="text" id="addCardPass" placeholder="パス">
+  <input type="text" id="addCardPass" placeholder="追加パス">
   <button onclick="addCardByPass()">追加</button>
 </div>
 
+<!-- スタンプ通知 -->
 <div id="notice" class="notice" style="display:none;">
   <span id="noticeText"></span>
   <button onclick="closeNotice()">閉じる</button>
 </div>
 
+<!-- スタンプカード表示 -->
 <div id="cardsContainer"></div>
 
-<script src="script.js"></script>
+<script src="script_user.js"></script>
 </body>
 </html>
