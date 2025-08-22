@@ -33,17 +33,13 @@ function initUser() {
   const updateLogs = document.getElementById("updateLogs");
   const debugNameBtn = document.getElementById("debugNameBtn"); // デバッグ用
 
-  // 初回名前入力
   function showNameModal() {
     userNameInput.value = userName;
     nameModal.style.display = "flex";
   }
 
-  if (!userName) {
-    showNameModal();
-  } else {
-    cardTitle.textContent = `${userName}のスタンプカード`;
-  }
+  if (!userName) showNameModal();
+  else cardTitle.textContent = `${userName}のスタンプカード`;
 
   setNameBtn.onclick = () => {
     if (userNameInput.value.trim()) {
@@ -54,25 +50,16 @@ function initUser() {
     }
   };
 
-  // デバッグ用ボタンで名前入力モーダル表示
   if(debugNameBtn){
     debugNameBtn.onclick = showNameModal;
   }
 
-  // カード追加
   addCardBtn.onclick = () => {
     const pass = addCardPass.value.trim();
-    if (!pass) {
-      alert("追加パスを入力してください");
-      return;
-    }
+    if (!pass) { alert("追加パスを入力してください"); return; }
     const card = cards.find(c => c.addPass === pass);
-    if (card) {
-      alert("カードを追加しました！");
-      renderUserCards();
-    } else {
-      alert("パスが間違っています");
-    }
+    if (!card) { alert("パスが間違っています"); return; }
+    renderUserCards();
   };
 
   function renderUserCards() {
@@ -95,48 +82,35 @@ function initUser() {
         );
         if (targetKeyword) {
           const historyKey = `${c.id}_${kw}`;
-          if (userStampHistory.includes(historyKey)) {
-            alert("もう押してあるよ");
-            return;
-          }
-          alert(c.notify || "スタンプを押したよ");
+          if (userStampHistory.includes(historyKey)) { alert("もう押してあるよ"); return; }
           userStampHistory.push(historyKey);
           saveAll();
-          renderStampHistory();
-        } else {
-          alert("無効の合言葉だよ");
-        }
+          alert("スタンプを押したよ");
+          renderUserCards();
+          renderHistory();
+        } else alert("無効な合言葉です");
       };
       div.appendChild(btn);
-
       const serial = document.createElement("div");
       serial.className = "serial";
       serial.textContent = String(i + 1).padStart(5, "0");
       div.appendChild(serial);
-
       userCards.appendChild(div);
     });
   }
 
-  function renderStampHistory() {
+  function renderHistory() {
     historyList.innerHTML = "";
     userStampHistory.forEach(h => {
-      const [cardId, word] = h.split("_");
-      const card = cards.find(c => c.id == cardId);
       const li = document.createElement("li");
-      const dt = new Date();
-      li.textContent = `${card?.name}：${word} を ${dt.toLocaleString()} に押しました`;
+      li.textContent = h;
       historyList.appendChild(li);
     });
   }
 
-  function renderUpdates() {
-    updateLogs.innerHTML = updates.join("<br>");
-  }
-
+  updateLogs.innerHTML = updates.join("<br>");
   renderUserCards();
-  renderStampHistory();
-  renderUpdates();
+  renderHistory();
 }
 
 // --- 管理者画面 ---
@@ -156,18 +130,16 @@ function initAdmin() {
   const addUpdateBtn = document.getElementById("addUpdateBtn");
   const adminUpdateLogs = document.getElementById("adminUpdateLogs");
 
-  // カード作成
   createCardBtn.onclick = () => {
     if (!cardName.value.trim() || !cardSlots.value || !addPass.value.trim()) {
-      alert("必須項目が未入力です");
-      return;
+      alert("カード名・枠数・追加パスは必須です"); return;
     }
     const newCard = {
       id: Date.now(),
       name: cardName.value.trim(),
-      slots: parseInt(cardSlots.value, 10),
-      notify: notifyMsg.value.trim(),
-      maxNotify: maxNotifyMsg.value.trim(),
+      slots: parseInt(cardSlots.value),
+      notifyMsg: notifyMsg.value.trim(),
+      maxNotifyMsg: maxNotifyMsg.value.trim(),
       addPass: addPass.value.trim()
     };
     cards.push(newCard);
@@ -178,19 +150,16 @@ function initAdmin() {
 
   function renderCards() {
     adminCards.innerHTML = "";
-    cards.forEach((c, i) => {
+    cards.forEach((c,i)=>{
       const li = document.createElement("li");
       li.textContent = `${c.name} / パス: ${c.addPass} / 枠: ${c.slots}`;
       const del = document.createElement("button");
       del.textContent = "消去";
       del.onclick = () => {
-        cards.splice(i, 1);
-        keywords = keywords.filter(k => k.cardId !== c.id);
-        userStampHistory = userStampHistory.filter(h => !h.startsWith(c.id + "_"));
+        cards.splice(i,1);
         saveAll();
         renderCards();
         renderCardSelect();
-        renderKeywords();
       };
       li.appendChild(del);
       adminCards.appendChild(li);
@@ -199,71 +168,53 @@ function initAdmin() {
 
   function renderCardSelect() {
     keywordCardSelect.innerHTML = "";
-    cards.forEach(c => {
-      const op = document.createElement("option");
-      op.value = c.id;
-      op.textContent = c.name;
-      keywordCardSelect.appendChild(op);
+    cards.forEach(c=>{
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.name;
+      keywordCardSelect.appendChild(opt);
     });
   }
 
-  // 合言葉作成
   addKeywordBtn.onclick = () => {
-    const kwValue = keywordInput.value.trim();
-    const cardId = parseInt(keywordCardSelect.value, 10);
-    if (!kwValue) return;
-    const exists = keywords.find(k => k.cardId === cardId && k.word === kwValue);
-    if (exists) {
-      alert("すでに存在する合言葉です");
-      return;
+    const cardId = parseInt(keywordCardSelect.value);
+    const word = keywordInput.value.trim();
+    if (!word) { alert("合言葉を入力してください"); return; }
+    if (keywords.some(k=>k.word===word && k.cardId===cardId)) {
+      alert("既に存在します"); return;
     }
-    const kw = {
-      cardId: cardId,
-      word: kwValue,
-      enabled: true
-    };
-    keywords.push(kw);
+    keywords.push({cardId, word, enabled:true});
     saveAll();
     renderKeywords();
   };
 
   function renderKeywords() {
-    keywordList.innerHTML = "";
-    keywords.forEach((k, i) => {
+    keywordList.innerHTML="";
+    keywords.forEach((k,i)=>{
       const li = document.createElement("li");
-      const card = cards.find(c => c.id === k.cardId);
-      li.textContent = `${card?.name}・${k.word}・状態:${k.enabled ? "有効" : "無効"}`;
+      const cardName = cards.find(c=>c.id===k.cardId)?.name || "不明";
+      li.textContent=`${cardName} / ${k.word} / 状態: ${k.enabled?"有効":"無効"}`;
       const toggle = document.createElement("button");
-      toggle.textContent = "切替";
-      toggle.onclick = () => {
-        k.enabled = !k.enabled;
-        saveAll();
-        renderKeywords();
+      toggle.textContent="切替";
+      toggle.onclick=()=>{
+        k.enabled = !k.enabled; saveAll(); renderKeywords();
       };
       const del = document.createElement("button");
-      del.textContent = "消去";
-      del.onclick = () => {
-        keywords.splice(i, 1);
-        saveAll();
-        renderKeywords();
-      };
-      li.appendChild(toggle);
-      li.appendChild(del);
+      del.textContent="消去";
+      del.onclick=()=>{ keywords.splice(i,1); saveAll(); renderKeywords(); };
+      li.appendChild(toggle); li.appendChild(del);
       keywordList.appendChild(li);
     });
   }
 
-  // 更新履歴
-  addUpdateBtn.onclick = () => {
-    if (!updateInput.value.trim()) return;
+  addUpdateBtn.onclick = ()=>{
+    if(!updateInput.value.trim()) return;
     updates.push(updateInput.value.trim());
     saveAll();
     renderUpdates();
   };
 
-  function renderUpdates() {
-    adminUpdateLogs.innerHTML = updates.join("<br>");
-  }
+  function renderUpdates(){ adminUpdateLogs.innerHTML = updates.join("<br>"); }
 
   renderCards();
   renderCardSelect();
