@@ -31,6 +31,7 @@ function initUser() {
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
+  const debugNameBtn = document.getElementById("debugNameBtn"); // デバッグ用
 
   // 初回名前入力
   if (!userName) {
@@ -47,6 +48,14 @@ function initUser() {
       nameModal.style.display = "none";
     }
   };
+
+  // デバッグ用：名前入力モーダルを呼び出す
+  if(debugNameBtn){
+    debugNameBtn.onclick = () => {
+      userNameInput.value = userName;
+      nameModal.style.display = "flex";
+    };
+  }
 
   // カード追加
   addCardBtn.onclick = () => {
