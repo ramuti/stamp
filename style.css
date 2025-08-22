@@ -1,26 +1,50 @@
 body {
   font-family: Arial, sans-serif;
-  text-align: center;
   background-color: #ffe6f0; /* 薄ピンク */
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
 .container {
-  margin-top: 50px;
+  margin: 20px auto;
+  max-width: 600px;
 }
 
-h1, h2 {
+h1, h2, h3 {
   color: #333;
+  margin: 10px 0;
+}
+
+.section-box {
+  border: 1px solid #999;
+  padding: 15px;
+  margin: 15px 0;
+  background: #fff;
+  border-radius: 8px;
+}
+
+label {
+  display: block;
+  margin: 5px 0 2px;
+}
+
+input, select, textarea {
+  width: 90%;
+  padding: 6px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 button {
-  margin: 10px;
-  padding: 10px 20px;
+  margin: 5px;
+  padding: 10px 15px;
   background-color: #ff99cc;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 button:hover {
@@ -35,9 +59,10 @@ ul {
 li {
   margin: 5px 0;
   padding: 8px;
-  background: white;
-  border: 1px solid #ccc;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
   border-radius: 5px;
+  text-align: left;
 }
 
 /* モーダル */
@@ -59,4 +84,45 @@ li {
   padding: 20px;
   border-radius: 10px;
   text-align: center;
+}
+
+/* スタンプカード */
+.card {
+  border: 2px solid #333;
+  margin: 20px auto;
+  padding: 15px;
+  width: 90%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+}
+
+.card-title {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+
+.stamp-slot {
+  width: 50px;
+  height: 50px;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+
+.stamp-slot img {
+  width: 100%;
+  height: 100%;
+}
+
+.serial {
+  text-align: right;
+  margin-top: 10px;
+  font-size: 0.9em;
 }
