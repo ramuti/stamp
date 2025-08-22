@@ -1,18 +1,12 @@
 body {
   background-color: #ffe4e1;
   font-family: sans-serif;
-  text-align: center;
   margin:0; padding:0;
-}
-
-.dialog {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 100;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  text-align:center;
 }
 
 .cardsContainer, #cardsAdminList {
@@ -28,11 +22,10 @@ body {
   background-size: cover;
   margin: 10px;
   padding: 10px;
-  position: relative;
   border-radius: 8px;
-  border: 2px solid #888; /* 枠線 */
+  border: 2px solid #888;
   text-align: center;
-  background-color: #fff;
+  background-color: #ffe4e1; /* 背景薄ピンク */
 }
 
 .stampRow {
@@ -46,7 +39,7 @@ body {
   width: 50px;
   height: 50px;
   border: 2px solid #888;
-  background-color: #fff; /* 枠内白色 */
+  background-color: #fff;
   margin: 2px;
   position: relative;
 }
@@ -89,5 +82,5 @@ body {
 input, select, button {
   margin: 5px;
   padding:5px;
-  font-size:1em;
+  font-size:1.1em; /* 少し大きめ */
 }
