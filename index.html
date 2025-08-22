@@ -2,25 +2,24 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>スタンプカード</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- ユーザー名入力ダイアログ -->
+  <!-- 名前入力ダイアログ -->
   <div id="nameModal" class="modal">
     <div class="modal-content">
-      <h2>名前を入力してください</h2>
-      <input type="text" id="userNameInput" placeholder="名前を入力">
-      <button id="saveNameBtn">OK</button>
+      <h2>お名前を入力してください</h2>
+      <input type="text" id="userNameInput" placeholder="お名前">
+      <button id="setNameBtn">OK</button>
     </div>
   </div>
 
   <!-- ユーザー画面 -->
-  <div class="user-container">
-    <h1 id="userTitle">スタンプカード</h1>
-    <button id="createCardBtn">カードを作成</button>
-    <div id="cardsContainer"></div>
+  <div class="container">
+    <h1 id="cardTitle">スタンプカード</h1>
+    <div id="stampCards"></div>
+    <button id="createCardBtn">スタンプカードを作成</button>
   </div>
 
   <script src="script.js"></script>
