@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<!-- ユーザー名入力ダイアログ -->
+<!-- 名前入力ダイアログ -->
 <div id="userNameDialog" class="dialog">
   <div class="dialogContent">
     <label>Twitterの名前を入力してください</label><br>
@@ -17,22 +17,19 @@
   </div>
 </div>
 
-<!-- ユーザー画面ヘッダー -->
+<!-- ユーザー画面 -->
 <div id="userHeader">
   <h2 id="userTitle"></h2>
 </div>
 
-<!-- カード追加欄 -->
-<div id="cardAddArea">
+<div id="cardAddArea" class="userCardBox">
   <input type="text" id="userAddPass" placeholder="スタンプ追加パス">
   <button id="userAddCardBtn">追加</button>
 </div>
 
-<!-- ユーザーカード表示 -->
 <div id="userCards"></div>
 
-<!-- 更新履歴 -->
-<div id="userUpdateArea">
+<div id="userUpdateArea" class="userCardBox">
   <h3>更新履歴</h3>
   <div id="userUpdateList" class="updateList"></div>
 </div>
