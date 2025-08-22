@@ -115,8 +115,10 @@ function initUser() {
     });
   }
 
-  cards.forEach(c => {
-    if (userAddedCards.includes(c.id)) renderUserCard(c);
+  // --- リロード時にユーザーが追加したカードを描画 ---
+  userAddedCards.forEach(cardId => {
+    const card = cards.find(c => c.id===cardId);
+    if(card) renderUserCard(card);
   });
   updateHistory();
 }
