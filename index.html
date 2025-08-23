@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカードユーザー</title>
+<title>スタンプカード</title>
 <style>
 body {
   font-family: 'Yu Gothic', sans-serif;
@@ -11,9 +11,9 @@ body {
   padding: 20px;
 }
 
-h1, h3 { color: #ff69b4; }
+h1 { color: #ff69b4; }
 
-input[type=text], input[type=number] {
+input[type=text] {
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #ffa6c9;
@@ -28,7 +28,6 @@ button {
   color: #fff;
   cursor: pointer;
   transition: 0.2s;
-  margin: 2px;
 }
 
 button:hover { background: #ff66b3; }
@@ -50,15 +49,20 @@ button:hover { background: #ff66b3; }
   margin: 2px;
   background: #fff;
   vertical-align: middle;
-  background-size: cover;
-  background-position: center;
+  transition: 0.2s;
 }
 
-#userCards .card {
-  margin-bottom: 12px;
+.stamp-filled {
+  background: #ff69b4;
 }
 
-#stampHistory, #updateLogs {
+.serial {
+  font-size: 0.85em;
+  color: #ff66b3;
+  margin-top: 6px;
+}
+
+#userCards {
   margin-top: 12px;
 }
 </style>
@@ -67,14 +71,17 @@ button:hover { background: #ff66b3; }
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<div>
-  <input type="text" id="userNameInput" placeholder="名前">
-  <button id="setNameBtn">名前を設定</button>
+<!-- ユーザー名入力欄 -->
+<div style="margin-top: 20px;">
+  <input type="text" id="userNameInput" placeholder="名前を入力">
+  <button id="setNameBtn">変更</button>
 </div>
 
-<div>
-  <input type="text" id="addCardPass" placeholder="カード追加パス">
-  <button id="addCardBtn">カードを追加</button>
+<hr>
+
+<div style="margin-top: 20px;">
+  <input type="text" id="addCardPass" placeholder="追加パス">
+  <button id="addCardBtn">カード追加</button>
 </div>
 
 <div id="userCards"></div>
