@@ -5,25 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード管理</title>
 <style>
-/* ====== 可愛めピンク基調 ====== */
 body {
-  font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-family: 'Yu Gothic', sans-serif;
   background: #fff0f5;
   padding: 20px;
 }
-h1, h3 { color: #ff69b4; margin: 8px 0; }
+
+h1, h3 { color: #ff69b4; }
 
 input[type=text], input[type=number], input[type=color] {
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #ffa6c9;
-  margin: 4px 6px 4px 0;
-  background: #fff;
+  margin-right: 6px;
 }
 
 button {
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
   background: #ff99cc;
   color: #fff;
@@ -31,6 +30,7 @@ button {
   transition: 0.2s;
   margin: 2px;
 }
+
 button:hover { background: #ff66b3; }
 
 .card {
@@ -40,6 +40,7 @@ button:hover { background: #ff66b3; }
   margin: 12px 0;
   background: #fff0f5;
 }
+
 .stamp-slot {
   display: inline-block;
   width: 28px;
@@ -51,39 +52,31 @@ button:hover { background: #ff66b3; }
   vertical-align: middle;
 }
 
-#adminCards { list-style: none; padding-left: 0; }
 #adminCards li, #keywordList li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  margin: 6px 0;
+  padding: 6px;
+  margin: 4px 0;
   background: #ffe6f0;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid #ffb6c1;
 }
 
-#adminCards .info {
-  flex: 1;
-  font-size: 0.95rem;
-  color: #c44a7b;
+#previewArea {
+  margin-top: 12px;
 }
-#adminCards .btns button { margin-left: 6px; }
-
-#previewArea { margin-top: 12px; }
 
 #adminUpdateLogs div {
   background: #ffe6f0;
-  border-radius: 8px;
-  padding: 6px 8px;
-  margin: 4px 0;
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: 2px 0;
   border: 1px solid #ffb6c1;
 }
-.helper {
-  font-size: 12px; color: #c44a7b; opacity: .9; margin-left: 4px;
-}
-.block { display: block; margin: 6px 0; }
+
+.helper { font-size: 0.85em; color: #999; }
+.block { display: block; margin-top: 4px; }
 </style>
 </head>
 <body class="admin">
@@ -126,7 +119,6 @@ button:hover { background: #ff66b3; }
 <h3>更新履歴</h3>
 <div id="adminUpdateLogs"></div>
 
-<h3>プレビュー</h3>
 <div id="previewArea"></div>
 
 <script src="script.js"></script>
