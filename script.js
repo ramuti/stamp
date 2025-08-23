@@ -13,7 +13,7 @@ const LS_KEYS = {
   userUIColors: "userUIColors"
 };
 
-const APP_VERSION = "v1.1.2";
+const APP_VERSION = "v1.1.1";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -96,11 +96,11 @@ function initUser() {
 
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
-    document.body.style.color = userUIColors.text;
+    document.body.style.color = userUIColors.text; // 文字色変更
     cardTitle.style.color = userUIColors.text;
     document.querySelectorAll("button").forEach(btn=>{
       btn.style.background = userUIColors.btn;
-      btn.style.color = userUIColors.text;
+      btn.style.color = userUIColors.text; // ボタン文字色も変更
     });
   }
 
@@ -238,33 +238,15 @@ function initAdmin() {
   function renderAdminCards() {
     adminCards.innerHTML="";
     keywordCardSelect.innerHTML="";
-
-    // ヘッダ行
-    const header = document.createElement("li");
-    header.innerHTML = "<strong>カード名</strong> | <strong>追加パス</strong> | <strong>プレビュー</strong> | <strong>消去</strong>";
-    adminCards.appendChild(header);
-
     cards.forEach(card=>{
       const li=document.createElement("li");
 
-      // カード名
-      const nameDiv = document.createElement("div"); nameDiv.textContent = card.name; nameDiv.style.flex="1"; li.appendChild(nameDiv);
+      // --- 修正部分 ---
+      const info = document.createElement("div"); info.className="info";
+      info.innerHTML=`${card.name} | ${card.addPass} | <button class="previewBtn">プレビュー</button>`;
+      li.appendChild(info);
+      // --- 修正部分終わり ---
 
-      // 追加パス
-      const passDiv = document.createElement("div"); passDiv.textContent = card.addPass; passDiv.style.flex="1"; li.appendChild(passDiv);
-
-      // プレビューボタン
-      const previewBtn = document.createElement("button"); previewBtn.textContent="プレビュー";
-      previewBtn.addEventListener("click",()=>{
-        previewArea.innerHTML="";
-        const div=document.createElement("div"); div.className="card"; if(card.bg) div.style.background=card.bg;
-        const title=document.createElement("h3"); title.textContent=card.name; div.appendChild(title);
-        for(let i=0;i<card.slots;i++){ const s=document.createElement("div"); s.className="stamp-slot"; div.appendChild(s);}
-        previewArea.appendChild(div);
-      });
-      li.appendChild(previewBtn);
-
-      // 消去ボタン
       const delBtn=document.createElement("button"); delBtn.textContent="削除";
       delBtn.addEventListener("click",()=>{
         if(!confirm("このカードを削除しますか？")) return;
@@ -274,9 +256,17 @@ function initAdmin() {
       });
       li.appendChild(delBtn);
 
+      // プレビュー機能
+      li.querySelector(".previewBtn").addEventListener("click",()=>{
+        previewArea.innerHTML="";
+        const div=document.createElement("div"); div.className="card"; if(card.bg) div.style.background=card.bg;
+        const title=document.createElement("h3"); title.textContent=card.name; div.appendChild(title);
+        for(let i=0;i<card.slots;i++){ const s=document.createElement("div"); s.className="stamp-slot"; div.appendChild(s);}
+        previewArea.appendChild(div);
+      });
+
       adminCards.appendChild(li);
 
-      // キーワードカード選択
       const option = document.createElement("option"); option.value=card.id; option.textContent=card.name;
       keywordCardSelect.appendChild(option);
     });
