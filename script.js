@@ -111,11 +111,10 @@ function initUser(){
       container.appendChild(title);
 
       const grid = document.createElement("div");
-      grid.style.marginBottom="6px";
       for(let i=0;i<card.slots;i++){
         const slot = document.createElement("div");
         slot.className="stamp-slot";
-        if(userStampHistory.some(s=>s.cardId===card.id && s.slot===i)) slot.style.background="#ff99cc";
+        if(userStampHistory.some(s=>s.cardId===card.id && s.slot===i)) slot.style.background="#ff99cc"; // 色つき
         grid.appendChild(slot);
       }
       container.appendChild(grid);
@@ -123,21 +122,22 @@ function initUser(){
       const btn = document.createElement("button");
       btn.textContent="スタンプを押す";
       btn.addEventListener("click", ()=>{
-        // 合言葉を確認
-        const availableKeywords = keywords.filter(k=>k.cardId===card.id);
-        if(availableKeywords.length===0){ alert("合言葉が設定されていません"); return; }
-        const inputKW = prompt("スタンプ合言葉を入力してください");
-        if(!inputKW) return;
-        const kwIndex = availableKeywords.findIndex(k=>k.keyword===inputKW);
-        if(kwIndex===-1){ alert("合言葉が違います"); return; }
+        // 合言葉確認
+        const availableKeywords = keywords.filter(k=>k.cardId===card.id)
+                                          .filter(k=>!userStampHistory.some(s=>s.keyword===k.keyword));
+        if(availableKeywords.length===0){ alert("使用可能な合言葉がありません"); return; }
 
-        // 合言葉使用済みかチェック
-        if(userStampHistory.some(s=>s.cardId===card.id && s.keyword===inputKW)){ alert("この合言葉は既に使用済みです"); return; }
+        const inputKw = prompt("合言葉を入力してください:");
+        if(!inputKw) return;
 
+        const matchedKw = availableKeywords.find(k=>k.keyword===inputKw);
+        if(!matchedKw){ alert("合言葉が間違っています、または既に使用済みです"); return; }
+
+        // 正しい合言葉ならスタンプ追加
         const idx = userStampHistory.filter(s=>s.cardId===card.id).length;
         if(idx>=card.slots){ alert("満了です"); return; }
 
-        userStampHistory.push({cardId:card.id, slot:idx, date:Date.now(), keyword:inputKW});
+        userStampHistory.push({cardId:card.id, slot:idx, date:Date.now(), keyword:inputKw});
         saveAll(); renderUserCards(); renderStampHistory();
       });
       container.appendChild(btn);
