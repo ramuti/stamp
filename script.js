@@ -1,6 +1,6 @@
 /* ============================
    script.js — ユーザー＋管理者 共通
-   ============================ */
+============================ */
 
 const LS_KEYS = {
   appVersion: "appVersion",
@@ -59,12 +59,18 @@ function initUser(){
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
+  const historyTitle = document.getElementById("historyTitle");
+  const updateTitle = document.getElementById("updateTitle");
 
   cardTitle.textContent = userName?`${userName}のスタンプカード`:"スタンプカード";
   userNameInput.value = userName;
 
   function applyUserColors(){
-    document.body.style.color = userUIColors.text;
+    cardTitle.style.color = userUIColors.text;
+    historyTitle.style.color = userUIColors.text;
+    updateTitle.style.color = userUIColors.text;
+    historyList.style.color = userUIColors.text;
+    updateLogs.style.color = userUIColors.text;
     document.body.style.background = userUIColors.bg;
     document.querySelectorAll("button").forEach(btn=>{
       btn.style.background = userUIColors.btn;
@@ -102,19 +108,20 @@ function initUser(){
       container.appendChild(title);
 
       const grid = document.createElement("div");
+      grid.style.marginBottom="6px";
       for(let i=0;i<card.slots;i++){
         const slot = document.createElement("div");
         slot.className="stamp-slot";
-        if(userStampHistory.some(s=>s.cardId===card.id && s.slot===i)) slot.classList.add("stamp-filled");
+        if(userStampHistory.some(s=>s.cardId===card.id && s.slot===i)) slot.style.background="#ff99cc";
         grid.appendChild(slot);
       }
       container.appendChild(grid);
 
       const btn = document.createElement("button");
       btn.textContent="スタンプを押す";
-      btn.style.background=userUIColors.btn;
-      btn.style.color=userUIColors.text;
       btn.addEventListener("click", ()=>{
+        const pass = prompt("カードの追加パスを入力してください");
+        if(pass!==card.addPass){ alert("パスが違います"); return; }
         const idx = userStampHistory.filter(s=>s.cardId===card.id).length;
         if(idx>=card.slots){ alert("満了です"); return; }
         userStampHistory.push({cardId:card.id, slot:idx, date:Date.now()});
@@ -124,8 +131,6 @@ function initUser(){
 
       const delBtn = document.createElement("button");
       delBtn.textContent="カード削除";
-      delBtn.style.background="#999";
-      delBtn.style.color=userUIColors.text;
       delBtn.addEventListener("click", ()=>{
         if(!confirm("本当に削除しますか？履歴も消えます")) return;
         userAddedCards=userAddedCards.filter(c=>c.id!==card.id);
@@ -190,87 +195,132 @@ function initUser(){
    管理者側
 ============================ */
 function initAdmin(){
-  const cardName = document.getElementById("cardName");
-  const cardSlots = document.getElementById("cardSlots");
-  const addPass = document.getElementById("addPass");
-  const notifyMsg = document.getElementById("notifyMsg");
-  const maxNotifyMsg = document.getElementById("maxNotifyMsg");
-  const cardBG = document.getElementById("cardBG");
-  const stampIcon = document.getElementById("stampIcon");
-
-  const previewArea = document.getElementById("previewArea");
+  const cardNameInput = document.getElementById("cardName");
+  const cardSlotsInput = document.getElementById("cardSlots");
+  const addPassInput = document.getElementById("addPass");
+  const notifyMsgInput = document.getElementById("notifyMsg");
+  const maxNotifyMsgInput = document.getElementById("maxNotifyMsg");
+  const cardBGInput = document.getElementById("cardBG");
+  const stampIconInput = document.getElementById("stampIcon");
+  const createCardBtn = document.getElementById("createCardBtn");
   const previewCardBtn = document.getElementById("previewCardBtn");
   const previewClearBtn = document.getElementById("previewClearBtn");
-  const createCardBtn = document.getElementById("createCardBtn");
   const adminCards = document.getElementById("adminCards");
+  const keywordCardSelect = document.getElementById("keywordCardSelect");
+  const keywordInput = document.getElementById("keywordInput");
+  const addKeywordBtn = document.getElementById("addKeywordBtn");
+  const updateInput = document.getElementById("updateInput");
+  const addUpdateBtn = document.getElementById("addUpdateBtn");
+  const previewArea = document.getElementById("previewArea");
+  const adminUpdateLogs = document.getElementById("adminUpdateLogs");
 
-  function renderAdminCards(){
+  function renderCards(){
     adminCards.innerHTML="";
     cards.forEach(card=>{
       const li = document.createElement("li");
+      const infoDiv = document.createElement("div");
+      infoDiv.className="info";
+      infoDiv.textContent=`${card.name} | ${card.addPass} | プレビュー`;
+      li.appendChild(infoDiv);
 
-      const info = document.createElement("div");
-      info.className="info";
-      info.textContent=`${card.name} | ${card.addPass} |`;
-      li.appendChild(info);
+      const btnsDiv=document.createElement("div");
+      btnsDiv.className="btns";
 
-      const btns = document.createElement("div");
-      btns.className="btns";
-
-      const previewBtn = document.createElement("button");
+      const previewBtn=document.createElement("button");
       previewBtn.textContent="プレビュー";
-      previewBtn.addEventListener("click",()=>previewCard(card));
-      btns.appendChild(previewBtn);
+      previewBtn.addEventListener("click",()=>{ renderPreview(card); });
+      btnsDiv.appendChild(previewBtn);
 
-      const delBtn = document.createElement("button");
+      const delBtn=document.createElement("button");
       delBtn.textContent="消去";
       delBtn.addEventListener("click",()=>{
-        if(!confirm("本当に削除しますか？")) return;
+        if(!confirm("カード削除しますか？")) return;
         cards=cards.filter(c=>c.id!==card.id);
-        userAddedCards=userAddedCards.filter(c=>c.id!==card.id);
-        userStampHistory=userStampHistory.filter(s=>s.cardId!==card.id);
-        saveAll(); renderAdminCards(); previewArea.innerHTML="";
+        keywords=keywords.filter(k=>k.cardId!==card.id);
+        updates=updates.filter(u=>u.cardId!==card.id);
+        saveAll(); renderCards(); renderKeywords(); renderUpdates();
       });
-      btns.appendChild(delBtn);
+      btnsDiv.appendChild(delBtn);
 
-      li.appendChild(btns);
+      li.appendChild(btnsDiv);
       adminCards.appendChild(li);
+    });
+    renderKeywordSelect();
+  }
+
+  function renderKeywordSelect(){
+    keywordCardSelect.innerHTML="";
+    cards.forEach(c=>{
+      const opt=document.createElement("option");
+      opt.value=c.id; opt.textContent=c.name;
+      keywordCardSelect.appendChild(opt);
     });
   }
 
-  function previewCard(card){
-    previewArea.innerHTML="";
-    const container = document.createElement("div");
-    container.className="card";
-    container.style.background=card.bg||"#fff0f5";
-
-    const title = document.createElement("h3");
-    title.textContent=card.name;
-    container.appendChild(title);
-
-    const grid=document.createElement("div");
-    for(let i=0;i<card.slots;i++){
-      const slot=document.createElement("div");
-      slot.className="stamp-slot";
-      grid.appendChild(slot);
-    }
-    container.appendChild(grid);
-
-    previewArea.appendChild(container);
+  function renderKeywords(){
+    const keywordList=document.getElementById("keywordList");
+    keywordList.innerHTML="";
+    keywords.forEach(k=>{
+      const li=document.createElement("li");
+      li.textContent=`${cards.find(c=>c.id===k.cardId)?.name||""}: ${k.keyword}`;
+      keywordList.appendChild(li);
+    });
   }
 
-  previewCardBtn.addEventListener("click",()=>{
-    const card={name:cardName.value, slots:Number(cardSlots.value), addPass:addPass.value, bg:cardBG.value};
-    previewCard(card);
-  });
-  previewClearBtn.addEventListener("click",()=>{previewArea.innerHTML="";});
+  function renderUpdates(){
+    adminUpdateLogs.innerHTML="";
+    updates.forEach(u=>{
+      const div=document.createElement("div");
+      div.textContent=u.text||u;
+      adminUpdateLogs.appendChild(div);
+    });
+  }
+
+  function renderPreview(card){
+    previewArea.innerHTML="";
+    const div=document.createElement("div");
+    div.className="card";
+    div.style.background=card.bg;
+    const title=document.createElement("h3"); title.textContent=card.name;
+    div.appendChild(title);
+    previewArea.appendChild(div);
+  }
 
   createCardBtn.addEventListener("click",()=>{
-    if(!cardName.value.trim()){ alert("カード名を入力"); return; }
-    if(!addPass.value.trim()){ alert("追加パスを入力"); return; }
-    const card={id:Date.now(), name:cardName.value, slots:Number(cardSlots.value), addPass:addPass.value, bg:cardBG.value};
-    cards.push(card); saveAll(); renderAdminCards();
+    const name=cardNameInput.value.trim();
+    const slots=parseInt(cardSlotsInput.value);
+    const addPass=addPassInput.value.trim();
+    const notify=notifyMsgInput.value.trim();
+    const maxNotify=maxNotifyMsgInput.value.trim();
+    const bg=cardBGInput.value;
+    const stampIcon=stampIconInput.value.trim();
+    if(!name||!slots||!addPass){ alert("カード情報未入力"); return; }
+    const card={id:Date.now(), name, slots, addPass, notify, maxNotify, bg, stampIcon};
+    cards.push(card); saveAll(); renderCards(); cardNameInput.value=""; addPassInput.value=""; stampIconInput.value="";
   });
 
-  renderAdminCards();
+  previewCardBtn.addEventListener("click",()=>{
+    const card={name:cardNameInput.value, bg:cardBGInput.value};
+    renderPreview(card);
+  });
+  previewClearBtn.addEventListener("click",()=>{ previewArea.innerHTML=""; });
+
+  addKeywordBtn.addEventListener("click",()=>{
+    const cardId=keywordCardSelect.value;
+    const kw=keywordInput.value.trim();
+    if(!kw||!cardId){ alert("キーワード未入力"); return; }
+    keywords.push({cardId, keyword:kw}); saveAll(); renderKeywords();
+    keywordInput.value="";
+  });
+
+  addUpdateBtn.addEventListener("click",()=>{
+    const text=updateInput.value.trim();
+    if(!text) return;
+    updates.push({text}); saveAll(); renderUpdates();
+    updateInput.value="";
+  });
+
+  renderCards();
+  renderKeywords();
+  renderUpdates();
 }
