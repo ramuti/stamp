@@ -66,12 +66,15 @@ function initUser(){
   userNameInput.value = userName;
 
   function applyUserColors(){
+    // 文字色をカード外に適用
     cardTitle.style.color = userUIColors.text;
     historyTitle.style.color = userUIColors.text;
     updateTitle.style.color = userUIColors.text;
     historyList.style.color = userUIColors.text;
     updateLogs.style.color = userUIColors.text;
+
     document.body.style.background = userUIColors.bg;
+
     document.querySelectorAll("button").forEach(btn=>{
       btn.style.background = userUIColors.btn;
       btn.style.color = userUIColors.text;
@@ -120,11 +123,21 @@ function initUser(){
       const btn = document.createElement("button");
       btn.textContent="スタンプを押す";
       btn.addEventListener("click", ()=>{
-        const pass = prompt("カードの追加パスを入力してください");
-        if(pass!==card.addPass){ alert("パスが違います"); return; }
+        // 合言葉を確認
+        const availableKeywords = keywords.filter(k=>k.cardId===card.id);
+        if(availableKeywords.length===0){ alert("合言葉が設定されていません"); return; }
+        const inputKW = prompt("スタンプ合言葉を入力してください");
+        if(!inputKW) return;
+        const kwIndex = availableKeywords.findIndex(k=>k.keyword===inputKW);
+        if(kwIndex===-1){ alert("合言葉が違います"); return; }
+
+        // 合言葉使用済みかチェック
+        if(userStampHistory.some(s=>s.cardId===card.id && s.keyword===inputKW)){ alert("この合言葉は既に使用済みです"); return; }
+
         const idx = userStampHistory.filter(s=>s.cardId===card.id).length;
         if(idx>=card.slots){ alert("満了です"); return; }
-        userStampHistory.push({cardId:card.id, slot:idx, date:Date.now()});
+
+        userStampHistory.push({cardId:card.id, slot:idx, date:Date.now(), keyword:inputKW});
         saveAll(); renderUserCards(); renderStampHistory();
       });
       container.appendChild(btn);
