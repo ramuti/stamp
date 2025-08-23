@@ -13,7 +13,7 @@ body {
 
 h1, h3 { color: #ff69b4; }
 
-input[type=text], input[type=number] {
+input[type=text], input[type=number], input[type=color] {
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #ffa6c9;
@@ -39,10 +39,9 @@ button:hover { background: #ff66b3; }
   padding: 12px;
   margin: 12px 0;
   background: #fff0f5;
-  position: relative;
 }
 
-.card .stamp-slot {
+.stamp-slot {
   display: inline-block;
   width: 28px;
   height: 28px;
@@ -51,7 +50,6 @@ button:hover { background: #ff66b3; }
   margin: 2px;
   background: #fff;
   vertical-align: middle;
-  cursor: pointer;
 }
 
 #adminCards li, #keywordList li {
@@ -76,17 +74,6 @@ button:hover { background: #ff66b3; }
   margin: 2px 0;
   border: 1px solid #ffb6c1;
 }
-
-/* 背景色設定パレット */
-.color-picker {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 2px solid #ff99cc;
-  cursor: pointer;
-  vertical-align: middle;
-}
 </style>
 </head>
 <body class="admin">
@@ -100,7 +87,7 @@ button:hover { background: #ff66b3; }
   <input type="text" id="addPass" placeholder="追加パス">
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
-  <span class="color-picker" id="cardBG" title="背景色をクリックで変更"></span>
+  <input type="color" id="cardBG" value="#fff0f5" title="カード背景色">
   <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
   <button id="createCardBtn">作成</button>
   <button id="previewClearBtn">プレビュークリア</button>
