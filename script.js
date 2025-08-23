@@ -1,4 +1,4 @@
-/* ============================
+//* ============================
    script.js — ユーザー＋管理者 共通
    ============================ */
 
@@ -56,39 +56,59 @@ document.addEventListener("DOMContentLoaded", () => {
    ユーザー側ロジック
    ============================ */
 function initUser() {
-  const nameInput = document.getElementById("userNameInput");
+  const nameModal = document.getElementById("nameModal");
+  const setNameBtn = document.getElementById("setNameBtn");
+  const userNameInput = document.getElementById("userNameInput");
   const cardTitle = document.getElementById("cardTitle");
+  const addCardBtn = document.getElementById("addCardBtn");
+  const addCardPass = document.getElementById("addCardPass");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
-  const setNameBtn = document.getElementById("setNameBtn");
   const debugNameBtn = document.getElementById("debugNameBtn");
 
-  function updateCardTitle() {
-    cardTitle.textContent = `${userName || "○○"}のスタンプカード`;
+  function showNameModal() {
+    userNameInput.value = userName || "";
+    if (nameModal) nameModal.style.display = "flex";
+    userNameInput.focus();
   }
-  updateCardTitle();
+  function hideNameModal() { if (nameModal) nameModal.style.display = "none"; }
+
+  if (!userName) showNameModal();
+  else cardTitle.textContent = `${userName}のスタンプカード`;
 
   setNameBtn.addEventListener("click", () => {
-    const v = nameInput.value.trim();
-    if(!v){ alert("名前を入力してください"); return; }
+    const v = userNameInput.value.trim();
+    if (!v) { alert("名前を入力してください"); return; }
     userName = v;
     saveAll();
-    updateCardTitle();
+    cardTitle.textContent = `${userName}のスタンプカード`;
+    hideNameModal();
+  });
+  debugNameBtn && debugNameBtn.addEventListener("click", showNameModal);
+
+  addCardBtn.addEventListener("click", () => {
+    const pass = addCardPass.value.trim();
+    if (!pass) { alert("追加パスを入力してください"); return; }
+    const card = cards.find(c => c.addPass === pass);
+    if (!card) { alert("パスが間違っています"); return; }
+    if (!userAddedCards.includes(card.id)) {
+      userAddedCards.push(card.id);
+      saveJSON(LS_KEYS.userAddedCards, userAddedCards); 
+      renderUserCards();
+      addCardPass.value = "";
+    } else {
+      alert("すでに追加済みです");
+    }
   });
 
-  debugNameBtn && debugNameBtn.addEventListener("click", ()=>{
-    nameInput.value = userName;
-  });
-
-  function renderUserCard(card){
+  function renderUserCard(card) {
     const container = document.createElement("div");
     container.className = "card";
     container.dataset.id = card.id;
+
+    // 追加：カードごとの背景色
     container.style.background = card.bg || "#fff0f5";
-    container.style.borderRadius = "8px";
-    container.style.padding = "8px";
-    container.style.marginBottom = "10px";
 
     const title = document.createElement("h3");
     title.textContent = card.name;
@@ -96,10 +116,10 @@ function initUser() {
 
     const grid = document.createElement("div");
     grid.style.marginBottom = "8px";
-    for(let i=0;i<card.slots;i++){
+    for (let i = 0; i < card.slots; i++) {
       const slot = document.createElement("div");
       slot.className = "stamp-slot";
-      if(userStampHistory.some(s=>s.cardId===card.id && s.slot===i)) slot.classList.add("stamp-filled");
+      if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) slot.classList.add("stamp-filled");
       grid.appendChild(slot);
     }
     container.appendChild(grid);
@@ -111,22 +131,27 @@ function initUser() {
 
     const btn = document.createElement("button");
     btn.textContent = "スタンプを押す";
-    btn.style.marginTop="8px";
-    btn.addEventListener("click",()=>{
+    btn.style.marginTop = "8px";
+    btn.addEventListener("click", () => {
       const kw = prompt("スタンプ合言葉を入力してください");
-      if(kw===null) return;
+      if (kw === null) return;
       const word = kw.trim();
-      if(!word){ alert("合言葉を入力してください"); return; }
-      const keywordObj = keywords.find(k=>String(k.cardId)===String(card.id) && k.word===word && k.active);
-      if(!keywordObj){ alert("合言葉が違うか無効です"); return; }
-      const usedSameKeyword = userStampHistory.some(s=>s.cardId===card.id && s.keyword===word);
-      if(usedSameKeyword){ alert("もう押してあります"); return; }
-      let nextSlot=0;
-      while(userStampHistory.some(s=>s.cardId===card.id && s.slot===nextSlot)) nextSlot++;
-      if(nextSlot>=card.slots){ alert(card.maxNotifyMsg || "スタンプがMAXです"); return; }
-      userStampHistory.push({cardId:card.id, slot:nextSlot, keyword:word, date:new Date().toLocaleString()});
+      if (!word) { alert("合言葉を入力してください"); return; }
+
+      const keywordObj = keywords.find(k => String(k.cardId) === String(card.id) && k.word === word && k.active);
+      if (!keywordObj) { alert("合言葉が違うか無効です"); return; }
+
+      const usedSameKeyword = userStampHistory.some(s => s.cardId === card.id && s.keyword === word);
+      if (usedSameKeyword) { alert("もう押してあります"); return; }
+
+      let nextSlot = 0;
+      while (userStampHistory.some(s => s.cardId === card.id && s.slot === nextSlot)) nextSlot++;
+      if (nextSlot >= card.slots) { alert(card.maxNotifyMsg || "スタンプがMAXです"); return; }
+
+      userStampHistory.push({ cardId: card.id, slot: nextSlot, keyword: word, date: new Date().toLocaleString() });
       saveJSON(LS_KEYS.userStampHistory, userStampHistory);
-      renderUserCards(); updateHistory();
+      renderUserCards();
+      updateHistory();
       alert(card.notifyMsg || "スタンプを押しました！");
     });
     container.appendChild(btn);
@@ -134,11 +159,11 @@ function initUser() {
     const delBtn = document.createElement("button");
     delBtn.textContent = "カードを削除";
     delBtn.style.background = "#999";
-    delBtn.style.marginLeft="8px";
-    delBtn.addEventListener("click",()=>{
-      if(!confirm("このカードを自分の端末から削除しますか？（履歴も消えます）")) return;
-      userAddedCards = userAddedCards.filter(id=>id!==card.id);
-      userStampHistory = userStampHistory.filter(h=>h.cardId!==card.id);
+    delBtn.style.marginLeft = "8px";
+    delBtn.addEventListener("click", () => {
+      if (!confirm("このカードを自分の端末から削除しますか？（履歴も消えます）")) return;
+      userAddedCards = userAddedCards.filter(id => id !== card.id);
+      userStampHistory = userStampHistory.filter(h => h.cardId !== card.id);
       saveAll();
       renderUserCards();
       updateHistory();
@@ -148,32 +173,34 @@ function initUser() {
     return container;
   }
 
-  function renderUserCards(){
-    userCards.innerHTML="";
-    userAddedCards.forEach(id=>{
-      const card = cards.find(c=>c.id===id);
-      if(card) userCards.appendChild(renderUserCard(card));
+  function renderUserCards() {
+    userCards.innerHTML = "";
+    userAddedCards.forEach(id => {
+      const card = cards.find(c => c.id === id);
+      if (card) userCards.appendChild(renderUserCard(card));
     });
   }
 
-  function updateHistory(){
-    historyList.innerHTML="";
-    [...userStampHistory].reverse().forEach(h=>{
-      const card = cards.find(c=>c.id===h.cardId);
-      if(!card) return;
+  function updateHistory() {
+    historyList.innerHTML = "";
+    [...userStampHistory].reverse().forEach(h => {
+      const card = cards.find(c => c.id === h.cardId);
+      if (!card) return;
       const li = document.createElement("li");
       li.textContent = `${card.name} — ${h.date}`;
       historyList.appendChild(li);
     });
-    updateLogs.innerHTML="";
-    updates.slice().reverse().forEach(u=>{
+    updateLogs.innerHTML = "";
+    updates.slice().reverse().forEach(u => {
       const div = document.createElement("div");
-      div.textContent=u;
+      div.textContent = u;
       updateLogs.appendChild(div);
     });
   }
 
-  function genSerialForUser(){ return (userStampHistory.length+1).toString().padStart(5,"0"); }
+  function genSerialForUser() {
+    return (userStampHistory.length + 1).toString().padStart(5, "0");
+  }
 
   renderUserCards();
   updateHistory();
