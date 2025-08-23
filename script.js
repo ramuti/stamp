@@ -10,17 +10,16 @@ const LS_KEYS = {
   keywords: "keywords",
   updates: "updates",
   userAddedCards: "userAddedCards",
-  userStampHistory: "userStampHistory",
-  userUIColors: "userUIColors"
+  userStampHistory: "userStampHistory"
 };
 
 const APP_VERSION = "v1.0.0";
 
-/* load/save helper */
-function loadJSON(key, fallback){
+/* load helper */
+function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
 }
-function saveJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj)); }
+function saveJSON(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
 
 /* app state */
 let userName = localStorage.getItem(LS_KEYS.userName) || "";
@@ -31,84 +30,94 @@ let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []);
 let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []);
 
 /* UIカラー設定 */
-let userUIColors = loadJSON(LS_KEYS.userUIColors, {
-  background: "#fff0f5",
-  button: "#ff99cc",
-  text: "#c44a7b"
-});
+let userUIColors = {
+  text: "#c44a7b",
+  bg: "#fff0f5",
+  button: "#ff99cc"
+};
 
 /* save all */
-function saveAll(){
-  try{
-    localStorage.setItem(LS_KEYS.userName,userName);
-    saveJSON(LS_KEYS.cards,cards);
-    saveJSON(LS_KEYS.keywords,keywords);
-    saveJSON(LS_KEYS.updates,updates);
-    saveJSON(LS_KEYS.userAddedCards,userAddedCards);
-    saveJSON(LS_KEYS.userStampHistory,userStampHistory);
-    saveJSON(LS_KEYS.userUIColors,userUIColors);
-    localStorage.setItem(LS_KEYS.appVersion,APP_VERSION);
-  }catch(e){ console.error(e); alert("データ保存に失敗しました"); }
+function saveAll() {
+  try {
+    localStorage.setItem(LS_KEYS.userName, userName);
+    saveJSON(LS_KEYS.cards, cards);
+    saveJSON(LS_KEYS.keywords, keywords);
+    saveJSON(LS_KEYS.updates, updates);
+    saveJSON(LS_KEYS.userAddedCards, userAddedCards);
+    saveJSON(LS_KEYS.userStampHistory, userStampHistory);
+    localStorage.setItem(LS_KEYS.appVersion, APP_VERSION);
+  } catch (e) {
+    alert("データ保存に失敗しました。");
+    console.error(e);
+  }
 }
 
 /* DOM ready init */
-document.addEventListener("DOMContentLoaded",()=>{
-  const body=document.body;
-  body.style.backgroundColor=userUIColors.background;
-
-  if(body.classList.contains("user")) initUser();
-  if(body.classList.contains("admin")) initAdmin();
+document.addEventListener("DOMContentLoaded", () => {
+  const body = document.body;
+  if (body.classList.contains("user")) initUser();
+  if (body.classList.contains("admin")) initAdmin();
 });
 
 /* ============================
    ユーザー側
    ============================ */
-function initUser(){
+function initUser() {
   const setNameBtn = document.getElementById("setNameBtn");
   const userNameInput = document.getElementById("userNameInput");
   const cardTitle = document.getElementById("cardTitle");
-  const addCardBtn = document.getElementById("addCardBtn");
-  const addCardPass = document.getElementById("addCardPass");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
+  const userTitle = document.getElementById("userTitle");
 
-  const bgPicker = document.getElementById("bgColorPicker");
-  const btnColorPicker = document.getElementById("btnColorPicker");
-  const textColorPicker = document.getElementById("textColorPicker");
-
-  // 初期UI色
-  document.body.style.backgroundColor = userUIColors.background;
-  setGlobalButtonColor(userUIColors.button);
-  setGlobalTextColor(userUIColors.text);
+  const textColorInput = document.getElementById("textColor");
+  const bgColorInput = document.getElementById("bgColor");
+  const buttonColorInput = document.getElementById("buttonColor");
 
   cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
   userNameInput.value = userName;
 
-  setNameBtn.addEventListener("click",()=>{
+  setNameBtn.addEventListener("click", () => {
     const v = userNameInput.value.trim();
-    if(!v){ alert("名前を入力してください"); return; }
-    userName = v; saveAll();
+    if (!v) { alert("名前を入力してください"); return; }
+    userName = v;
+    saveAll();
     cardTitle.textContent = `${userName}のスタンプカード`;
   });
 
-  addCardBtn.addEventListener("click",()=>{
-    const pass = addCardPass.value.trim();
-    if(!pass){ alert("パスを入力してください"); return; }
-    const card = cards.find(c=>c.addPass===pass);
-    if(!card){ alert("パスが間違っています"); return; }
-    if(!userAddedCards.includes(card.id)){
-      userAddedCards.push(card.id);
-      saveJSON(LS_KEYS.userAddedCards,userAddedCards);
-      renderUserCards();
-      addCardPass.value="";
-    } else { alert("すでに追加済みです"); }
+  /* カラー設定変更 */
+  function applyColors() {
+    document.body.style.backgroundColor = userUIColors.bg;
+    userTitle.style.color = userUIColors.text;
+    cardTitle.style.color = userUIColors.text;
+
+    /* ボタンの文字色と背景色 */
+    document.querySelectorAll("button").forEach(btn=>{
+      btn.style.backgroundColor = userUIColors.button;
+      btn.style.color = userUIColors.text;
+    });
+
+    /* 履歴文字色 */
+    renderStampHistory();
+    renderUpdateLogs();
+  }
+
+  textColorInput.addEventListener("input", e => {
+    userUIColors.text = e.target.value;
+    applyColors();
+  });
+  bgColorInput.addEventListener("input", e => {
+    userUIColors.bg = e.target.value;
+    applyColors();
+  });
+  buttonColorInput.addEventListener("input", e => {
+    userUIColors.button = e.target.value;
+    applyColors();
   });
 
-  /* ====================
-     カード表示
-     ==================== */
-  function renderUserCard(card){
+  /* --- ユーザーカード描画 --- */
+  function renderUserCard(card) {
     const container = document.createElement("div");
     container.className = "card";
     container.dataset.id = card.id;
@@ -120,145 +129,102 @@ function initUser(){
 
     const grid = document.createElement("div");
     grid.style.marginBottom = "8px";
-    for(let i=0;i<card.slots;i++){
+    for (let i = 0; i < card.slots; i++) {
       const slot = document.createElement("div");
       slot.className = "stamp-slot";
-      if(userStampHistory.some(s=>s.cardId===card.id && s.slot===i)) slot.classList.add("stamp-filled");
+      if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) slot.classList.add("stamp-filled");
       grid.appendChild(slot);
     }
     container.appendChild(grid);
 
     const serial = document.createElement("div");
-    serial.className="serial";
-    serial.textContent=genSerialForUser();
+    serial.className = "serial";
+    serial.textContent = genSerialForUser();
     container.appendChild(serial);
 
     const btn = document.createElement("button");
-    btn.textContent="スタンプを押す";
-    btn.style.marginTop="8px";
-    btn.style.backgroundColor = userUIColors.button;
-    btn.style.color = userUIColors.text;
-    btn.addEventListener("click",()=>{
+    btn.textContent = "スタンプを押す";
+    btn.style.marginTop = "8px";
+    btn.addEventListener("click", () => {
       const kw = prompt("スタンプ合言葉を入力してください");
-      if(kw===null) return;
+      if (kw === null) return;
       const word = kw.trim();
-      if(!word){ alert("合言葉を入力してください"); return; }
+      if (!word) { alert("合言葉を入力してください"); return; }
 
-      const keywordObj = keywords.find(k=>String(k.cardId)===String(card.id) && k.word===word && k.active);
-      if(!keywordObj){ alert("合言葉が違うか無効です"); return; }
+      const keywordObj = keywords.find(k => String(k.cardId) === String(card.id) && k.word === word && k.active);
+      if (!keywordObj) { alert("合言葉が違うか無効です"); return; }
 
-      const usedSameKeyword = userStampHistory.some(s=>s.cardId===card.id && s.keyword===word);
-      if(usedSameKeyword){ alert("もう押してあります"); return; }
+      const usedSameKeyword = userStampHistory.some(s => s.cardId === card.id && s.keyword === word);
+      if (usedSameKeyword) { alert("もう押してあります"); return; }
 
       let nextSlot = 0;
-      while(userStampHistory.some(s=>s.cardId===card.id && s.slot===nextSlot)) nextSlot++;
-      if(nextSlot >= card.slots){ alert(card.maxNotifyMsg||"スタンプがMAXです"); return; }
+      while (userStampHistory.some(s => s.cardId === card.id && s.slot === nextSlot)) nextSlot++;
+      if (nextSlot >= card.slots) { alert(card.maxNotifyMsg || "スタンプがMAXです"); return; }
 
       userStampHistory.push({ cardId: card.id, slot: nextSlot, keyword: word, date: new Date().toLocaleString() });
-      saveJSON(LS_KEYS.userStampHistory,userStampHistory);
+      saveJSON(LS_KEYS.userStampHistory, userStampHistory);
       renderUserCards();
       renderStampHistory();
       renderUpdateLogs();
-      alert(card.notifyMsg||"スタンプを押しました！");
+      alert(card.notifyMsg || "スタンプを押しました！");
     });
     container.appendChild(btn);
 
     const delBtn = document.createElement("button");
-    delBtn.textContent="カードを削除";
-    delBtn.style.background="#999";
-    delBtn.style.marginLeft="8px";
-    delBtn.style.color="#fff";
-    delBtn.addEventListener("click",()=>{
-      if(!confirm("このカードを自分の端末から削除しますか？（履歴も消えます）")) return;
-      userAddedCards=userAddedCards.filter(id=>id!==card.id);
-      userStampHistory=userStampHistory.filter(h=>h.cardId!==card.id);
+    delBtn.textContent = "カードを削除";
+    delBtn.style.background = "#999";
+    delBtn.style.marginLeft = "8px";
+    delBtn.addEventListener("click", () => {
+      if (!confirm("このカードを自分の端末から削除しますか？（履歴も消えます）")) return;
+      userAddedCards = userAddedCards.filter(id => id !== card.id);
+      userStampHistory = userStampHistory.filter(h => h.cardId !== card.id);
       saveAll();
       renderUserCards();
       renderStampHistory();
+      renderUpdateLogs();
     });
     container.appendChild(delBtn);
 
     return container;
   }
 
-  function renderUserCards(){
-    userCards.innerHTML="";
-    userAddedCards.forEach(id=>{
-      const card = cards.find(c=>c.id===id);
-      if(card) userCards.appendChild(renderUserCard(card));
+  function renderUserCards() {
+    userCards.innerHTML = "";
+    userAddedCards.forEach(id => {
+      const card = cards.find(c => c.id === id);
+      if (card) userCards.appendChild(renderUserCard(card));
     });
+    applyColors();
   }
 
-  /* ====================
-     履歴表示
-     ==================== */
-  function renderStampHistory(){
-    historyList.innerHTML="";
-    [...userStampHistory].reverse().forEach(h=>{
-      const card = cards.find(c=>c.id===h.cardId);
-      if(!card) return;
+  function renderStampHistory() {
+    historyList.innerHTML = "";
+    [...userStampHistory].reverse().forEach(h => {
+      const card = cards.find(c => c.id === h.cardId);
+      if (!card) return;
       const li = document.createElement("li");
       li.textContent = `${card.name} — ${h.date}`;
-      li.style.color = userUIColors.text; // ← 文字色適用
+      li.style.color = userUIColors.text;
       historyList.appendChild(li);
     });
   }
 
-  function renderUpdateLogs(){
-    updateLogs.innerHTML="";
-    [...updates].reverse().forEach(u=>{
-      const div=document.createElement("div");
-      div.textContent=u;
-      div.style.color = userUIColors.text; // ← 文字色適用
+  function renderUpdateLogs() {
+    updateLogs.innerHTML = "";
+    updates.slice().reverse().forEach(u => {
+      const div = document.createElement("div");
+      div.textContent = u;
+      div.style.color = userUIColors.text;
       updateLogs.appendChild(div);
     });
   }
 
-  /* ====================
-     UIカラー変更
-     ==================== */
-  function setGlobalButtonColor(color){
-    document.querySelectorAll("button").forEach(b=>{
-      b.style.backgroundColor=color;
-    });
-  }
-
-  function setGlobalTextColor(color){
-    // タイトル、履歴、ボタン文字など
-    document.body.style.color=color;
-    document.querySelectorAll("button").forEach(b=>{
-      b.style.color=color;
-    });
-    renderStampHistory();
-    renderUpdateLogs();
-  }
-
-  /* ====================
-     カラーピッカーイベント
-     ==================== */
-  bgPicker.addEventListener("input",(e)=>{
-    userUIColors.background=e.target.value;
-    document.body.style.backgroundColor=e.target.value;
-    saveJSON(LS_KEYS.userUIColors,userUIColors);
-  });
-  btnColorPicker.addEventListener("input",(e)=>{
-    userUIColors.button=e.target.value;
-    setGlobalButtonColor(e.target.value);
-    saveJSON(LS_KEYS.userUIColors,userUIColors);
-  });
-  textColorPicker.addEventListener("input",(e)=>{
-    userUIColors.text=e.target.value;
-    setGlobalTextColor(e.target.value);
-    saveJSON(LS_KEYS.userUIColors,userUIColors);
-  });
-
-  function genSerialForUser(){ return (userStampHistory.length+1).toString().padStart(5,"0"); }
+  function genSerialForUser() { return (userStampHistory.length + 1).toString().padStart(5, "0"); }
 
   renderUserCards();
   renderStampHistory();
   renderUpdateLogs();
 }
-
 /* ============================
    管理者側
    ============================ */
