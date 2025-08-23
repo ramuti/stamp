@@ -5,84 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード管理</title>
 <style>
-body {
-  font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
-  background: #fff0f5;
-  padding: 20px;
-}
-h1, h3, #adminCards .info, #keywordList li, #adminUpdateLogs div { color: #ff69b4; margin: 8px 0; }
-
-input[type=text], input[type=number], input[type=color] {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ffa6c9;
-  margin: 4px 6px 4px 0;
-  background: #fff;
-  color: inherit;
-}
-
-button {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: none;
-  background: #ff99cc;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 2px;
-}
-button:hover { background: #ff66b3; }
-
-.card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
-}
-.stamp-slot {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  background: #fff;
-  vertical-align: middle;
-}
-
-#adminCards { list-style: none; padding-left: 0; }
-#adminCards li, #keywordList li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  margin: 6px 0;
-  background: #ffe6f0;
-  border-radius: 10px;
-  border: 1px solid #ffb6c1;
-}
-
-#adminCards .info {
-  flex: 1;
-  font-size: 0.95rem;
-}
-#adminCards .btns button { margin-left: 6px; }
-
-#previewArea { margin-top: 12px; }
-
-#adminUpdateLogs div {
-  background: #ffe6f0;
-  border-radius: 8px;
-  padding: 6px 8px;
-  margin: 4px 0;
-  border: 1px solid #ffb6c1;
-}
-.helper {
-  font-size: 12px; opacity: .9; margin-left: 4px;
-}
-.block { display: block; margin: 6px 0; }
+body { font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif; background:#fff0f5; padding:20px;}
+h1,h3,#adminCards .info,#keywordList li,#adminUpdateLogs div{color:#ff69b4;margin:8px 0;}
+input[type=text],input[type=number],input[type=color]{padding:6px 10px;border-radius:8px;border:1px solid #ffa6c9;margin:4px 6px 4px 0;background:#fff;color:inherit;}
+button{padding:6px 10px;border-radius:8px;border:none;background:#ff99cc;color:#fff;cursor:pointer;transition:0.2s;margin:2px;}
+button:hover{background:#ff66b3;}
+.card{border:2px dashed #ffb6c1;border-radius:12px;padding:12px;margin:12px 0;background:#fff0f5;}
+.stamp-slot{display:inline-block;width:28px;height:28px;border:2px solid #ff99cc;border-radius:6px;margin:2px;background:#fff;vertical-align:middle;}
+#adminCards{list-style:none;padding-left:0;}
+#adminCards li,#keywordList li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;margin:6px 0;background:#ffe6f0;border-radius:10px;border:1px solid #ffb6c1;}
+#adminCards .info{flex:1;font-size:0.95rem;}
+#adminCards .btns button{margin-left:6px;}
+#previewArea{margin-top:12px;}
+#adminUpdateLogs div{background:#ffe6f0;border-radius:8px;padding:6px 8px;margin:4px 0;border:1px solid #ffb6c1;}
+.helper{font-size:12px;opacity:.9;margin-left:4px;}
+.block{display:block;margin:6px 0;}
 </style>
 </head>
 <body class="admin">
@@ -96,8 +33,7 @@ button:hover { background: #ff66b3; }
   <input type="text" id="addPass" placeholder="追加パス">
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
-  <input type="color" id="cardBG" value="#fff0f5" title="カード背景色">
-  <span class="helper">← 背景色はここで選べます</span>
+  <input type="color" id="cardBG" value="#fff0f5" title="カード背景色"><span class="helper">← 背景色選択</span>
   <span class="block"></span>
   <input type="text" id="stampIcon" placeholder="スタンプ画像URL（任意）">
   <button id="previewCardBtn">プレビュー表示</button>
