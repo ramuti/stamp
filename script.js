@@ -1,7 +1,3 @@
-/* ============================
-   script.js — ユーザー＋管理者 共通
-   ============================ */
-
 const LS_KEYS = {
   appVersion: "appVersion",
   userName: "userName",
@@ -46,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ============================
    ユーザー側
-   ============================ */
+============================ */
 function initUser() {
   const setNameBtn = document.getElementById("setNameBtn");
   const userNameInput = document.getElementById("userNameInput");
@@ -179,7 +175,7 @@ function initUser() {
 
 /* ============================
    管理者側
-   ============================ */
+============================ */
 function initAdmin() {
   const cardName = document.getElementById("cardName");
   const cardSlots = document.getElementById("cardSlots");
@@ -216,7 +212,6 @@ function initAdmin() {
         saveAll();
         renderAdminCards();
         renderKeywordList();
-        renderPreview();
       });
       li.appendChild(delBtn);
       adminCards.appendChild(li);
@@ -230,21 +225,23 @@ function initAdmin() {
 
   function renderPreview() {
     previewArea.innerHTML = "";
-    // 全カードプレビュー
-    cards.forEach(card => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.style.background = card.bg || "#fff0f5";
-      const h3 = document.createElement("h3");
-      h3.textContent = card.name;
-      div.appendChild(h3);
-      for (let i = 0; i < card.slots; i++) {
-        const slot = document.createElement("div");
-        slot.className = "stamp-slot";
-        div.appendChild(slot);
-      }
-      previewArea.appendChild(div);
-    });
+    const card = {
+      name: cardName.value || "カード名",
+      slots: Number(cardSlots.value) || 5,
+      bg: cardBG.value || "#fff0f5"
+    };
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.background = card.bg;
+    const h3 = document.createElement("h3");
+    h3.textContent = card.name;
+    div.appendChild(h3);
+    for (let i = 0; i < card.slots; i++) {
+      const slot = document.createElement("div");
+      slot.className = "stamp-slot";
+      div.appendChild(slot);
+    }
+    previewArea.appendChild(div);
   }
 
   cardName.addEventListener("input", renderPreview);
