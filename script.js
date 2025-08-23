@@ -13,7 +13,7 @@ const LS_KEYS = {
   userStampHistory: "userStampHistory"
 };
 
-const APP_VERSION = "v1.0.0";
+const APP_VERSION = "v1.0.1";
 
 /* load/save helper */
 function loadJSON(key, fallback) {
@@ -232,6 +232,7 @@ function initAdmin() {
   const addUpdateBtn = document.getElementById("addUpdateBtn");
   const adminUpdateLogs = document.getElementById("adminUpdateLogs");
   const previewClearBtn = document.getElementById("previewClearBtn");
+  const clearUpdatesBtn = document.getElementById("clearUpdatesBtn");
 
   function refreshCardListUI() {
     adminCards.innerHTML = "";
@@ -346,6 +347,12 @@ function initAdmin() {
     if(!txt){alert("入力してください"); return;}
     const line=`${new Date().toLocaleDateString()} ${txt}`;
     updates.push(line); saveAll(); updateInput.value=""; refreshUpdates(); alert("更新追加");
+  });
+
+  clearUpdatesBtn && clearUpdatesBtn.addEventListener("click",()=>{
+    if(confirm("更新履歴をすべて消去しますか？")){
+      updates = []; saveAll(); refreshUpdates();
+    }
   });
 
   refreshCardListUI(); refreshKeywordList(); refreshUpdates();
