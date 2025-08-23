@@ -9,7 +9,7 @@ body {
   font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
   background: #fff0f5;
   padding: 20px;
-  color: #c44a7b; /* カード内以外の文字色初期値 */
+  color: #c44a7b;
 }
 h1, h3 { color: #ff69b4; margin: 8px 0; }
 
@@ -32,7 +32,6 @@ button {
   transition: 0.2s;
   margin: 2px;
 }
-
 button:hover { background: #ff66b3; }
 
 .card {
@@ -55,14 +54,11 @@ button:hover { background: #ff66b3; }
 
 #userCards, #stampHistory, #updateLogs { margin-top: 12px; }
 #stampHistory li, #updateLogs div { margin: 2px 0; }
-
-.label-text { display: inline-block; margin-right: 6px; }
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
-
 <div>
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">名前を設定</button>
@@ -75,10 +71,10 @@ button:hover { background: #ff66b3; }
 
 <div id="userCards"></div>
 
-<h3 class="label-text">スタンプ履歴</h3>
+<h3>スタンプ履歴</h3>
 <ul id="stampHistory"></ul>
 
-<h3 class="label-text">更新履歴</h3>
+<h3>更新履歴</h3>
 <div id="updateLogs"></div>
 
 <h3>カスタマイズ</h3>
