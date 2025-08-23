@@ -9,7 +9,6 @@ body {
   font-family: 'Yu Gothic', sans-serif;
   background: #fff0f5;
   padding: 20px;
-  transition: background 0.2s, color 0.2s;
 }
 
 h1 { color: #ff69b4; }
@@ -40,7 +39,6 @@ button:hover { background: #ff66b3; }
   padding: 12px;
   margin: 12px 0;
   background: #fff0f5;
-  transition: background 0.2s, color 0.2s;
 }
 
 .stamp-slot {
@@ -50,30 +48,23 @@ button:hover { background: #ff66b3; }
   border: 2px solid #ff99cc;
   border-radius: 6px;
   margin: 2px;
-  vertical-align: middle;
   background: #fff;
+  vertical-align: middle;
 }
 
-.stamp-filled {
-  background: #ff69b4;
+.serial {
+  font-size: 0.85em;
+  color: #ff66b3;
+  margin-top: 6px;
 }
 
 #userCards {
   margin-top: 12px;
 }
 
-#colorSettings {
-  margin: 12px 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
+#stampHistory { margin-top: 12px; }
 
-#colorSettings div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
+#updateLogs { margin-top: 12px; }
 </style>
 </head>
 <body class="user">
@@ -85,24 +76,17 @@ button:hover { background: #ff66b3; }
   <button id="setNameBtn">変更</button>
 </div>
 
+<hr>
+
 <div style="margin-top: 20px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
 
-<div id="colorSettings">
-  <div>
-    <label for="bgColorPicker">背景色:</label>
-    <input type="color" id="bgColorPicker" value="#fff0f5">
-  </div>
-  <div>
-    <label for="textColorPicker">文字色:</label>
-    <input type="color" id="textColorPicker" value="#ff69b4">
-  </div>
-  <div>
-    <label for="buttonColorPicker">ボタン色:</label>
-    <input type="color" id="buttonColorPicker" value="#ff99cc">
-  </div>
+<div style="margin-top: 20px;">
+  <label>背景色: <input type="color" id="userBgColor" value="#fff0f5"></label>
+  <label>文字色: <input type="color" id="userTextColor" value="#ff69b4"></label>
+  <label>ボタン色: <input type="color" id="userBtnColor" value="#ff99cc"></label>
 </div>
 
 <div id="userCards"></div>
