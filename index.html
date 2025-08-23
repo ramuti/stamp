@@ -8,13 +8,26 @@
 </head>
 <body class="user">
 
+<!-- 名前入力モーダル -->
+<div id="nameModal" class="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <h2>Twitterの名前を入力してください</h2>
+    <input type="text" id="userNameInput" placeholder="名前">
+    <div style="margin-top:12px">
+      <button id="setNameBtn">OK</button>
+    </div>
+  </div>
+</div>
+
 <header class="top-bar">
   <h1 id="cardTitle">スタンプカード</h1>
+  <div>
+    <button id="debugNameBtn">名前入力</button>
+  </div>
 </header>
 
 <main>
   <section class="card-add">
-    <input id="userNameInput" placeholder="名前を入力">
     <input id="addCardPass" placeholder="スタンプ追加パスを入力">
     <button id="addCardBtn">カード追加</button>
   </section>
