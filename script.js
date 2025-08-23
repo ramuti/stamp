@@ -1,3 +1,7 @@
+/* ============================
+   script.js — ユーザー＋管理者 共通
+   ============================ */
+
 const LS_KEYS = {
   appVersion: "appVersion",
   userName: "userName",
@@ -8,7 +12,7 @@ const LS_KEYS = {
   userStampHistory: "userStampHistory"
 };
 
-const APP_VERSION = "v1.0.1";
+const APP_VERSION = "v1.0.0";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -42,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ============================
    ユーザー側
-============================ */
+   ============================ */
 function initUser() {
   const setNameBtn = document.getElementById("setNameBtn");
   const userNameInput = document.getElementById("userNameInput");
@@ -175,7 +179,7 @@ function initUser() {
 
 /* ============================
    管理者側
-============================ */
+   ============================ */
 function initAdmin() {
   const cardName = document.getElementById("cardName");
   const cardSlots = document.getElementById("cardSlots");
@@ -185,6 +189,7 @@ function initAdmin() {
   const cardBG = document.getElementById("cardBG");
   const stampIcon = document.getElementById("stampIcon");
   const createCardBtn = document.getElementById("createCardBtn");
+  const previewCardBtn = document.getElementById("previewCardBtn");
   const adminCards = document.getElementById("adminCards");
   const previewArea = document.getElementById("previewArea");
   const previewClearBtn = document.getElementById("previewClearBtn");
@@ -244,10 +249,7 @@ function initAdmin() {
     previewArea.appendChild(div);
   }
 
-  cardName.addEventListener("input", renderPreview);
-  cardSlots.addEventListener("input", renderPreview);
-  cardBG.addEventListener("input", renderPreview);
-
+  previewCardBtn.addEventListener("click", renderPreview);
   previewClearBtn.addEventListener("click", () => previewArea.innerHTML = "");
 
   createCardBtn.addEventListener("click", () => {
@@ -264,7 +266,6 @@ function initAdmin() {
     cards.push(newCard);
     saveAll();
     renderAdminCards();
-    renderPreview();
     alert("カードを作成しました！");
   });
 
@@ -319,5 +320,4 @@ function initAdmin() {
   renderAdminCards();
   renderKeywordList();
   renderUpdateLogs();
-  renderPreview();
 }
