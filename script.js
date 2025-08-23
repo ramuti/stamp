@@ -15,7 +15,7 @@ const LS_KEYS = {
 
 const APP_VERSION = "v1.0.0";
 
-/* load helper */
+/* load / save helper */
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
 }
@@ -93,6 +93,7 @@ function initUser() {
     const container = document.createElement("div");
     container.className = "card";
     container.dataset.id = card.id;
+    if (card.bg) container.style.background = card.bg;
 
     const title = document.createElement("h3");
     title.textContent = card.name;
@@ -103,7 +104,10 @@ function initUser() {
     for (let i = 0; i < card.slots; i++) {
       const slot = document.createElement("div");
       slot.className = "stamp-slot";
-      if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) slot.classList.add("stamp-filled");
+      if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) {
+        slot.classList.add("stamp-filled");
+        if (card.stampImg) slot.style.backgroundImage = `url(${card.stampImg})`;
+      }
       grid.appendChild(slot);
     }
     container.appendChild(grid);
@@ -267,11 +271,13 @@ function initAdmin() {
     previewArea.innerHTML = "";
     const d = document.createElement("div");
     d.className = "card";
+    if (card.bg) d.style.background = card.bg;
     d.innerHTML = `<h3>${card.name}（プレビュー）</h3>`;
     const slotWrap = document.createElement("div");
-    for (let i=0;i<card.slots;i++){
+    for (let i = 0; i < card.slots; i++) {
       const s = document.createElement("div");
       s.className = "stamp-slot";
+      if (card.stampImg) s.style.backgroundImage = `url(${card.stampImg})`;
       slotWrap.appendChild(s);
     }
     d.appendChild(slotWrap);
@@ -316,45 +322,41 @@ function initAdmin() {
     const name = (cardName.value||"").trim();
     const slots = parseInt(cardSlots.value,10);
     const pass = (addPass.value||"").trim();
-    if(!name){ alert("カード名を入力してください"); return; }
-    if(!slots||slots<=0){ alert("枠数を正しく入力してください"); return; }
-    if(!pass){ alert("追加パスは必須です"); return; }
-    if(cards.some(c=>c.addPass===pass)){ alert("その追加パスは既に使われています"); return; }
+    if(!name){ alert("カード名を入力してください"); return;}
+    if(!slots||slots<=0){ alert("枠数を正しく入力してください"); return;}
+    if(!pass){ alert("追加パスは必須です"); return;}
+    if(cards.some(c=>c.addPass===pass)){ alert("その追加パスは既に使われています"); return;}
 
-    const newCard = { id: Date.now(), name, slots, addPass: pass,
+    const newCard={id:Date.now(), name, slots, addPass:pass,
       notifyMsg:(notifyMsg.value||"").trim(),
       maxNotifyMsg:(maxNotifyMsg.value||"").trim(),
       bg:(cardBG.value||"").trim(),
-      stampImg:(stampIcon.value||"").trim() };
+      stampImg:(stampIcon.value||"").trim()};
 
-    cards.push(newCard);
-    saveJSON(LS_KEYS.cards, cards); 
-    refreshCardListUI();
-    refreshKeywordList();
-    refreshUpdates();
+    cards.push(newCard); saveJSON(LS_KEYS.cards,cards); 
+    refreshCardListUI(); refreshKeywordList(); refreshUpdates();
 
     cardName.value=""; cardSlots.value="5"; addPass.value=""; notifyMsg.value=""; maxNotifyMsg.value=""; cardBG.value=""; stampIcon.value="";
   });
 
   addKeywordBtn.addEventListener("click",()=>{
-    const cardId = parseInt(keywordCardSelect.value);
-    const word = (keywordInput.value||"").trim();
-    if(!word){ alert("合言葉を入力してください"); return; }
-    if(!cards.some(c=>c.id===cardId)){ alert("カードが見つかりません"); return; }
-    keywords.push({ cardId, word, active:true });
-    saveJSON(LS_KEYS.keywords, keywords); 
-    keywordInput.value="";
+    const cardId=parseInt(keywordCardSelect.value);
+    const word=(keywordInput.value||"").trim();
+    if(!word){alert("合言葉を入力してください"); return;}
+    if(!cards.some(c=>c.id===cardId)){alert("カードが見つかりません"); return;}
+    keywords.push({cardId, word, active:true});
+    saveJSON(LS_KEYS.keywords,keywords); keywordInput.value="";
     refreshKeywordList();
   });
 
   addUpdateBtn.addEventListener("click",()=>{
-    const val = (updateInput.value||"").trim();
+    const val=(updateInput.value||"").trim();
     if(!val) return;
-    updates.push(val); saveJSON(LS_KEYS.updates, updates); updateInput.value="";
+    updates.push(val); saveJSON(LS_KEYS.updates,updates); updateInput.value="";
     refreshUpdates();
   });
 
-  previewClearBtn.addEventListener("click",()=>{ previewArea.innerHTML=""; });
+  previewClearBtn.addEventListener("click",()=>{previewArea.innerHTML="";});
 
   refreshCardListUI(); refreshKeywordList(); refreshUpdates();
 }
