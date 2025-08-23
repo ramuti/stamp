@@ -5,27 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
-body { font-family: sans-serif; margin: 20px; }
-input { padding: 4px 6px; margin-right: 4px; }
-button { padding: 4px 6px; margin: 2px; }
-.card { border: 1px solid #ccc; padding: 8px; margin: 8px 0; }
-.stamp-slot { display: inline-block; width: 20px; height: 20px; border: 1px solid #aaa; margin: 2px; vertical-align: middle; }
-.stamp-filled { background-color: #f90; }
-.serial { font-size: 0.8em; color: #666; margin-top: 4px; }
+body {
+  font-family: 'Yu Gothic', sans-serif;
+  background: #fff0f5;
+  padding: 20px;
+}
+
+h1 { color: #ff69b4; }
+
+input[type=text] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ffa6c9;
+  margin-right: 6px;
+}
+
+button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #ff99cc;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover { background: #ff66b3; }
+
+.card {
+  border: 2px dashed #ffb6c1;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  background: #fff0f5;
+}
+
+.stamp-slot {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ff99cc;
+  border-radius: 6px;
+  margin: 2px;
+  vertical-align: middle;
+  background: #fff;
+  transition: 0.2s;
+}
+
+.stamp-filled {
+  background: #ff69b4;
+}
+
+.serial {
+  font-size: 0.85em;
+  color: #ff66b3;
+  margin-top: 6px;
+}
+
+#userCards {
+  margin-top: 12px;
+}
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<div>
+<!-- ユーザー名入力欄は下に配置 -->
+<div style="margin-top: 20px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
 
 <hr>
 
-<div>
+<div style="margin-top: 20px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
