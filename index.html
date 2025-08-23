@@ -6,11 +6,12 @@
 <title>スタンプカード</title>
 <style>
 body {
-  font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif;
   background: #fff0f5;
   padding: 20px;
   color: #c44a7b;
 }
+
 h1 { margin: 8px 0; }
 
 input[type=text] {
@@ -21,6 +22,7 @@ input[type=text] {
   background: #fff;
   color: #000;
 }
+
 button {
   padding: 6px 10px;
   border-radius: 8px;
@@ -39,6 +41,7 @@ button:hover { background: #ff66b3; }
   margin: 12px 0;
   background: #fff0f5;
 }
+
 .stamp-slot {
   display: inline-block;
   width: 28px;
@@ -50,12 +53,19 @@ button:hover { background: #ff66b3; }
   vertical-align: middle;
   transition: 0.2s;
 }
+
 .stamp-filled { background: #ff69b4; }
 
 .serial { font-size: 0.85em; margin-top: 6px; }
 #userCards { margin-top: 12px; }
 
-#colorSettings { margin-top: 16px; border:1px solid #ffa6c9; padding: 8px; border-radius: 8px; background:#ffe6f0;}
+#colorSettings {
+  margin-top: 16px;
+  border: 1px solid #ffa6c9;
+  padding: 8px;
+  border-radius: 8px;
+  background: #ffe6f0;
+}
 #colorSettings label { margin-right: 8px; font-size: 0.9rem; }
 </style>
 </head>
@@ -63,14 +73,14 @@ button:hover { background: #ff66b3; }
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<div style="margin-top: 16px;">
+<div style="margin-top:16px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
 
 <hr>
 
-<div style="margin-top: 16px;">
+<div style="margin-top:16px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
@@ -90,6 +100,6 @@ button:hover { background: #ff66b3; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<script src="script.js"></script>
+<script src="index.js"></script>
 </body>
 </html>
