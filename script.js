@@ -1,5 +1,5 @@
 /* ============================
-   script.js — ユーザー＋管理者 共通
+   script.js — 管理者＋ユーザー 共通
    ============================ */
 
 const LS_KEYS = {
@@ -206,7 +206,15 @@ function initAdmin() {
     keywordCardSelect.innerHTML = "";
     cards.forEach(c => {
       const li = document.createElement("li");
-      li.textContent = c.name + ` (#${c.id})`;
+      li.style.display = "flex";
+      li.style.justifyContent = "space-between";
+      li.style.alignItems = "center";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = c.name; // IDは表示しない
+      li.appendChild(nameSpan);
+
+      const btnContainer = document.createElement("div");
       const delBtn = document.createElement("button");
       delBtn.textContent = "削除";
       delBtn.style.background = "#999";
@@ -218,7 +226,9 @@ function initAdmin() {
         renderAdminCards();
         renderKeywordList();
       });
-      li.appendChild(delBtn);
+      btnContainer.appendChild(delBtn);
+      li.appendChild(btnContainer);
+
       adminCards.appendChild(li);
 
       const opt = document.createElement("option");
@@ -257,16 +267,16 @@ function initAdmin() {
       id: Date.now(),
       name: cardName.value || "カード名",
       slots: Number(cardSlots.value) || 5,
-      notifyMsg: notifyMsg.value || "スタンプしました！",
-      maxNotifyMsg: maxNotifyMsg.value || "スタンプがMAXです",
-      addPass: addPass.value || "",
       bg: cardBG.value || "#fff0f5",
-      stampIcon: stampIcon.value || ""
+      addPass: addPass.value.trim(),
+      notifyMsg: notifyMsg.value.trim(),
+      maxNotifyMsg: maxNotifyMsg.value.trim(),
+      stampIcon: stampIcon.value.trim()
     };
     cards.push(newCard);
     saveAll();
     renderAdminCards();
-    alert("カードを作成しました！");
+    alert("カードを作成しました。プレビューで確認できます。");
   });
 
   addKeywordBtn.addEventListener("click", () => {
