@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>スタンプカード</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -10,24 +11,26 @@
     <h1 id="cardTitle">スタンプカード</h1>
   </header>
 
+  <!-- 名前入力欄 -->
+  <section class="card-add">
+    <label>名前：<input id="userNameInput" placeholder="名前を入力"></label>
+    <button id="setNameBtn">変更</button>
+  </section>
+
   <main>
-    <!-- 名前入力と変更ボタン -->
-    <section class="name-section">
-      <label>名前：<input id="userNameInput" placeholder="名前を入力"></label>
-      <button id="setNameBtn">変更</button>
-    </section>
-
-    <!-- スタンプカード本体 -->
     <section class="card">
-      <div id="stampContainer" class="stamp-container"></div>
+      <div id="stampGrid" class="grid"></div>
     </section>
 
-    <!-- ボタン -->
     <section class="controls">
-      <button id="addStampBtn">スタンプ追加</button>
-      <button id="resetBtn">リセット</button>
+      <button id="addStampBtn">スタンプを押す</button>
+      <button id="clearStampsBtn">スタンプを全部消す</button>
     </section>
   </main>
+
+  <footer>
+    <p>スタンプカード（ローカル保存版）</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
