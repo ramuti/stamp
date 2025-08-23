@@ -1,64 +1,96 @@
-/* ---------------------------
-   共通（最低限） 
-   --------------------------- */
-:root{
-  --pink-bg: #ffe6e6;
-  --card-bg: #fff0f5;
-  --accent: #ff9f9f;
-  --muted: #666666;
-  --black: #222;
+body {
+  font-family: "Hiragino Maru Gothic Pro", "Comic Sans MS", sans-serif;
+  background: #ffe6f0;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #333;
 }
-*{box-sizing:border-box}
-body{font-family: 'Hiragino Kaku Gothic Pro', Meiryo, sans-serif; margin:0; padding:0; color:var(--black);}
 
-/* モーダル共通 */
-.modal{display:none; position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.45); z-index:60}
-.modal-content{background:#fff; padding:20px; border-radius:12px; width:min(92%,420px); text-align:center; box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+header {
+  background: #ff99cc;
+  padding: 15px;
+  color: white;
+  font-size: 20px;
+}
 
-/* ボタン・入力 共通 */
-button{cursor:pointer; border:0; border-radius:8px; background:var(--accent); color:#fff; padding:8px 12px; font-weight:600}
-button:active{transform:translateY(1px)}
-input, select{padding:8px; border-radius:8px; border:1px solid #e6aeb6; width:100%}
+h1, h2 {
+  margin: 10px 0;
+}
 
-/* ---------------------------
-   ユーザー画面（body.user） 
-   --------------------------- */
-body.user{background:var(--pink-bg); min-height:100vh}
-body.user .top-bar{display:flex; justify-content:space-between; align-items:center; padding:12px; background:linear-gradient(180deg,#ffdfe0,#ffd6d6); box-shadow:0 2px 6px rgba(0,0,0,0.06)}
-body.user #cardTitle{font-size:1.2rem; margin:0; color:#b33}
-body.user .top-bar button{background:#ff7f7f}
+#cardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px;
+}
 
-.card-add{padding:12px; text-align:center}
-.card-add input{width:70%; display:inline-block; margin-right:8px}
-.card-add button{width:auto; display:inline-block}
+.card {
+  width: 150px;
+  height: 200px;
+  background: white;
+  border: 3px solid #ff99cc;
+  border-radius: 10px;
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
-.cards{display:flex; flex-wrap:wrap; gap:12px; justify-content:center; padding:12px}
+.card.filled {
+  background: #ffccdd;
+}
 
-.card{width:280px; background:var(--card-bg); padding:14px; border-radius:12px; border:2px solid #ffd0d8; box-shadow:0 6px 18px rgba(0,0,0,0.06); text-align:center}
-.card h3{margin:6px 0 12px 0; font-size:1.15rem}
-.stamp-slot{display:inline-block; width:52px; height:52px; margin:6px; border:2px dashed #ffb1c1; background:#fff; border-radius:10px}
-.stamp-slot.stamp-filled{background:#ffb6d6; border-style:solid; border-color:#ff8aa3}
-.serial{font-size:0.85rem; text-align:right; color:var(--muted); margin-top:8px}
+#historyList {
+  list-style: none;
+  padding: 0;
+}
 
-.history, .updates{padding:12px}
-.updates-list, #stampHistory{background:#fff; padding:10px; border-radius:8px; border:1px solid #ffdfe6; max-height:220px; overflow:auto}
+#historyList li {
+  margin: 5px 0;
+  background: white;
+  padding: 5px;
+  border-radius: 5px;
+}
 
-/* ---------------------------
-   管理者画面（body.admin） 
-   --------------------------- */
-body.admin{background:#f8f8fb; min-height:100vh}
-body.admin main{padding:18px}
-.admin-section{background:#fff; padding:12px; border-radius:10px; border:1px solid #e6e6e9; margin:12px auto}
-#previewArea .card{width:100%; margin:8px 0}
+button {
+  background: #ff99cc;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
 
-/* 列挙リスト */
-#adminCards li, #keywordList li{list-style:none; padding:8px; margin:6px 0; border-radius:8px; background:#fffafc; border:1px solid #ffe6ea; display:flex; justify-content:space-between; align-items:center}
-.admin-section label{display:block; margin:8px 0}
+button:hover {
+  background: #ff6699;
+}
 
-/* レスポンシブ */
-@media (max-width:480px){
-  .card{width:92%}
-  .card-add input{width:60%}
-  .top-bar{padding:10px}
-  .modal-content{width:94%}
+.hidden {
+  display: none;
+}
+
+.admin-only {
+  margin-top: 10px;
+}
+
+/* 名前入力ポップアップ */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
 }
