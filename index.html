@@ -8,13 +8,14 @@
 body {
   font-family: 'Yu Gothic', sans-serif;
   background: #fff0f5;
-  padding: 20px;
   color: #ff69b4;
+  padding: 20px;
+  transition: background 0.3s, color 0.3s;
 }
 
 h1 { color: inherit; }
 
-input[type=text], input[type=color] {
+input[type=text] {
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #ffa6c9;
@@ -28,7 +29,8 @@ button {
   background: #ff99cc;
   color: #fff;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.2s, background 0.3s;
+  margin: 2px 0;
 }
 
 button:hover { opacity: 0.85; }
@@ -48,9 +50,8 @@ button:hover { opacity: 0.85; }
   border: 2px solid #ff99cc;
   border-radius: 6px;
   margin: 2px;
-  vertical-align: middle;
   background: #fff;
-  transition: 0.2s;
+  vertical-align: middle;
 }
 
 .stamp-filled {
@@ -67,22 +68,25 @@ button:hover { opacity: 0.85; }
   margin-top: 12px;
 }
 
-#appearanceSettings {
+#settingsPanel {
   margin-top: 20px;
+  border: 1px solid #ffb6c1;
   padding: 12px;
-  border: 1px solid #ffa6c9;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #ffe6f0;
 }
 
-#appearanceSettings h3 { margin-top: 0; }
+#settingsPanel label {
+  display: inline-block;
+  margin-right: 6px;
+}
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<!-- ユーザ名設定 -->
+<!-- ユーザー名変更 -->
 <div style="margin-top: 20px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
@@ -96,7 +100,6 @@ button:hover { opacity: 0.85; }
   <button id="addCardBtn">カード追加</button>
 </div>
 
-<!-- ユーザカード表示 -->
 <div id="userCards"></div>
 
 <h3>スタンプ履歴</h3>
@@ -105,17 +108,20 @@ button:hover { opacity: 0.85; }
 <h3>更新履歴</h3>
 <div id="updateLogs"></div>
 
-<!-- 外観設定 -->
-<div id="appearanceSettings">
-  <h3>外観設定</h3>
+<!-- ユーザ側見た目設定パネル -->
+<div id="settingsPanel">
+  <h3>見た目設定</h3>
   <div>
-    <label>背景色: <input type="color" id="bgColorPicker"></label>
+    <label for="bgColorPicker">背景色:</label>
+    <input type="color" id="bgColorPicker" value="#fff0f5">
   </div>
   <div>
-    <label>文字色: <input type="color" id="textColorPicker"></label>
+    <label for="textColorPicker">文字色:</label>
+    <input type="color" id="textColorPicker" value="#ff69b4">
   </div>
   <div>
-    <label>ボタン色: <input type="color" id="buttonColorPicker"></label>
+    <label for="buttonColorPicker">ボタン色:</label>
+    <input type="color" id="buttonColorPicker" value="#ff99cc">
   </div>
 </div>
 
