@@ -9,6 +9,7 @@ body {
   font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
   background: #fff0f5;
   padding: 20px;
+  color: #c44a7b;
 }
 h1 { margin: 8px 0; }
 
@@ -18,15 +19,18 @@ input[type=text] {
   border: 1px solid #ffa6c9;
   margin-right: 6px;
   background: #fff;
+  color: inherit;
 }
 button {
   padding: 6px 10px;
   border-radius: 8px;
   border: none;
+  background: #ff99cc;
+  color: #fff;
   cursor: pointer;
   transition: 0.2s;
 }
-button:hover { opacity: 0.8; }
+button:hover { background: #ff66b3; }
 
 .card {
   border: 2px dashed #ffb6c1;
@@ -34,6 +38,7 @@ button:hover { opacity: 0.8; }
   padding: 12px;
   margin: 12px 0;
   background: #fff0f5;
+  color: inherit;
 }
 .stamp-slot {
   display: inline-block;
@@ -52,10 +57,11 @@ button:hover { opacity: 0.8; }
   font-size: 0.85em;
   margin-top: 6px;
 }
+
 #userCards { margin-top: 12px; }
 
 #colorSettings { margin-top: 16px; border:1px solid #ffa6c9; padding: 8px; border-radius: 8px; background:#ffe6f0;}
-#colorSettings label { margin-right: 8px; font-size: 0.9rem;}
+#colorSettings label { margin-right: 8px; font-size: 0.9rem; }
 </style>
 </head>
 <body class="user">
@@ -84,7 +90,7 @@ button:hover { opacity: 0.8; }
 
 <h3>見た目設定</h3>
 <div id="colorSettings">
-  <label>文字色: <input type="color" id="textColor" value="#ff69b4"></label>
+  <label>文字色: <input type="color" id="textColor" value="#c44a7b"></label>
   <label>背景色: <input type="color" id="bgColor" value="#fff0f5"></label>
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
