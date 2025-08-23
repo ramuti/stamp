@@ -1,5 +1,5 @@
 /* ============================
-   script.js — 管理者＋ユーザー 共通
+   script.js — ユーザー＋管理者 共通
    ============================ */
 
 const LS_KEYS = {
@@ -206,15 +206,14 @@ function initAdmin() {
     keywordCardSelect.innerHTML = "";
     cards.forEach(c => {
       const li = document.createElement("li");
-      li.style.display = "flex";
-      li.style.justifyContent = "space-between";
-      li.style.alignItems = "center";
-
       const nameSpan = document.createElement("span");
-      nameSpan.textContent = c.name; // IDは表示しない
+      nameSpan.textContent = c.name;
       li.appendChild(nameSpan);
 
-      const btnContainer = document.createElement("div");
+      const idSpan = document.createElement("span");
+      idSpan.textContent = ` (#${c.id})`;
+      li.appendChild(idSpan);
+
       const delBtn = document.createElement("button");
       delBtn.textContent = "削除";
       delBtn.style.background = "#999";
@@ -226,9 +225,7 @@ function initAdmin() {
         renderAdminCards();
         renderKeywordList();
       });
-      btnContainer.appendChild(delBtn);
-      li.appendChild(btnContainer);
-
+      li.appendChild(delBtn);
       adminCards.appendChild(li);
 
       const opt = document.createElement("option");
@@ -267,16 +264,17 @@ function initAdmin() {
       id: Date.now(),
       name: cardName.value || "カード名",
       slots: Number(cardSlots.value) || 5,
+      notifyMsg: notifyMsg.value || "スタンプしました！",
+      maxNotifyMsg: maxNotifyMsg.value || "スタンプがMAXです",
+      addPass: addPass.value || "",
       bg: cardBG.value || "#fff0f5",
-      addPass: addPass.value.trim(),
-      notifyMsg: notifyMsg.value.trim(),
-      maxNotifyMsg: maxNotifyMsg.value.trim(),
-      stampIcon: stampIcon.value.trim()
+      stampIcon: stampIcon.value || ""
     };
     cards.push(newCard);
     saveAll();
     renderAdminCards();
-    alert("カードを作成しました。プレビューで確認できます。");
+    cardName.value = cardSlots.value = notifyMsg.value = maxNotifyMsg.value = addPass.value = stampIcon.value = "";
+    alert("カード作成完了");
   });
 
   addKeywordBtn.addEventListener("click", () => {
