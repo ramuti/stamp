@@ -9,9 +9,8 @@ body {
   font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
   background: #fff0f5;
   padding: 20px;
-  color: #c44a7b;
 }
-h1 { margin: 8px 0; }
+h1 { color: #ff69b4; margin: 8px 0; }
 
 input[type=text] {
   padding: 6px 10px;
@@ -38,7 +37,6 @@ button:hover { background: #ff66b3; }
   padding: 12px;
   margin: 12px 0;
   background: #fff0f5;
-  color: inherit;
 }
 .stamp-slot {
   display: inline-block;
@@ -53,8 +51,9 @@ button:hover { background: #ff66b3; }
 }
 .stamp-filled { background: #ff69b4; }
 
-.serial {
+.serial, #stampHistory li, #updateLogs div { 
   font-size: 0.85em;
+  color: #ff69b4;
   margin-top: 6px;
 }
 
@@ -90,7 +89,7 @@ button:hover { background: #ff66b3; }
 
 <h3>見た目設定</h3>
 <div id="colorSettings">
-  <label>文字色: <input type="color" id="textColor" value="#c44a7b"></label>
+  <label>文字色: <input type="color" id="textColor" value="#ff69b4"></label>
   <label>背景色: <input type="color" id="bgColor" value="#fff0f5"></label>
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
