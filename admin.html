@@ -74,14 +74,16 @@ button:hover { background: #ff66b3; }
   margin: 2px 0;
   border: 1px solid #ffb6c1;
 }
+
 .color-picker {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #ffa6c9;
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  border: 1px solid #999;
-  margin-left: 6px;
-  cursor: pointer;
   vertical-align: middle;
+  cursor: pointer;
+  margin-right: 4px;
 }
 </style>
 </head>
@@ -97,14 +99,11 @@ button:hover { background: #ff66b3; }
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
   <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
+  <div style="margin:4px 0;">
+    背景色: <span class="color-picker" id="cardBGPicker" style="background:#fff0f5"></span>
+  </div>
   <button id="createCardBtn">作成</button>
   <button id="previewClearBtn">プレビュークリア</button>
-</div>
-
-<h3>カード背景色変更</h3>
-<div>
-  <input type="color" id="cardColorPicker">
-  <button id="applyColorBtn">全カードに適用</button>
 </div>
 
 <h3>カード一覧</h3>
