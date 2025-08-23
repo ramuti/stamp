@@ -55,9 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ============================
    ユーザー側ロジック
    ============================ */
+/* ============================
+   ユーザー側ロジック（モーダル削除版）
+   ============================ */
 function initUser() {
-  const nameModal = document.getElementById("nameModal");
-  const setNameBtn = document.getElementById("setNameBtn");
   const userNameInput = document.getElementById("userNameInput");
   const cardTitle = document.getElementById("cardTitle");
   const addCardBtn = document.getElementById("addCardBtn");
@@ -65,28 +66,21 @@ function initUser() {
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
-  const debugNameBtn = document.getElementById("debugNameBtn");
 
-  function showNameModal() {
-    userNameInput.value = userName || "";
-    nameModal.style.display = "flex";
-    userNameInput.focus();
-  }
-  function hideNameModal() { nameModal.style.display = "none"; }
+  // タイトル初期表示
+  cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
 
-  if (!userName) showNameModal();
-  else cardTitle.textContent = `${userName}のスタンプカード`;
+  // 名前入力欄初期値
+  userNameInput.value = userName;
 
-  setNameBtn.addEventListener("click", () => {
-    const v = userNameInput.value.trim();
-    if (!v) { alert("名前を入力してください"); return; }
-    userName = v;
+  // 名前入力でタイトル更新
+  userNameInput.addEventListener("input", ()=>{
+    userName = userNameInput.value.trim();
+    cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
     saveAll();
-    cardTitle.textContent = `${userName}のスタンプカード`;
-    hideNameModal();
   });
-  debugNameBtn.addEventListener("click", showNameModal);
 
+  /* 以下の処理は元の仕様と完全に同じ */
   addCardBtn.addEventListener("click", () => {
     const pass = addCardPass.value.trim();
     if (!pass) { alert("追加パスを入力してください"); return; }
