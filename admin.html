@@ -1,57 +1,119 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>スタンプカード（管理者）</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタンプカード管理</title>
+<style>
+body {
+  font-family: 'Yu Gothic', sans-serif;
+  background: #fff0f5;
+  padding: 20px;
+}
+
+h1, h3 { color: #ff69b4; }
+
+input[type=text], input[type=number] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ffa6c9;
+  margin-right: 6px;
+}
+
+button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #ff99cc;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+  margin: 2px;
+}
+
+button:hover { background: #ff66b3; }
+
+.card {
+  border: 2px dashed #ffb6c1;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  background: #fff0f5;
+}
+
+.stamp-slot {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ff99cc;
+  border-radius: 6px;
+  margin: 2px;
+  background: #fff;
+  vertical-align: middle;
+}
+
+#adminCards li, #keywordList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px;
+  margin: 4px 0;
+  background: #ffe6f0;
+  border-radius: 8px;
+  border: 1px solid #ffb6c1;
+}
+
+#previewArea {
+  margin-top: 12px;
+}
+
+#adminUpdateLogs div {
+  background: #ffe6f0;
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: 2px 0;
+  border: 1px solid #ffb6c1;
+}
+</style>
 </head>
 <body class="admin">
 
-<main style="padding:12px; max-width:920px; margin:auto;">
-  <h1>管理者画面</h1>
+<h1>スタンプカード管理</h1>
 
-  <section class="admin-section">
-    <h2>カード作成（必須：カード名・枠数・追加パス）</h2>
-    <label>カード名<br><input id="cardName" placeholder="例：ログインスタンプ"></label><br>
-    <label>枠数（数字）<br><input id="cardSlots" type="number" min="1" value="5"></label><br>
-    <label>通知文（任意）<br><input id="notifyMsg" placeholder="例：スタンプを押しました！"></label><br>
-    <label>MAX到達通知（任意）<br><input id="maxNotifyMsg" placeholder="例：MAXになりました！"></label><br>
-    <label>追加パス（ユーザーがカード追加時に入力する値）<br><input id="addPass" placeholder="例：login2025"></label><br>
-    <label>背景画像パス（相対パス or URL、任意）<br><input id="cardBG" placeholder="例：assets/cards/123/bg.png"></label><br>
-    <label>スタンプ画像パス（任意）<br><input id="stampIcon" placeholder="例：assets/cards/123/stamp.png"></label><br>
-    <div style="margin-top:8px">
-      <button id="createCardBtn">カード作成</button>
-      <button id="previewClearBtn">プレビュークリア</button>
-    </div>
+<h3>カード作成</h3>
+<div>
+  <input type="text" id="cardName" placeholder="カード名">
+  <input type="number" id="cardSlots" value="5" min="1" placeholder="枠数">
+  <input type="text" id="addPass" placeholder="追加パス">
+  <input type="text" id="notifyMsg" placeholder="通知メッセージ">
+  <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
+  <input type="text" id="cardBG" placeholder="背景色/画像">
+  <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
+  <button id="createCardBtn">作成</button>
+  <button id="previewClearBtn">プレビュークリア</button>
+</div>
 
-    <div id="previewArea" style="margin-top:12px"></div>
-  </section>
+<h3>カード一覧</h3>
+<ul id="adminCards"></ul>
 
-  <section class="admin-section">
-    <h2>作成済カード一覧</h2>
-    <ul id="adminCards"></ul>
-  </section>
+<h3>キーワード管理</h3>
+<div>
+  <select id="keywordCardSelect"></select>
+  <input type="text" id="keywordInput" placeholder="合言葉">
+  <button id="addKeywordBtn">追加</button>
+</div>
+<ul id="keywordList"></ul>
 
-  <section class="admin-section">
-    <h2>スタンプ合言葉管理</h2>
-    <label>対象カード<br>
-      <select id="keywordCardSelect"></select>
-    </label><br>
-    <label>合言葉<br><input id="keywordInput" placeholder="例：quiz100"></label>
-    <div style="margin-top:8px">
-      <button id="addKeywordBtn">合言葉を作成</button>
-    </div>
-    <ul id="keywordList" style="margin-top:12px"></ul>
-  </section>
+<h3>更新履歴追加</h3>
+<div>
+  <input type="text" id="updateInput" placeholder="更新内容">
+  <button id="addUpdateBtn">追加</button>
+</div>
 
-  <section class="admin-section">
-    <h2>更新履歴追加</h2>
-    <input id="updateInput" placeholder="例：2025/08/22 - 表示改善">
-    <button id="addUpdateBtn">追加</button>
-    <div id="adminUpdateLogs" class="updates-list" style="margin-top:8px"></div>
-  </section>
-</main>
+<h3>更新履歴</h3>
+<div id="adminUpdateLogs"></div>
+
+<div id="previewArea"></div>
 
 <script src="script.js"></script>
 </body>
