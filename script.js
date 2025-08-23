@@ -190,8 +190,10 @@ function initUser() {
 }
 
 /* ============================
-   管理者側ロジック
+   script.js — 管理者用プレビュー修正版
    ============================ */
+
+/* --- admin側初期化 --- */
 function initAdmin() {
   const cardName = document.getElementById("cardName");
   const cardSlots = document.getElementById("cardSlots");
@@ -212,12 +214,46 @@ function initAdmin() {
   const adminUpdateLogs = document.getElementById("adminUpdateLogs");
   const previewClearBtn = document.getElementById("previewClearBtn");
 
+  /* ==========================
+     プレビュー描画関数
+     ========================== */
+  function renderPreview(card) {
+    previewArea.innerHTML = "";
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.background = card.bg || "#fff0f5";
+    div.innerHTML = `<h3>${card.name}</h3>`;
+    const slotWrap = document.createElement("div");
+    slotWrap.style.display = "flex";
+    slotWrap.style.gap = "4px";
+    for (let i = 0; i < card.slots; i++) {
+      const s = document.createElement("div");
+      s.className = "stamp-slot";
+      s.style.width = "32px";
+      s.style.height = "32px";
+      s.style.border = "1px solid #ccc";
+      s.style.borderRadius = "6px";
+      s.style.backgroundImage = card.stampImg ? `url(${card.stampImg})` : "";
+      s.style.backgroundSize = "cover";
+      slotWrap.appendChild(s);
+    }
+    div.appendChild(slotWrap);
+    previewArea.appendChild(div);
+  }
+
+  /* ==========================
+     カード一覧表示
+     ========================== */
   function refreshCardListUI() {
     adminCards.innerHTML = "";
     cards.forEach(c => {
       const li = document.createElement("li");
+      li.style.display = "flex";
+      li.style.justifyContent = "space-between";
+      li.style.alignItems = "center";
+      li.style.marginBottom = "6px";
+
       const left = document.createElement("div");
-      left.style.flex = "1";
       left.innerText = `${c.name} | パス:${c.addPass} | 枠:${c.slots}`;
       li.appendChild(left);
 
@@ -225,14 +261,14 @@ function initAdmin() {
 
       const pbtn = document.createElement("button");
       pbtn.textContent = "プレビュー";
-      pbtn.style.background = "#ff7f7f";
-      pbtn.addEventListener("click", () => { renderPreview(c); });
+      pbtn.addEventListener("click", () => renderPreview(c));
       btns.appendChild(pbtn);
 
       const copyBtn = document.createElement("button");
       copyBtn.textContent = "コピー";
-      copyBtn.style.background = "#4a90e2";
-      copyBtn.addEventListener("click", () => { navigator.clipboard.writeText(c.addPass).then(()=> alert("追加パスをコピーしました")); });
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(c.addPass).then(() => alert("追加パスをコピーしました"));
+      });
       btns.appendChild(copyBtn);
 
       const delBtn = document.createElement("button");
@@ -264,23 +300,10 @@ function initAdmin() {
     });
   }
 
-  function renderPreview(card) {
-    previewArea.innerHTML = "";
-    const d = document.createElement("div");
-    d.className = "card";
-    d.style.background = card.bg || "#fff0f5"; // ← 背景色反映
-    d.innerHTML = `<h3>${card.name}（プレビュー）</h3>`;
-    const slotWrap = document.createElement("div");
-    for (let i=0;i<card.slots;i++){
-      const s = document.createElement("div");
-      s.className = "stamp-slot";
-      slotWrap.appendChild(s);
-    }
-    d.appendChild(slotWrap);
-    previewArea.appendChild(d);
-  }
-
-  function refreshKeywordList(){
+  /* ==========================
+     キーワードリスト更新
+     ========================== */
+  function refreshKeywordList() {
     keywordList.innerHTML = "";
     keywords.forEach(k => {
       const li = document.createElement("li");
@@ -306,6 +329,9 @@ function initAdmin() {
     });
   }
 
+  /* ==========================
+     更新履歴更新
+     ========================== */
   function refreshUpdates(){
     adminUpdateLogs.innerHTML = "";
     updates.slice().reverse().forEach(u=>{
@@ -314,7 +340,25 @@ function initAdmin() {
     });
   }
 
-  createCardBtn.addEventListener("click",()=>{
+  /* ==========================
+     作成フォームから即時プレビュー
+     ========================== */
+  [cardName, cardSlots, cardBG, stampIcon].forEach(el => {
+    el.addEventListener("input", () => {
+      const previewCard = {
+        name: cardName.value || "カード名",
+        slots: parseInt(cardSlots.value) || 5,
+        bg: cardBG.value,
+        stampImg: stampIcon.value
+      };
+      renderPreview(previewCard);
+    });
+  });
+
+  /* ==========================
+     作成ボタンクリック
+     ========================== */
+  createCardBtn.addEventListener("click", ()=>{
     const name = (cardName.value||"").trim();
     const slots = parseInt(cardSlots.value,10);
     const pass = (addPass.value||"").trim();
@@ -330,16 +374,21 @@ function initAdmin() {
       stampImg:(stampIcon.value||"").trim() };
 
     cards.push(newCard);
-    saveJSON(LS_KEYS.cards, cards);
+    saveAll(); 
     refreshCardListUI();
     refreshKeywordList();
     refreshUpdates();
+    renderPreview(newCard);
 
-    cardName.value=""; cardSlots.value="5"; addPass.value=""; notifyMsg.value=""; maxNotifyMsg.value=""; cardBG.value=""; stampIcon.value="";
+    cardName.value=""; cardSlots.value="5"; addPass.value=""; notifyMsg.value=""; maxNotifyMsg.value=""; cardBG.value="#fff0f5"; stampIcon.value="";
     alert("カードを作成しました");
   });
 
   previewClearBtn && previewClearBtn.addEventListener("click",()=>{previewArea.innerHTML="";});
+
+  /* ==========================
+     キーワード追加
+     ========================== */
   addKeywordBtn.addEventListener("click",()=>{
     const cardId = Number(keywordCardSelect.value);
     const word = (keywordInput.value||"").trim();
@@ -347,18 +396,21 @@ function initAdmin() {
     if(!word){ alert("合言葉を入力してください"); return; }
     if(keywords.some(k=>k.cardId===cardId&&k.word===word)){ alert("その合言葉は既に存在します"); return; }
     keywords.push({id:Date.now(), cardId, word, active:true});
-    saveJSON(LS_KEYS.keywords, keywords);
+    saveAll(); 
     refreshKeywordList();
     keywordInput.value="";
     alert("合言葉を作成しました");
   });
 
+  /* ==========================
+     更新履歴追加
+     ========================== */
   addUpdateBtn.addEventListener("click",()=>{
     const txt = (updateInput.value||"").trim();
     if(!txt){ alert("更新内容を入力してください"); return; }
     const line = `${new Date().toLocaleDateString()} ${txt}`;
     updates.push(line);
-    saveJSON(LS_KEYS.updates, updates);
+    saveAll();
     updateInput.value="";
     refreshUpdates();
     alert("更新履歴を追加しました");
