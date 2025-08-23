@@ -13,7 +13,7 @@ body {
 
 h1, h3 { color: #ff69b4; }
 
-input[type=text], input[type=number] {
+input[type=text], input[type=number], input[type=range] {
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #ffa6c9;
@@ -22,16 +22,16 @@ input[type=text], input[type=number] {
 
 button {
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 12px;
   border: none;
-  background: #ff99cc;
+  background: linear-gradient(to bottom, #ff99cc, #ff66b3);
   color: #fff;
   cursor: pointer;
   transition: 0.2s;
   margin: 2px;
 }
 
-button:hover { background: #ff66b3; }
+button:hover { background: linear-gradient(to bottom, #ffb3d9, #ff4da6); }
 
 .card {
   border: 2px dashed #ffb6c1;
@@ -39,7 +39,10 @@ button:hover { background: #ff66b3; }
   padding: 12px;
   margin: 12px 0;
   background: #fff0f5;
+  transition: 0.3s;
 }
+
+.card:hover { box-shadow: 0 0 10px rgba(255,105,180,0.5); }
 
 .stamp-slot {
   display: inline-block;
@@ -50,6 +53,11 @@ button:hover { background: #ff66b3; }
   margin: 2px;
   background: #fff;
   vertical-align: middle;
+  transition: 0.2s;
+}
+
+.stamp-filled {
+  background: #ff69b4;
 }
 
 #adminCards li, #keywordList li {
@@ -65,6 +73,10 @@ button:hover { background: #ff66b3; }
 
 #previewArea {
   margin-top: 12px;
+  padding: 10px;
+  background: #ffe6f0;
+  border-radius: 12px;
+  border: 1px solid #ffb6c1;
 }
 
 #adminUpdateLogs div {
@@ -75,10 +87,9 @@ button:hover { background: #ff66b3; }
   border: 1px solid #ffb6c1;
 }
 
-/* RGB入力欄 */
-.color-inputs input {
-  width: 50px;
-  margin-right: 4px;
+.colorSlider {
+  width: 60px;
+  vertical-align: middle;
 }
 </style>
 </head>
@@ -89,17 +100,17 @@ button:hover { background: #ff66b3; }
 <h3>カード作成</h3>
 <div>
   <input type="text" id="cardName" placeholder="カード名">
-  <input type="number" id="cardSlots" value="5" min="1" placeholder="枠数">
+  <label>枠数: <span id="slotsLabel">5</span></label>
+  <input type="range" id="cardSlots" value="5" min="1" max="20">
   <input type="text" id="addPass" placeholder="追加パス">
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
+  <br>
+  <label>背景色: R</label><input type="range" id="bgR" class="colorSlider" value="255" min="0" max="255">
+  <label>G</label><input type="range" id="bgG" class="colorSlider" value="240" min="0" max="255">
+  <label>B</label><input type="range" id="bgB" class="colorSlider" value="245" min="0" max="255">
   <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
-  <div class="color-inputs">
-    背景色 RGB: 
-    <input type="number" id="bgR" min="0" max="255" placeholder="R">
-    <input type="number" id="bgG" min="0" max="255" placeholder="G">
-    <input type="number" id="bgB" min="0" max="255" placeholder="B">
-  </div>
+  <br>
   <button id="createCardBtn">作成</button>
   <button id="previewClearBtn">プレビュークリア</button>
 </div>
