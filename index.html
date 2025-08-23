@@ -3,66 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード</title>
+<title>スタンプカード管理</title>
 <style>
 body {
-  font-family: 'Yu Gothic', sans-serif;
-  background-color: #fff0f5;
-  color: #000000;
-  padding: 20px;
+    font-family: 'Yu Gothic', sans-serif;
+    background: #fff0f5;
+    padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 h1, h3 { color: #ff69b4; }
 
-button {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  background-color: #ff66b2;
-  color: #ffffff;
-  cursor: pointer;
-  margin: 2px;
+input[type=text], input[type=number], select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ffa6c9;
+    margin-right: 6px;
 }
 
-button:hover { opacity: 0.85; }
+button {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    background: #ff99cc;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 2px;
+}
+
+button:hover { background: #ff66b3; }
 
 .card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
+    border: 2px dashed #ffb6c1;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 12px 0;
+    background: #fff0f5;
 }
 
-.stamp {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  vertical-align: middle;
-  background: #fff;
+.stamp-slot {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border: 2px solid #ff99cc;
+    border-radius: 6px;
+    margin: 2px;
+    background: #fff;
+    vertical-align: middle;
 }
 
-.stamp.stamped {
-  background: #ff69b4;
+#adminCards li, #keywordList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    margin: 4px 0;
+    background: #ffe6f0;
+    border-radius: 8px;
+    border: 1px solid #ffb6c1;
 }
 
-.panel {
-  border: 1px solid #ffb6c1;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 12px;
+#previewArea {
+    margin-top: 12px;
 }
 
-#theme-panel, #admin-panel {
-  display: none;
-  border: 2px solid #ffb6c1;
-  padding: 12px;
-  border-radius: 10px;
-  margin-top: 12px;
-  background: #ffe6f0;
+#adminUpdateLogs div {
+    background: #ffe6f0;
+    border-radius: 6px;
+    padding: 4px 6px;
+    margin: 2px 0;
+    border: 1px solid #ffb6c1;
+}
+
+/* テーマパネル */
+.theme-panel {
+    position: fixed;
+    top: 10%;
+    right: 10%;
+    background: #fff;
+    border: 2px solid #ff99cc;
+    border-radius: 12px;
+    padding: 16px;
+    display: none;
+    z-index: 1000;
+}
+
+.theme-panel h3 {
+    margin-top: 0;
 }
 </style>
 </head>
@@ -70,34 +98,46 @@ button:hover { opacity: 0.85; }
 
 <h1>スタンプカード</h1>
 
-<div class="panel">
-  <button id="add-stamp-btn">スタンプを押す</button>
-  <button id="reset-btn">リセット</button>
-  <button id="open-admin-btn">管理者設定</button>
-  <button id="open-theme-btn">テーマ変更</button>
+<h3>ユーザー名</h3>
+<div>
+    <input type="text" id="userNameInput" placeholder="名前を入力">
+    <button id="setNameBtn">設定</button>
 </div>
 
+<h3>スタンプカード</h3>
 <div id="stamp-container" class="card"></div>
 <div id="count-display"></div>
 <div id="reward-display"></div>
+<button id="add-stamp-btn">スタンプを押す</button>
+<button id="reset-btn">リセット</button>
 
-<!-- 管理者パネル -->
-<div id="admin-panel">
-  <h3>管理者設定</h3>
-  <label>総スタンプ数: <input type="number" id="admin-total" min="1" value="10"></label><br>
-  <label>特典内容: <input type="text" id="admin-reward" value="特典なし"></label><br>
-  <button id="save-admin-btn">保存</button>
-  <button id="close-admin-btn">閉じる</button>
+<h3>管理者</h3>
+<button id="open-admin-btn">管理者パネルを開く</button>
+
+<div id="admin-panel" style="display:none; border:2px solid #ff99cc; padding:12px; margin-top:12px;">
+    <h3>カード設定</h3>
+    <input type="number" id="admin-total" placeholder="スタンプ総数">
+    <input type="text" id="admin-reward" placeholder="特典名">
+    <button id="save-admin-btn">保存</button>
+    <button id="close-admin-btn">閉じる</button>
 </div>
 
-<!-- テーマパネル -->
-<div id="theme-panel">
-  <h3>テーマ変更</h3>
-  <label>背景色: <input type="color" id="bg-color-picker"></label><br>
-  <label>文字色: <input type="color" id="text-color-picker"></label><br>
-  <label>ボタン色: <input type="color" id="button-color-picker"></label><br>
-  <button id="save-theme-btn">保存</button>
-  <button id="close-theme-btn">閉じる</button>
+<h3>テーマ設定</h3>
+<button id="open-theme-btn">テーマを変更</button>
+
+<div id="theme-panel" class="theme-panel">
+    <h3>テーマ変更</h3>
+    <div>
+        <label>背景色: </label><input type="color" id="bg-color-picker">
+    </div>
+    <div>
+        <label>文字色: </label><input type="color" id="text-color-picker">
+    </div>
+    <div>
+        <label>ボタン色: </label><input type="color" id="button-color-picker">
+    </div>
+    <button id="save-theme-btn">保存</button>
+    <button id="close-theme-btn">閉じる</button>
 </div>
 
 <script src="script.js"></script>
