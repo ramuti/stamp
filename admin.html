@@ -3,46 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード管理者</title>
+<title>スタンプカード</title>
 <style>
-body { font-family:'Yu Gothic',sans-serif; padding:20px; background:#fff0f5; }
-h1 { color:#ff69b4; }
-input, select { padding:6px 10px; border-radius:6px; border:1px solid #ffa6c9; margin-right:6px; }
-button { padding:6px 10px; border-radius:6px; border:none; background:#ff99cc; color:#fff; cursor:pointer; transition:0.2s; }
-button:hover{ background:#ff66b3; }
-.card { border:2px dashed #ffb6c1; border-radius:12px; padding:12px; margin:12px 0; transition:0.2s; }
-.stamp-slot { display:inline-block; width:28px; height:28px; border:2px solid #ff99cc; border-radius:6px; margin:2px; vertical-align:middle; background:#fff; transition:0.2s; }
-#previewArea .card { background:#fff0f5; }
+body {
+  font-family: 'Yu Gothic', sans-serif;
+  background: #fff0f5;
+  padding: 20px;
+}
+
+h1 { color: #ff69b4; }
+
+input[type=text] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ffa6c9;
+  margin-right: 6px;
+}
+
+button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #ff99cc;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover { background: #ff66b3; }
+
+.card {
+  border: 2px dashed #ffb6c1;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  background: #fff0f5;
+}
+
+.stamp-slot {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ff99cc;
+  border-radius: 6px;
+  margin: 2px;
+  vertical-align: middle;
+  background: #fff;
+  transition: 0.2s;
+}
+
+.stamp-filled {
+  background: #ff69b4;
+}
+
+.serial {
+  font-size: 0.85em;
+  color: #ff66b3;
+  margin-top: 6px;
+}
+
+#userCards {
+  margin-top: 12px;
+}
 </style>
 </head>
-<body class="admin">
+<body class="user">
 
-<h1>管理者画面</h1>
+<h1 id="cardTitle">スタンプカード</h1>
 
-<h3>カード作成</h3>
-<input type="text" id="cardName" placeholder="カード名">
-<input type="number" id="cardSlots" value="5" min="1" style="width:60px;">
-<input type="text" id="addPass" placeholder="追加パス">
-<input type="color" id="cardBG" value="#fff0f5">
-<button id="createCardBtn">作成</button>
+<!-- ユーザー名入力欄は下に配置 -->
+<div style="margin-top: 20px;">
+  <input type="text" id="userNameInput" placeholder="名前を入力">
+  <button id="setNameBtn">変更</button>
+</div>
 
-<h3>カードプレビュー</h3>
-<div id="previewArea"></div>
-<button id="previewClearBtn">クリア</button>
+<hr>
 
-<h3>既存カード</h3>
-<ul id="adminCards"></ul>
+<div style="margin-top: 20px;">
+  <input type="text" id="addCardPass" placeholder="追加パス">
+  <button id="addCardBtn">カード追加</button>
+</div>
 
-<h3>合言葉管理</h3>
-<select id="keywordCardSelect"></select>
-<input type="text" id="keywordInput" placeholder="合言葉">
-<button id="addKeywordBtn">追加</button>
-<ul id="keywordList"></ul>
+<div id="userCards"></div>
+
+<h3>スタンプ履歴</h3>
+<ul id="stampHistory"></ul>
 
 <h3>更新履歴</h3>
-<input type="text" id="updateInput" placeholder="更新内容">
-<button id="addUpdateBtn">追加</button>
-<div id="adminUpdateLogs"></div>
+<div id="updateLogs"></div>
 
 <script src="script.js"></script>
 </body>
