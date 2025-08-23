@@ -23,11 +23,11 @@ function saveJSON(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
 
 /* app state (in-memory mirrors localStorage) */
 let userName = localStorage.getItem(LS_KEYS.userName) || "";
-let cards = loadJSON(LS_KEYS.cards, []);                 
-let keywords = loadJSON(LS_KEYS.keywords, []);           
-let updates = loadJSON(LS_KEYS.updates, []);             
-let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []); 
-let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []); 
+let cards = loadJSON(LS_KEYS.cards, []);                 // array of card objects
+let keywords = loadJSON(LS_KEYS.keywords, []);           // array of keyword objects
+let updates = loadJSON(LS_KEYS.updates, []);             // array of string or {date,text}
+let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []); // array of card.id
+let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []); // array of {cardId, slot, keyword, date}
 
 /* save all helper */
 function saveAll() {
@@ -53,12 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ============================
-   ユーザー側ロジック
-   ============================ */
-/* ============================
-   ユーザー側ロジック（モーダル削除版）
+   ユーザー側ロジック（モーダル廃止・常設入力）
    ============================ */
 function initUser() {
+  const setNameBtn = document.getElementById("setNameBtn");
   const userNameInput = document.getElementById("userNameInput");
   const cardTitle = document.getElementById("cardTitle");
   const addCardBtn = document.getElementById("addCardBtn");
@@ -66,21 +64,26 @@ function initUser() {
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
+  const debugNameBtn = document.getElementById("debugNameBtn");
 
-  // タイトル初期表示
+  // 初期タイトル
   cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
+  userNameInput.value = userName || "";
 
-  // 名前入力欄初期値
-  userNameInput.value = userName;
-
-  // 名前入力でタイトル更新
-  userNameInput.addEventListener("input", ()=>{
-    userName = userNameInput.value.trim();
-    cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
+  // 「変更」ボタンでタイトル反映
+  setNameBtn.addEventListener("click", () => {
+    const v = userNameInput.value.trim();
+    if (!v) { alert("名前を入力してください"); return; }
+    userName = v;
     saveAll();
+    cardTitle.textContent = `${userName}のスタンプカード`;
   });
 
-  /* 以下の処理は元の仕様と完全に同じ */
+  // デバッグボタンは入力欄へフォーカス
+  debugNameBtn.addEventListener("click", () => {
+    userNameInput.focus();
+  });
+
   addCardBtn.addEventListener("click", () => {
     const pass = addCardPass.value.trim();
     if (!pass) { alert("追加パスを入力してください"); return; }
@@ -88,7 +91,7 @@ function initUser() {
     if (!card) { alert("パスが間違っています"); return; }
     if (!userAddedCards.includes(card.id)) {
       userAddedCards.push(card.id);
-      saveJSON(LS_KEYS.userAddedCards, userAddedCards); 
+      saveJSON(LS_KEYS.userAddedCards, userAddedCards); // ←カード追加のみ保存
       renderUserCards();
       addCardPass.value = "";
     } else {
@@ -198,7 +201,7 @@ function initUser() {
 }
 
 /* ============================
-   管理者側ロジック
+   管理者側ロジック（変更なし）
    ============================ */
 function initAdmin() {
   const cardName = document.getElementById("cardName");
@@ -337,7 +340,7 @@ function initAdmin() {
       stampImg:(stampIcon.value||"").trim() };
 
     cards.push(newCard);
-    saveJSON(LS_KEYS.cards, cards); 
+    saveJSON(LS_KEYS.cards, cards); // ←userAddedCardsは触らない
     refreshCardListUI();
     refreshKeywordList();
     refreshUpdates();
@@ -355,7 +358,7 @@ function initAdmin() {
     if(!word){ alert("合言葉を入力してください"); return; }
     if(keywords.some(k=>k.cardId===cardId&&k.word===word)){ alert("その合言葉は既に存在します"); return; }
     keywords.push({id:Date.now(), cardId, word, active:true});
-    saveJSON(LS_KEYS.keywords, keywords); 
+    saveJSON(LS_KEYS.keywords, keywords); // ←userAddedCardsには影響なし
     refreshKeywordList();
     keywordInput.value="";
     alert("合言葉を作成しました");
