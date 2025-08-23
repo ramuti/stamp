@@ -2,49 +2,129 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>スタンプカード管理者</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタンプカード管理</title>
 <style>
-body{font-family:sans-serif;padding:16px;}
-h2{margin-top:24px;}
-.card,.stamp-slot{border:1px solid #ccc;padding:8px;margin:4px;display:inline-block;text-align:center;}
-.card{width:200px;background:#fff;border-radius:4px;}
-.stamp-slot{width:30px;height:30px;margin:2px;background:#eee;background-size:cover;}
-li{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-button{margin:2px;}
-#previewArea .card{margin-top:16px;}
+body {
+  font-family: 'Yu Gothic', sans-serif;
+  background: #fff0f5;
+  padding: 20px;
+}
+
+h1, h3 { color: #ff69b4; }
+
+input[type=text], input[type=number] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ffa6c9;
+  margin-right: 6px;
+}
+
+button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #ff99cc;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+  margin: 2px;
+}
+
+button:hover { background: #ff66b3; }
+
+.card {
+  border: 2px dashed #ffb6c1;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  background: #fff0f5;
+}
+
+.stamp-slot {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #ff99cc;
+  border-radius: 6px;
+  margin: 2px;
+  background: #fff;
+  vertical-align: middle;
+}
+
+#adminCards li, #keywordList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px;
+  margin: 4px 0;
+  background: #ffe6f0;
+  border-radius: 8px;
+  border: 1px solid #ffb6c1;
+}
+
+#previewArea {
+  margin-top: 12px;
+}
+
+#adminUpdateLogs div {
+  background: #ffe6f0;
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: 2px 0;
+  border: 1px solid #ffb6c1;
+}
+
+/* RGB入力欄 */
+.color-inputs input {
+  width: 50px;
+  margin-right: 4px;
+}
 </style>
 </head>
 <body class="admin">
 
-<h1>管理者画面</h1>
+<h1>スタンプカード管理</h1>
 
-<h2>カード作成</h2>
-<label>カード名: <input type="text" id="cardName"></label><br>
-<label>枠数: <input type="number" id="cardSlots" value="5" min="1"></label><br>
-<label>追加パス: <input type="text" id="addPass"></label><br>
-<label>通知メッセージ: <input type="text" id="notifyMsg"></label><br>
-<label>最大通知メッセージ: <input type="text" id="maxNotifyMsg"></label><br>
-<label>背景色: <input type="text" id="cardBG" placeholder="rgb(255,240,245)"></label><br>
-<label>スタンプ画像URL: <input type="text" id="stampIcon"></label><br>
-<button id="createCardBtn">カード作成</button>
+<h3>カード作成</h3>
+<div>
+  <input type="text" id="cardName" placeholder="カード名">
+  <input type="number" id="cardSlots" value="5" min="1" placeholder="枠数">
+  <input type="text" id="addPass" placeholder="追加パス">
+  <input type="text" id="notifyMsg" placeholder="通知メッセージ">
+  <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
+  <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
+  <div class="color-inputs">
+    背景色 RGB: 
+    <input type="number" id="bgR" min="0" max="255" placeholder="R">
+    <input type="number" id="bgG" min="0" max="255" placeholder="G">
+    <input type="number" id="bgB" min="0" max="255" placeholder="B">
+  </div>
+  <button id="createCardBtn">作成</button>
+  <button id="previewClearBtn">プレビュークリア</button>
+</div>
 
-<h2>プレビュー</h2>
-<div id="previewArea"></div>
-<button id="previewClearBtn">クリア</button>
-
-<h2>既存カード</h2>
+<h3>カード一覧</h3>
 <ul id="adminCards"></ul>
 
-<h2>合言葉管理</h2>
-<label>カード選択: <select id="keywordCardSelect"></select></label><br>
-<label>合言葉: <input type="text" id="keywordInput"></label>
-<button id="addKeywordBtn">追加</button>
+<h3>キーワード管理</h3>
+<div>
+  <select id="keywordCardSelect"></select>
+  <input type="text" id="keywordInput" placeholder="合言葉">
+  <button id="addKeywordBtn">追加</button>
+</div>
 <ul id="keywordList"></ul>
 
-<h2>更新履歴</h2>
-<input type="text" id="updateInput">
-<button id="addUpdateBtn">追加</button>
+<h3>更新履歴追加</h3>
+<div>
+  <input type="text" id="updateInput" placeholder="更新内容">
+  <button id="addUpdateBtn">追加</button>
+</div>
+
+<h3>更新履歴</h3>
 <div id="adminUpdateLogs"></div>
+
+<div id="previewArea"></div>
 
 <script src="script.js"></script>
 </body>
