@@ -9,7 +9,8 @@ const LS_KEYS = {
   keywords: "keywords",
   updates: "updates",
   userAddedCards: "userAddedCards",
-  userStampHistory: "userStampHistory"
+  userStampHistory: "userStampHistory",
+  userStyles: "userStyles"
 };
 
 const APP_VERSION = "v1.0.0";
@@ -25,6 +26,11 @@ let keywords = loadJSON(LS_KEYS.keywords, []);
 let updates = loadJSON(LS_KEYS.updates, []);
 let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []);
 let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []);
+let userStyles = loadJSON(LS_KEYS.userStyles, {
+  bgColor: "#fff0f5",
+  textColor: "#ff69b4",
+  buttonColor: "#ff99cc"
+});
 
 function saveAll() {
   try {
@@ -34,8 +40,9 @@ function saveAll() {
     saveJSON(LS_KEYS.updates, updates);
     saveJSON(LS_KEYS.userAddedCards, userAddedCards);
     saveJSON(LS_KEYS.userStampHistory, userStampHistory);
+    saveJSON(LS_KEYS.userStyles, userStyles);
     localStorage.setItem(LS_KEYS.appVersion, APP_VERSION);
-  } catch (e) { alert("データ保存に失敗しました。"); console.error(e); }
+  } catch (e) { console.error(e); }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -57,24 +64,8 @@ function initUser() {
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
 
-  const bgPicker = document.getElementById("bgColorPicker");
-  const textPicker = document.getElementById("textColorPicker");
-  const btnPicker = document.getElementById("buttonColorPicker");
-
   cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
   userNameInput.value = userName;
-
-  function applyColors() {
-    document.body.style.backgroundColor = bgPicker.value;
-    document.body.style.color = textPicker.value;
-    document.querySelectorAll("button").forEach(b => b.style.backgroundColor = btnPicker.value);
-  }
-
-  bgPicker.addEventListener("input", applyColors);
-  textPicker.addEventListener("input", applyColors);
-  btnPicker.addEventListener("input", applyColors);
-
-  applyColors();
 
   setNameBtn.addEventListener("click", () => {
     const v = userNameInput.value.trim();
@@ -89,168 +80,132 @@ function initUser() {
     if (!pass) { alert("追加パスを入力してください"); return; }
     const card = cards.find(c => c.addPass === pass);
     if (!card) { alert("パスが間違っています"); return; }
-    if (userAddedCards.some(c => c.addPass === pass)) { alert("既に追加済みです"); return; }
-    userAddedCards.push({ addPass: pass });
-    saveAll();
-    renderUserCards();
+    if (!userAddedCards.includes(card.id)) {
+      userAddedCards.push(card.id);
+      saveAll();
+      addCardPass.value = "";
+      renderUserCards();
+      updateHistory();
+    } else { alert("すでに追加済みです"); }
   });
+
+  function renderUserCard(card) {
+    const container = document.createElement("div");
+    container.className = "card";
+    container.dataset.id = card.id;
+    container.style.background = card.bg || userStyles.bgColor;
+
+    const title = document.createElement("h3");
+    title.textContent = card.name;
+    container.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.style.marginBottom = "8px";
+    for (let i = 0; i < card.slots; i++) {
+      const slot = document.createElement("div");
+      slot.className = "stamp-slot";
+      if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) slot.classList.add("stamp-filled");
+      grid.appendChild(slot);
+    }
+    container.appendChild(grid);
+
+    const serial = document.createElement("div");
+    serial.className = "serial";
+    serial.textContent = genSerialForUser();
+    container.appendChild(serial);
+
+    const btn = document.createElement("button");
+    btn.textContent = "スタンプを押す";
+    btn.style.marginTop = "8px";
+    btn.style.background = userStyles.buttonColor;
+    btn.style.color = "#fff";
+    btn.addEventListener("click", () => {
+      const kw = prompt("スタンプ合言葉を入力してください");
+      if (!kw) return;
+      const word = kw.trim();
+      if (!word) { alert("合言葉を入力してください"); return; }
+      const keywordObj = keywords.find(k => String(k.cardId) === String(card.id) && k.word === word && k.active);
+      if (!keywordObj) { alert("合言葉が違うか無効です"); return; }
+      if (userStampHistory.some(s => s.cardId === card.id && s.keyword === word)) { alert("もう押してあります"); return; }
+      let nextSlot = 0;
+      while (userStampHistory.some(s => s.cardId === card.id && s.slot === nextSlot)) nextSlot++;
+      if (nextSlot >= card.slots) { alert(card.maxNotifyMsg || "スタンプがMAXです"); return; }
+      userStampHistory.push({ cardId: card.id, slot: nextSlot, keyword: word, date: new Date().toLocaleString() });
+      saveAll();
+      renderUserCards();
+      updateHistory();
+      alert(card.notifyMsg || "スタンプを押しました！");
+    });
+    container.appendChild(btn);
+
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "カードを削除";
+    delBtn.style.background = "#999";
+    delBtn.style.marginLeft = "8px";
+    delBtn.addEventListener("click", () => {
+      if (!confirm("このカードを自分の端末から削除しますか？（履歴も消えます）")) return;
+      userAddedCards = userAddedCards.filter(id => id !== card.id);
+      userStampHistory = userStampHistory.filter(h => h.cardId !== card.id); // カード削除で履歴も消す
+      saveAll();
+      renderUserCards();
+      updateHistory();
+    });
+    container.appendChild(delBtn);
+
+    return container;
+  }
 
   function renderUserCards() {
     userCards.innerHTML = "";
-    if (!userAddedCards.length) return; // スタンプカードがない場合は履歴も描画しない
-
-    userAddedCards.forEach((uc, idx) => {
-      const card = cards.find(c => c.addPass === uc.addPass);
+    userAddedCards.forEach(id => {
+      const card = cards.find(c => c.id === id);
       if (!card) return;
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <div>
-          <strong>${card.name}</strong>
-          <span style="margin-left: 12px;">追加パス: ${uc.addPass}</span>
-        </div>
-        <div>
-          <button data-pass="${uc.addPass}" class="previewBtn">プレビュー表示</button>
-          <button data-pass="${uc.addPass}" class="deleteBtn">消去</button>
-        </div>
-      `;
-      userCards.appendChild(div);
+      const el = renderUserCard(card);
+      userCards.appendChild(el);
     });
-
-    // プレビュー表示
-    document.querySelectorAll(".previewBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const pass = btn.dataset.pass;
-        const card = cards.find(c => c.addPass === pass);
-        if (!card) return;
-        alert(`カード名: ${card.name}\n枠数: ${card.slots}\n背景: ${card.bg || "なし"}`);
-      });
-    });
-
-    // 削除
-    document.querySelectorAll(".deleteBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const pass = btn.dataset.pass;
-        userAddedCards = userAddedCards.filter(c => c.addPass !== pass);
-        saveAll();
-        renderUserCards();
-      });
-    });
+    applyUserStyles();
   }
 
-  function renderHistory() {
+  function updateHistory() {
     historyList.innerHTML = "";
-    if (!userAddedCards.length) return;
-    userAddedCards.forEach(c => {
-      const card = cards.find(cc => cc.addPass === c.addPass);
-      if (!card) return;
-      const history = userStampHistory.filter(s => s.addPass === c.addPass);
-      history.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = `${card.name} - スタンプ枠: ${s.slot + 1}`;
-        historyList.appendChild(li);
-      });
+    userStampHistory.forEach(h => {
+      const c = cards.find(c => c.id === h.cardId);
+      if(!c) return; // カードが削除された場合、履歴残さない
+      const li = document.createElement("li");
+      li.textContent = `${c.name} - スロット${h.slot + 1} (${h.keyword}) ${h.date}`;
+      historyList.appendChild(li);
     });
   }
 
-  function renderUpdates() {
-    updateLogs.innerHTML = "";
-    updates.forEach(u => {
-      const div = document.createElement("div");
-      div.textContent = u;
-      updateLogs.appendChild(div);
-    });
-  }
+  function genSerialForUser() { return Math.floor(Math.random() * 9999999999999); }
 
   renderUserCards();
-  renderHistory();
-  renderUpdates();
-}
+  updateHistory();
 
-/* ============================
-   管理者側
-   ============================ */
-function initAdmin() {
-  const cardNameInput = document.getElementById("cardName");
-  const cardSlotsInput = document.getElementById("cardSlots");
-  const addPassInput = document.getElementById("addPass");
-  const notifyMsgInput = document.getElementById("notifyMsg");
-  const maxNotifyMsgInput = document.getElementById("maxNotifyMsg");
-  const cardBGInput = document.getElementById("cardBG");
-  const stampIconInput = document.getElementById("stampIcon");
-  const createCardBtn = document.getElementById("createCardBtn");
-  const adminCardsList = document.getElementById("adminCards");
-  const previewArea = document.getElementById("previewArea");
+  /* ============================
+     ユーザ見た目設定（カラーパレット対応）
+     ============================ */
+  const bgColorPicker = document.getElementById("bgColorPicker");
+  const textColorPicker = document.getElementById("textColorPicker");
+  const buttonColorPicker = document.getElementById("buttonColorPicker");
 
-  const updateInput = document.getElementById("updateInput");
-  const addUpdateBtn = document.getElementById("addUpdateBtn");
-  const adminUpdateLogs = document.getElementById("adminUpdateLogs");
-
-  function renderAdminCards() {
-    adminCardsList.innerHTML = "";
-    cards.forEach(c => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span>${c.name} (#${c.addPass})</span>
-        <button data-pass="${c.addPass}" class="deleteCardBtn">消去</button>
-      `;
-      adminCardsList.appendChild(li);
+  function applyUserStyles() {
+    document.body.style.background = userStyles.bgColor;
+    document.body.style.color = userStyles.textColor;
+    document.querySelectorAll("button").forEach(b => {
+      if (b.textContent === "カードを削除" || b.textContent === "削除") return;
+      b.style.background = userStyles.buttonColor;
     });
-
-    document.querySelectorAll(".deleteCardBtn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const pass = btn.dataset.pass;
-        cards = cards.filter(c => c.addPass !== pass);
-        saveAll();
-        renderAdminCards();
-      });
+    document.querySelectorAll(".card").forEach(c => {
+      c.style.background = userStyles.bgColor;
     });
   }
 
-  createCardBtn.addEventListener("click", () => {
-    const name = cardNameInput.value.trim();
-    const slots = parseInt(cardSlotsInput.value) || 5;
-    const addPass = addPassInput.value.trim();
-    if (!name || !addPass) { alert("カード名と追加パスは必須"); return; }
-    if (cards.some(c => c.addPass === addPass)) { alert("追加パスが重複しています"); return; }
+  bgColorPicker.value = userStyles.bgColor;
+  textColorPicker.value = userStyles.textColor;
+  buttonColorPicker.value = userStyles.buttonColor;
 
-    const card = {
-      name,
-      slots,
-      addPass,
-      notifyMsg: notifyMsgInput.value,
-      maxNotifyMsg: maxNotifyMsgInput.value,
-      bg: cardBGInput.value,
-      icon: stampIconInput.value
-    };
-    cards.push(card);
-    saveAll();
-    renderAdminCards();
-    previewArea.innerHTML = `
-      <div class="card" style="background:${card.bg || "#fff0f5"};">
-        <strong>${card.name}</strong> 枠数: ${card.slots}
-      </div>
-    `;
-  });
-
-  addUpdateBtn.addEventListener("click", () => {
-    const val = updateInput.value.trim();
-    if (!val) return;
-    updates.push(val);
-    saveAll();
-    renderAdminUpdates();
-    updateInput.value = "";
-  });
-
-  function renderAdminUpdates() {
-    adminUpdateLogs.innerHTML = "";
-    updates.forEach(u => {
-      const div = document.createElement("div");
-      div.textContent = u;
-      adminUpdateLogs.appendChild(div);
-    });
-  }
-
-  renderAdminCards();
-  renderAdminUpdates();
+  bgColorPicker.addEventListener("input", () => { userStyles.bgColor = bgColorPicker.value; saveAll(); applyUserStyles(); });
+  textColorPicker.addEventListener("input", () => { userStyles.textColor = textColorPicker.value; saveAll(); applyUserStyles(); });
+  buttonColorPicker.addEventListener("input", () => { userStyles.buttonColor = buttonColorPicker.value; saveAll(); applyUserStyles(); });
 }
