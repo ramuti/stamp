@@ -107,7 +107,6 @@ function initUser() {
       if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) {
         slot.classList.add("stamp-filled");
         if (card.stampImg) slot.style.backgroundImage = `url(${card.stampImg})`;
-        if (card.stampImg) slot.style.backgroundSize = "cover";
       }
       grid.appendChild(slot);
     }
@@ -216,6 +215,29 @@ function initAdmin() {
   const adminUpdateLogs = document.getElementById("adminUpdateLogs");
   const previewClearBtn = document.getElementById("previewClearBtn");
 
+  /* -------------------------
+     RGB背景色ボタンUI
+     ------------------------- */
+  const rgbContainer = document.createElement("div");
+  const rInput = document.createElement("input"); rInput.type="number"; rInput.min=0; rInput.max=255; rInput.value=255;
+  const gInput = document.createElement("input"); gInput.type="number"; gInput.min=0; gInput.max=255; gInput.value=240;
+  const bInput = document.createElement("input"); bInput.type="number"; bInput.min=0; bInput.max=255; bInput.value=245;
+  const applyBtn = document.createElement("button"); applyBtn.textContent="背景色適用";
+  rgbContainer.appendChild(document.createTextNode("R:")); rgbContainer.appendChild(rInput);
+  rgbContainer.appendChild(document.createTextNode(" G:")); rgbContainer.appendChild(gInput);
+  rgbContainer.appendChild(document.createTextNode(" B:")); rgbContainer.appendChild(bInput);
+  rgbContainer.appendChild(applyBtn);
+  cardBG.parentNode.insertBefore(rgbContainer, cardBG.nextSibling);
+
+  applyBtn.addEventListener("click", () => {
+    const rgb = `rgb(${rInput.value},${gInput.value},${bInput.value})`;
+    cardBG.value = rgb;
+    alert(`背景色を ${rgb} に設定しました`);
+  });
+
+  /* -------------------------
+     カード一覧更新
+     ------------------------- */
   function refreshCardListUI() {
     adminCards.innerHTML = "";
     cards.forEach(c => {
@@ -268,35 +290,30 @@ function initAdmin() {
     });
   }
 
+  /* -------------------------
+     プレビュー描画
+     ------------------------- */
   function renderPreview(card) {
     previewArea.innerHTML = "";
     const d = document.createElement("div");
     d.className = "card";
-    if (card.bg) d.style.background = card.bg;
-    d.style.padding = "12px";
-    d.style.borderRadius = "12px";
-    d.style.marginBottom = "12px";
-
-    const h3 = document.createElement("h3");
-    h3.textContent = `${card.name}（プレビュー）`;
-    d.appendChild(h3);
-
+    if(card.bg) d.style.background = card.bg;
+    d.innerHTML = `<h3>${card.name}（プレビュー）</h3>`;
     const slotWrap = document.createElement("div");
-    for (let i = 0; i < card.slots; i++) {
+    for(let i=0;i<card.slots;i++){
       const s = document.createElement("div");
       s.className = "stamp-slot";
-      if (card.stampImg) {
-        s.style.backgroundImage = `url(${card.stampImg})`;
-        s.style.backgroundSize = "cover";
-      }
+      if(card.stampImg) s.style.backgroundImage = `url(${card.stampImg})`;
       slotWrap.appendChild(s);
     }
     d.appendChild(slotWrap);
-
     previewArea.appendChild(d);
   }
 
-  function refreshKeywordList() {
+  /* -------------------------
+     キーワードリスト更新
+     ------------------------- */
+  function refreshKeywordList(){
     keywordList.innerHTML = "";
     keywords.forEach(k => {
       const li = document.createElement("li");
@@ -322,15 +339,21 @@ function initAdmin() {
     });
   }
 
-  function refreshUpdates() {
+  /* -------------------------
+     更新履歴表示
+     ------------------------- */
+  function refreshUpdates(){
     adminUpdateLogs.innerHTML = "";
-    updates.slice().reverse().forEach(u => {
-      const d = document.createElement("div"); d.textContent = u;
+    updates.slice().reverse().forEach(u=>{
+      const d = document.createElement("div"); d.textContent=u;
       adminUpdateLogs.appendChild(d);
     });
   }
 
-  createCardBtn.addEventListener("click", () => {
+  /* -------------------------
+     ボタンイベント
+     ------------------------- */
+  createCardBtn.addEventListener("click",()=>{
     const name = (cardName.value||"").trim();
     const slots = parseInt(cardSlots.value,10);
     const pass = (addPass.value||"").trim();
@@ -347,11 +370,12 @@ function initAdmin() {
 
     cards.push(newCard); saveJSON(LS_KEYS.cards,cards); 
     refreshCardListUI(); refreshKeywordList(); refreshUpdates();
+    renderPreview(newCard); // ←作成時に即プレビュー
 
     cardName.value=""; cardSlots.value="5"; addPass.value=""; notifyMsg.value=""; maxNotifyMsg.value=""; cardBG.value=""; stampIcon.value="";
   });
 
-  addKeywordBtn.addEventListener("click", () => {
+  addKeywordBtn.addEventListener("click",()=>{
     const cardId=parseInt(keywordCardSelect.value);
     const word=(keywordInput.value||"").trim();
     if(!word){alert("合言葉を入力してください"); return;}
@@ -361,14 +385,14 @@ function initAdmin() {
     refreshKeywordList();
   });
 
-  addUpdateBtn.addEventListener("click", () => {
+  addUpdateBtn.addEventListener("click",()=>{
     const val=(updateInput.value||"").trim();
     if(!val) return;
     updates.push(val); saveJSON(LS_KEYS.updates,updates); updateInput.value="";
     refreshUpdates();
   });
 
-  previewClearBtn.addEventListener("click", ()=>{ previewArea.innerHTML=""; });
+  previewClearBtn.addEventListener("click",()=>{previewArea.innerHTML="";});
 
   refreshCardListUI(); refreshKeywordList(); refreshUpdates();
 }
