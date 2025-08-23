@@ -74,6 +74,13 @@ button:hover { background: #ff66b3; }
   margin: 2px 0;
   border: 1px solid #ffb6c1;
 }
+
+.preview-card {
+  border: 2px dashed #ffb6c1;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+}
 </style>
 </head>
 <body class="admin">
@@ -87,7 +94,7 @@ button:hover { background: #ff66b3; }
   <input type="text" id="addPass" placeholder="追加パス">
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
-  <input type="text" id="cardBG" placeholder="背景色/画像">
+  <input type="text" id="cardBG" placeholder="背景色/画像 (例:#fff0f5)">
   <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
   <button id="createCardBtn">作成</button>
   <button id="previewClearBtn">プレビュークリア</button>
@@ -113,6 +120,7 @@ button:hover { background: #ff66b3; }
 <h3>更新履歴</h3>
 <div id="adminUpdateLogs"></div>
 
+<h3>プレビュー</h3>
 <div id="previewArea"></div>
 
 <script src="script.js"></script>
