@@ -3,119 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタンプカード管理</title>
-<style>
-body {
-  font-family: 'Yu Gothic', sans-serif;
-  background: #fff0f5;
-  padding: 20px;
-}
-
-h1, h3 { color: #ff69b4; }
-
-input[type=text], input[type=number] {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #ffa6c9;
-  margin-right: 6px;
-}
-
-button {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  background: #ff99cc;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 2px;
-}
-
-button:hover { background: #ff66b3; }
-
-.card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
-}
-
-.stamp-slot {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  background: #fff;
-  vertical-align: middle;
-}
-
-#adminCards li, #keywordList li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px;
-  margin: 4px 0;
-  background: #ffe6f0;
-  border-radius: 8px;
-  border: 1px solid #ffb6c1;
-}
-
-#previewArea {
-  margin-top: 12px;
-  min-height: 80px;
-}
-
-#adminUpdateLogs div {
-  background: #ffe6f0;
-  border-radius: 6px;
-  padding: 4px 6px;
-  margin: 2px 0;
-  border: 1px solid #ffb6c1;
-}
-</style>
+<title>スタンプカード管理者画面</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="admin">
 
-<h1>スタンプカード管理</h1>
+<h1>スタンプカード管理者画面</h1>
 
-<h3>カード作成</h3>
-<div>
-  <input type="text" id="cardName" placeholder="カード名">
-  <input type="number" id="cardSlots" value="5" min="1" placeholder="枠数">
-  <input type="text" id="addPass" placeholder="追加パス">
-  <input type="text" id="notifyMsg" placeholder="通知メッセージ">
-  <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
-  <input type="text" id="cardBG" placeholder="背景色/画像">
-  <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
-  <button id="createCardBtn">作成</button>
+<section>
+  <h2>カード作成</h2>
+  <label>カード名: <input type="text" id="cardName"></label>
+  <label>枠数: <input type="number" id="cardSlots" value="5"></label>
+  <label>追加パス: <input type="text" id="addPass"></label>
+  <label>通知メッセージ: <input type="text" id="notifyMsg"></label>
+  <label>MAX通知メッセージ: <input type="text" id="maxNotifyMsg"></label>
+  <label>背景色: <input type="color" id="cardBG" value="#fff0f5"></label>
+  <label>スタンプ画像URL: <input type="text" id="stampIcon"></label>
+  <button id="createCardBtn">カード作成</button>
   <button id="previewClearBtn">プレビュークリア</button>
-</div>
+</section>
 
-<h3>カード一覧</h3>
-<ul id="adminCards"></ul>
+<section>
+  <h2>プレビュー</h2>
+  <div id="previewArea"></div>
+</section>
 
-<h3>キーワード管理</h3>
-<div>
+<section>
+  <h2>カード一覧</h2>
+  <ul id="adminCards"></ul>
+</section>
+
+<section>
+  <h2>合言葉管理</h2>
   <select id="keywordCardSelect"></select>
-  <input type="text" id="keywordInput" placeholder="合言葉">
-  <button id="addKeywordBtn">追加</button>
-</div>
-<ul id="keywordList"></ul>
+  <input type="text" id="keywordInput">
+  <button id="addKeywordBtn">合言葉追加</button>
+  <ul id="keywordList"></ul>
+</section>
 
-<h3>更新履歴追加</h3>
-<div>
-  <input type="text" id="updateInput" placeholder="更新内容">
+<section>
+  <h2>更新履歴</h2>
+  <input type="text" id="updateInput">
   <button id="addUpdateBtn">追加</button>
-</div>
-
-<h3>更新履歴</h3>
-<div id="adminUpdateLogs"></div>
-
-<h3>カードプレビュー</h3>
-<div id="previewArea"></div>
+  <div id="adminUpdateLogs"></div>
+</section>
 
 <script src="script.js"></script>
 </body>
