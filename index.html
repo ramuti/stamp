@@ -41,6 +41,7 @@ button:hover { background: #ff66b3; }
   margin: 12px 0;
   background: #fff0f5;
 }
+
 .stamp-slot {
   display: inline-block;
   width: 28px;
@@ -52,23 +53,30 @@ button:hover { background: #ff66b3; }
   vertical-align: middle;
 }
 
-#userCards, #stampHistory, #updateLogs { margin-top: 12px; }
-#stampHistory li, #updateLogs div { margin: 2px 0; }
+#stampHistory, #updateLogs {
+  margin-top: 12px;
+  padding-left: 18px;
+}
+
+.helper { font-size: 12px; opacity: .9; margin-left: 4px; }
+.block { display: block; margin: 6px 0; }
+
+.color-section {
+  margin: 12px 0;
+}
+.color-section label { margin-right: 6px; }
 </style>
 </head>
 <body class="user">
 
-<h1 id="cardTitle">スタンプカード</h1>
+<h1 id="userTitle">スタンプカード</h1>
+
 <div>
   <input type="text" id="userNameInput" placeholder="名前を入力">
-  <button id="setNameBtn">名前を設定</button>
+  <button id="setNameBtn">設定</button>
 </div>
 
-<div>
-  <input type="text" id="addCardPass" placeholder="カード追加パス">
-  <button id="addCardBtn">カード追加</button>
-</div>
-
+<h3 id="cardTitle">スタンプカード</h3>
 <div id="userCards"></div>
 
 <h3>スタンプ履歴</h3>
@@ -77,11 +85,14 @@ button:hover { background: #ff66b3; }
 <h3>更新履歴</h3>
 <div id="updateLogs"></div>
 
-<h3>カスタマイズ</h3>
-<div>
-  <label>文字色: <input type="color" id="textColor" value="#c44a7b"></label>
-  <label>背景色: <input type="color" id="bgColor" value="#fff0f5"></label>
-  <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
+<h3>表示カラー設定</h3>
+<div class="color-section">
+  <label for="textColor">文字色:</label>
+  <input type="color" id="textColor" value="#c44a7b">
+  <label for="bgColor">背景色:</label>
+  <input type="color" id="bgColor" value="#fff0f5">
+  <label for="buttonColor">ボタン色:</label>
+  <input type="color" id="buttonColor" value="#ff99cc">
 </div>
 
 <script src="script.js"></script>
