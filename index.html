@@ -6,96 +6,97 @@
 <title>スタンプカード</title>
 <style>
 body {
-  font-family: 'Yu Gothic', sans-serif;
-  background: #fff0f5;
-  color: #000;
-  padding: 20px;
+  font-family:'Yu Gothic',sans-serif;
+  background:#fff0f5;
+  padding:20px;
 }
 
-h1 { color: #ff69b4; }
+h1{ color:#ff69b4; }
 
-input[type=text] {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #ffa6c9;
-  margin-right: 6px;
+input[type=text]{
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid #ffa6c9;
+  margin-right:6px;
 }
 
-button {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  background: #ff99cc;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 2px;
+button{
+  padding:6px 10px;
+  border-radius:6px;
+  border:none;
+  background:#ff99cc;
+  color:#fff;
+  cursor:pointer;
+  transition:0.2s;
 }
 
-button:hover { background: #ff66b3; }
+button:hover{ background:#ff66b3; }
 
-.card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
+.card{
+  border:2px dashed #ffb6c1;
+  border-radius:12px;
+  padding:12px;
+  margin:12px 0;
+  background:#fff0f5;
 }
 
-.stamp-slot {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  vertical-align: middle;
-  background: #fff;
-  transition: 0.2s;
+.stamp-slot{
+  display:inline-block;
+  width:28px;
+  height:28px;
+  border:2px solid #ff99cc;
+  border-radius:6px;
+  margin:2px;
+  background:#fff;
+  vertical-align:middle;
 }
 
-.stamp-filled {
-  background: #ff69b4;
+.serial{
+  font-size:0.85em;
+  color:#ff66b3;
+  margin-top:6px;
 }
 
-.serial {
-  font-size: 0.85em;
-  color: #ff66b3;
-  margin-top: 6px;
+#userCards{ margin-top:12px; }
+
+.color-picker-wrapper{
+  display:flex;
+  align-items:center;
+  margin-top:8px;
 }
-
-#userCards { margin-top: 12px; }
-
-.color-control { margin: 8px 0; }
-.color-control label { margin-right: 4px; }
+.color-picker-wrapper label{
+  margin-right:6px;
+}
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<!-- ユーザー名入力 -->
-<div style="margin-top: 20px;">
+<div style="margin-top:20px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
 
-<!-- カード追加 -->
-<div style="margin-top: 20px;">
+<hr>
+
+<div style="margin-top:20px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
 
-<!-- カラー変更パレット -->
-<h3>表示設定</h3>
-<div class="color-control">
-  <label>背景色:</label>
+<h3>見た目カスタマイズ</h3>
+<div class="color-picker-wrapper">
+  <label for="bgColorPicker">背景色:</label>
   <input type="color" id="bgColorPicker" value="#fff0f5">
-  <label>文字色:</label>
-  <input type="color" id="textColorPicker" value="#000000">
-  <label>ボタン色:</label>
-  <input type="color" id="buttonColorPicker" value="#ff99cc">
-  <button id="applyColorsBtn">適用</button>
+</div>
+<div class="color-picker-wrapper">
+  <label for="textColorPicker">文字色:</label>
+  <input type="color" id="textColorPicker" value="#ff69b4">
+</div>
+<div class="color-picker-wrapper">
+  <label for="btnColorPicker">ボタン色:</label>
+  <input type="color" id="btnColorPicker" value="#ff99cc">
 </div>
 
 <div id="userCards"></div>
