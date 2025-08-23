@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スタンプカード</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>スタンプカード（ユーザー）</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <header>
-    <h1 id="cardTitle">スタンプカード</h1>
-  </header>
+<body class="user">
 
-  <!-- 名前入力欄 -->
+<header class="top-bar">
+  <h1 id="cardTitle">スタンプカード</h1>
+</header>
+
+<main>
   <section class="card-add">
-    <label>名前：<input id="userNameInput" placeholder="名前を入力"></label>
-    <button id="setNameBtn">変更</button>
+    <input id="userNameInput" placeholder="名前を入力">
+    <input id="addCardPass" placeholder="スタンプ追加パスを入力">
+    <button id="addCardBtn">カード追加</button>
   </section>
 
-  <main>
-    <section class="card">
-      <div id="stampGrid" class="grid"></div>
-    </section>
+  <section id="userCards" class="cards"></section>
 
-    <section class="controls">
-      <button id="addStampBtn">スタンプを押す</button>
-      <button id="clearStampsBtn">スタンプを全部消す</button>
-    </section>
-  </main>
+  <section class="history">
+    <h2>スタンプ履歴</h2>
+    <ul id="stampHistory"></ul>
+  </section>
 
-  <footer>
-    <p>スタンプカード（ローカル保存版）</p>
-  </footer>
+  <section class="updates">
+    <h2>更新履歴</h2>
+    <div id="updateLogs" class="updates-list"></div>
+  </section>
+</main>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
