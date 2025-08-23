@@ -23,11 +23,11 @@ function saveJSON(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
 
 /* app state (in-memory mirrors localStorage) */
 let userName = localStorage.getItem(LS_KEYS.userName) || "";
-let cards = loadJSON(LS_KEYS.cards, []);                 // array of card objects
-let keywords = loadJSON(LS_KEYS.keywords, []);           // array of keyword objects
-let updates = loadJSON(LS_KEYS.updates, []);             // array of string or {date,text}
-let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []); // array of card.id
-let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []); // array of {cardId, slot, keyword, date}
+let cards = loadJSON(LS_KEYS.cards, []);                 
+let keywords = loadJSON(LS_KEYS.keywords, []);           
+let updates = loadJSON(LS_KEYS.updates, []);             
+let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []); 
+let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []); 
 
 /* save all helper */
 function saveAll() {
@@ -77,7 +77,8 @@ function initUser() {
   }
 
   if (!userName) showNameModal();
-  else cardTitle.textContent = `${userName}のスタンプカード`;
+  else hideNameModal(); 
+  cardTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
 
   setNameBtn.addEventListener("click", () => {
     const v = userNameInput.value.trim();
@@ -96,7 +97,7 @@ function initUser() {
     if (!card) { alert("パスが間違っています"); return; }
     if (!userAddedCards.includes(card.id)) {
       userAddedCards.push(card.id);
-      saveJSON(LS_KEYS.userAddedCards, userAddedCards); // ←カード追加のみ保存
+      saveJSON(LS_KEYS.userAddedCards, userAddedCards); 
       renderUserCards();
       addCardPass.value = "";
     } else {
@@ -189,6 +190,7 @@ function initUser() {
       li.textContent = `${card.name} — ${h.date}`;
       historyList.appendChild(li);
     });
+
     updateLogs.innerHTML = "";
     updates.slice().reverse().forEach(u => {
       const div = document.createElement("div");
@@ -228,6 +230,7 @@ function initAdmin() {
   const adminUpdateLogs = document.getElementById("adminUpdateLogs");
   const previewClearBtn = document.getElementById("previewClearBtn");
 
+  /* ---------- カードリスト ---------- */
   function refreshCardListUI() {
     adminCards.innerHTML = "";
     cards.forEach(c => {
@@ -295,6 +298,7 @@ function initAdmin() {
     previewArea.appendChild(d);
   }
 
+  /* ---------- 合言葉リスト ---------- */
   function refreshKeywordList(){
     keywordList.innerHTML = "";
     keywords.forEach(k => {
@@ -321,14 +325,37 @@ function initAdmin() {
     });
   }
 
+  /* ---------- 更新履歴 ---------- */
   function refreshUpdates(){
     adminUpdateLogs.innerHTML = "";
-    updates.slice().reverse().forEach(u=>{
-      const d = document.createElement("div"); d.textContent=u;
+    updates.slice().reverse().forEach((u, idx)=>{
+      const d = document.createElement("div");
+      d.style.display="flex";
+      d.style.justifyContent="space-between";
+      d.style.alignItems="center";
+      d.style.marginBottom="4px";
+
+      const span = document.createElement("span");
+      span.textContent = u;
+      d.appendChild(span);
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "消去";
+      delBtn.style.background="#999";
+      delBtn.style.marginLeft="6px";
+      delBtn.addEventListener("click", ()=>{
+        if(!confirm("この更新履歴を削除しますか？")) return;
+        updates.splice(updates.length - 1 - idx, 1);
+        saveJSON(LS_KEYS.updates, updates);
+        refreshUpdates();
+      });
+      d.appendChild(delBtn);
+
       adminUpdateLogs.appendChild(d);
     });
   }
 
+  /* ---------- イベント ---------- */
   createCardBtn.addEventListener("click",()=>{
     const name = (cardName.value||"").trim();
     const slots = parseInt(cardSlots.value,10);
@@ -345,7 +372,7 @@ function initAdmin() {
       stampImg:(stampIcon.value||"").trim() };
 
     cards.push(newCard);
-    saveJSON(LS_KEYS.cards, cards); // ←userAddedCardsは触らない
+    saveJSON(LS_KEYS.cards, cards); 
     refreshCardListUI();
     refreshKeywordList();
     refreshUpdates();
@@ -363,7 +390,7 @@ function initAdmin() {
     if(!word){ alert("合言葉を入力してください"); return; }
     if(keywords.some(k=>k.cardId===cardId&&k.word===word)){ alert("その合言葉は既に存在します"); return; }
     keywords.push({id:Date.now(), cardId, word, active:true});
-    saveJSON(LS_KEYS.keywords, keywords); // ←userAddedCardsには影響なし
+    saveJSON(LS_KEYS.keywords, keywords); 
     refreshKeywordList();
     keywordInput.value="";
     alert("合言葉を作成しました");
