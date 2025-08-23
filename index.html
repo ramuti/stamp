@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
+/* ====== 可愛めピンク基調（ユーザー） ====== */
 body {
   font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
   background: #fff0f5;
@@ -35,7 +36,7 @@ button:hover { background: #ff66b3; }
   border-radius: 12px;
   padding: 12px;
   margin: 12px 0;
-  background: #fff0f5;
+  background: #fff0f5; /* 既定。カード個別の設定で上書き */
 }
 .stamp-slot {
   display: inline-block;
@@ -56,15 +57,13 @@ button:hover { background: #ff66b3; }
   margin-top: 6px;
 }
 #userCards { margin-top: 12px; }
-
-#colorSettings { margin-top: 16px; border:1px solid #ffa6c9; padding: 8px; border-radius: 8px; background:#ffe6f0;}
-#colorSettings label { margin-right: 8px; font-size: 0.9rem; color:#c44a7b;}
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
+<!-- ユーザー名は下の欄から変更（ダイアログ無し） -->
 <div style="margin-top: 16px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
@@ -84,13 +83,6 @@ button:hover { background: #ff66b3; }
 
 <h3>更新履歴</h3>
 <div id="updateLogs"></div>
-
-<h3>見た目設定</h3>
-<div id="colorSettings">
-  <label>文字色: <input type="color" id="textColor" value="#ff69b4"></label>
-  <label>背景色: <input type="color" id="bgColor" value="#fff0f5"></label>
-  <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
-</div>
 
 <script src="script.js"></script>
 </body>
