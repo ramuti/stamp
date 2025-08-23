@@ -1,8 +1,8 @@
 /* ============================
-   script.js — ユーザー＋管理者 共通
+   script.js — 共通（ユーザー＆管理者）
    ============================ */
 
-/* --- 初期ロードするデータ／キー --- */
+/* --- localStorage キー --- */
 const LS_KEYS = {
   appVersion: "appVersion",
   userName: "userName",
@@ -12,27 +12,29 @@ const LS_KEYS = {
   userAddedCards: "userAddedCards",
   userStampHistory: "userStampHistory"
 };
-
 const APP_VERSION = "v1.0.0";
 
-/* load helper */
+/* --- helpers --- */
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
 }
-function saveJSON(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
+function saveJSON(key, obj) {
+  try { localStorage.setItem(key, JSON.stringify(obj)); } catch(e) { console.error("saveJSON failed", e); }
+}
 
-/* app state (in-memory mirrors localStorage) */
+/* --- アプリ状態（メモリ） --- */
+/* userName は localStorage から読み出して初期化（後で明示保存） */
 let userName = localStorage.getItem(LS_KEYS.userName) || "";
-let cards = loadJSON(LS_KEYS.cards, []);                 
-let keywords = loadJSON(LS_KEYS.keywords, []);           
-let updates = loadJSON(LS_KEYS.updates, []);             
-let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []); 
-let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []); 
+let cards = loadJSON(LS_KEYS.cards, []);                 // 管理者が作成したカード配列
+let keywords = loadJSON(LS_KEYS.keywords, []);           // 合言葉配列
+let updates = loadJSON(LS_KEYS.updates, []);             // 更新履歴配列
+let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []); // ユーザーが追加したカード id 配列
+let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []); // ユーザーのスタンプ履歴配列
 
-/* save all helper */
+/* --- 保存関数 --- */
+/* saveAll は userName を書き換えない（管理者操作でユーザー名が消されるのを防ぐ） */
 function saveAll() {
   try {
-    localStorage.setItem(LS_KEYS.userName, userName);
     saveJSON(LS_KEYS.cards, cards);
     saveJSON(LS_KEYS.keywords, keywords);
     saveJSON(LS_KEYS.updates, updates);
@@ -44,8 +46,16 @@ function saveAll() {
     console.error(e);
   }
 }
+/* ユーザー名だけを確実に保存する関数 */
+function saveUserName() {
+  try {
+    if (userName && typeof userName === "string") localStorage.setItem(LS_KEYS.userName, userName);
+  } catch (e) {
+    console.error("ユーザー名の保存に失敗しました", e);
+  }
+}
 
-/* DOM ready init */
+/* --- DOMContentLoaded --- */
 document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   if (body.classList.contains("user")) initUser();
@@ -65,27 +75,34 @@ function initUser() {
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
-  const debugNameBtn = document.getElementById("debugNameBtn");
 
   function showNameModal() {
     userNameInput.value = userName || "";
     nameModal.style.display = "flex";
     userNameInput.focus();
   }
-  function hideNameModal() { nameModal.style.display = "none"; }
+  function hideNameModal() {
+    nameModal.style.display = "none";
+  }
 
-  if (!userName) showNameModal();
-  else cardTitle.textContent = `${userName}のスタンプカード`;
+  // 初回のみ表示するため、localStorage を改めて確認（別タブで変わっている可能性を考慮）
+  const stored = localStorage.getItem(LS_KEYS.userName);
+  if (stored) {
+    userName = stored;
+    cardTitle.textContent = `${userName}のスタンプカード`;
+    hideNameModal();
+  } else {
+    showNameModal();
+  }
 
   setNameBtn.addEventListener("click", () => {
     const v = userNameInput.value.trim();
     if (!v) { alert("名前を入力してください"); return; }
     userName = v;
-    saveAll();
+    saveUserName(); // ←ここで確実に保存（saveAll は userName を触らない）
     cardTitle.textContent = `${userName}のスタンプカード`;
     hideNameModal();
   });
-  debugNameBtn.addEventListener("click", showNameModal);
 
   addCardBtn.addEventListener("click", () => {
     const pass = addCardPass.value.trim();
@@ -94,7 +111,7 @@ function initUser() {
     if (!card) { alert("パスが間違っています"); return; }
     if (!userAddedCards.includes(card.id)) {
       userAddedCards.push(card.id);
-      saveJSON(LS_KEYS.userAddedCards, userAddedCards); 
+      saveJSON(LS_KEYS.userAddedCards, userAddedCards);
       renderUserCards();
       addCardPass.value = "";
     } else {
@@ -246,7 +263,9 @@ function initAdmin() {
       const copyBtn = document.createElement("button");
       copyBtn.textContent = "コピー";
       copyBtn.style.background = "#4a90e2";
-      copyBtn.addEventListener("click", () => { navigator.clipboard.writeText(c.addPass).then(()=> alert("追加パスをコピーしました")); });
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(c.addPass).then(()=> alert("追加パスをコピーしました")).catch(()=> alert("クリップボードにコピーできませんでした"));
+      });
       btns.appendChild(copyBtn);
 
       const delBtn = document.createElement("button");
@@ -336,14 +355,19 @@ function initAdmin() {
     if(!pass){ alert("追加パスは必須です"); return; }
     if(cards.some(c=>c.addPass===pass)){ alert("その追加パスは既に使われています"); return; }
 
-    const newCard = { id: Date.now(), name, slots, addPass: pass,
+    const newCard = {
+      id: Date.now(),
+      name,
+      slots,
+      addPass: pass,
       notifyMsg:(notifyMsg.value||"").trim(),
       maxNotifyMsg:(maxNotifyMsg.value||"").trim(),
       bg:(cardBG.value||"").trim(),
-      stampImg:(stampIcon.value||"").trim() };
+      stampImg:(stampIcon.value||"").trim()
+    };
 
     cards.push(newCard);
-    saveJSON(LS_KEYS.cards, cards); 
+    saveAll();
     refreshCardListUI();
     refreshKeywordList();
     refreshUpdates();
@@ -361,7 +385,7 @@ function initAdmin() {
     if(!word){ alert("合言葉を入力してください"); return; }
     if(keywords.some(k=>k.cardId===cardId&&k.word===word)){ alert("その合言葉は既に存在します"); return; }
     keywords.push({id:Date.now(), cardId, word, active:true});
-    saveJSON(LS_KEYS.keywords, keywords); 
+    saveAll();
     refreshKeywordList();
     keywordInput.value="";
     alert("合言葉を作成しました");
@@ -372,7 +396,7 @@ function initAdmin() {
     if(!txt){ alert("更新内容を入力してください"); return; }
     const line = `${new Date().toLocaleDateString()} ${txt}`;
     updates.push(line);
-    saveJSON(LS_KEYS.updates, updates);
+    saveAll();
     updateInput.value="";
     refreshUpdates();
     alert("更新履歴を追加しました");
