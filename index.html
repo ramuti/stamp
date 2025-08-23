@@ -5,84 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
-/* ====== 可愛めピンク基調（ユーザー） ====== */
 body {
-  font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
-  background: #fff0f5;
+  font-family: 'Yu Gothic', sans-serif;
+  background-color: #fff0f5;
+  color: #000000;
   padding: 20px;
 }
-h1 { color: #ff69b4; margin: 8px 0; }
 
-input[type=text] {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ffa6c9;
-  margin-right: 6px;
-  background: #fff;
-}
+h1, h3 { color: #ff69b4; }
+
 button {
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
-  background: #ff99cc;
-  color: #fff;
+  background-color: #ff66b2;
+  color: #ffffff;
   cursor: pointer;
-  transition: 0.2s;
+  margin: 2px;
 }
-button:hover { background: #ff66b3; }
+
+button:hover { opacity: 0.85; }
 
 .card {
   border: 2px dashed #ffb6c1;
   border-radius: 12px;
   padding: 12px;
   margin: 12px 0;
-  background: #fff0f5; /* 既定。カード個別の設定で上書き */
+  background: #fff0f5;
 }
-.stamp-slot {
+
+.stamp {
   display: inline-block;
   width: 28px;
   height: 28px;
   border: 2px solid #ff99cc;
   border-radius: 6px;
   margin: 2px;
-  background: #fff;
   vertical-align: middle;
-  transition: 0.2s;
+  background: #fff;
 }
-.stamp-filled { background: #ff69b4; }
 
-.serial {
-  font-size: 0.85em;
-  color: #ff66b3;
-  margin-top: 6px;
+.stamp.stamped {
+  background: #ff69b4;
 }
-#userCards { margin-top: 12px; }
+
+.panel {
+  border: 1px solid #ffb6c1;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 12px;
+}
+
+#theme-panel, #admin-panel {
+  display: none;
+  border: 2px solid #ffb6c1;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 12px;
+  background: #ffe6f0;
+}
 </style>
 </head>
 <body class="user">
 
-<h1 id="cardTitle">スタンプカード</h1>
+<h1>スタンプカード</h1>
 
-<!-- ユーザー名は下の欄から変更（ダイアログ無し） -->
-<div style="margin-top: 16px;">
-  <input type="text" id="userNameInput" placeholder="名前を入力">
-  <button id="setNameBtn">変更</button>
+<div class="panel">
+  <button id="add-stamp-btn">スタンプを押す</button>
+  <button id="reset-btn">リセット</button>
+  <button id="open-admin-btn">管理者設定</button>
+  <button id="open-theme-btn">テーマ変更</button>
 </div>
 
-<hr>
+<div id="stamp-container" class="card"></div>
+<div id="count-display"></div>
+<div id="reward-display"></div>
 
-<div style="margin-top: 16px;">
-  <input type="text" id="addCardPass" placeholder="追加パス">
-  <button id="addCardBtn">カード追加</button>
+<!-- 管理者パネル -->
+<div id="admin-panel">
+  <h3>管理者設定</h3>
+  <label>総スタンプ数: <input type="number" id="admin-total" min="1" value="10"></label><br>
+  <label>特典内容: <input type="text" id="admin-reward" value="特典なし"></label><br>
+  <button id="save-admin-btn">保存</button>
+  <button id="close-admin-btn">閉じる</button>
 </div>
 
-<div id="userCards"></div>
-
-<h3>スタンプ履歴</h3>
-<ul id="stampHistory"></ul>
-
-<h3>更新履歴</h3>
-<div id="updateLogs"></div>
+<!-- テーマパネル -->
+<div id="theme-panel">
+  <h3>テーマ変更</h3>
+  <label>背景色: <input type="color" id="bg-color-picker"></label><br>
+  <label>文字色: <input type="color" id="text-color-picker"></label><br>
+  <label>ボタン色: <input type="color" id="button-color-picker"></label><br>
+  <button id="save-theme-btn">保存</button>
+  <button id="close-theme-btn">閉じる</button>
+</div>
 
 <script src="script.js"></script>
 </body>
