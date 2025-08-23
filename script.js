@@ -12,7 +12,7 @@ const LS_KEYS = {
   userStampHistory: "userStampHistory"
 };
 
-const APP_VERSION = "v1.0.0";
+const APP_VERSION = "v1.0.1";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -216,6 +216,7 @@ function initAdmin() {
         saveAll();
         renderAdminCards();
         renderKeywordList();
+        renderPreview();
       });
       li.appendChild(delBtn);
       adminCards.appendChild(li);
@@ -229,23 +230,21 @@ function initAdmin() {
 
   function renderPreview() {
     previewArea.innerHTML = "";
-    const card = {
-      name: cardName.value || "カード名",
-      slots: Number(cardSlots.value) || 5,
-      bg: cardBG.value || "#fff0f5"
-    };
-    const div = document.createElement("div");
-    div.className = "card";
-    div.style.background = card.bg;
-    const h3 = document.createElement("h3");
-    h3.textContent = card.name;
-    div.appendChild(h3);
-    for (let i = 0; i < card.slots; i++) {
-      const slot = document.createElement("div");
-      slot.className = "stamp-slot";
-      div.appendChild(slot);
-    }
-    previewArea.appendChild(div);
+    // 全カードプレビュー
+    cards.forEach(card => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = card.bg || "#fff0f5";
+      const h3 = document.createElement("h3");
+      h3.textContent = card.name;
+      div.appendChild(h3);
+      for (let i = 0; i < card.slots; i++) {
+        const slot = document.createElement("div");
+        slot.className = "stamp-slot";
+        div.appendChild(slot);
+      }
+      previewArea.appendChild(div);
+    });
   }
 
   cardName.addEventListener("input", renderPreview);
