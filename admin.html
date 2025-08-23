@@ -10,7 +10,7 @@ body {
   background: #fff0f5;
   padding: 20px;
 }
-h1, h3 { color: #ff69b4; margin: 8px 0; }
+h1, h3, #adminCards .info, #keywordList li, #adminUpdateLogs div { color: #ff69b4; margin: 8px 0; }
 
 input[type=text], input[type=number], input[type=color] {
   padding: 6px 10px;
@@ -18,7 +18,7 @@ input[type=text], input[type=number], input[type=color] {
   border: 1px solid #ffa6c9;
   margin: 4px 6px 4px 0;
   background: #fff;
-  color: #c44a7b;
+  color: inherit;
 }
 
 button {
@@ -52,7 +52,7 @@ button:hover { background: #ff66b3; }
 }
 
 #adminCards { list-style: none; padding-left: 0; }
-#adminCards li {
+#adminCards li, #keywordList li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -63,8 +63,12 @@ button:hover { background: #ff66b3; }
   border-radius: 10px;
   border: 1px solid #ffb6c1;
 }
-#adminCards .info { flex:1; font-size:0.95rem; color:#c44a7b; }
-#adminCards .btns button { margin-left:6px; }
+
+#adminCards .info {
+  flex: 1;
+  font-size: 0.95rem;
+}
+#adminCards .btns button { margin-left: 6px; }
 
 #previewArea { margin-top: 12px; }
 
@@ -74,9 +78,10 @@ button:hover { background: #ff66b3; }
   padding: 6px 8px;
   margin: 4px 0;
   border: 1px solid #ffb6c1;
-  color: #c44a7b;
 }
-.helper { font-size: 12px; color: #c44a7b; opacity:.9; margin-left:4px; }
+.helper {
+  font-size: 12px; opacity: .9; margin-left: 4px;
+}
 .block { display: block; margin: 6px 0; }
 </style>
 </head>
