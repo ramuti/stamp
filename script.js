@@ -107,6 +107,7 @@ function initUser() {
       if (userStampHistory.some(s => s.cardId === card.id && s.slot === i)) {
         slot.classList.add("stamp-filled");
         if (card.stampImg) slot.style.backgroundImage = `url(${card.stampImg})`;
+        if (card.stampImg) slot.style.backgroundSize = "cover";
       }
       grid.appendChild(slot);
     }
@@ -272,19 +273,30 @@ function initAdmin() {
     const d = document.createElement("div");
     d.className = "card";
     if (card.bg) d.style.background = card.bg;
-    d.innerHTML = `<h3>${card.name}（プレビュー）</h3>`;
+    d.style.padding = "12px";
+    d.style.borderRadius = "12px";
+    d.style.marginBottom = "12px";
+
+    const h3 = document.createElement("h3");
+    h3.textContent = `${card.name}（プレビュー）`;
+    d.appendChild(h3);
+
     const slotWrap = document.createElement("div");
     for (let i = 0; i < card.slots; i++) {
       const s = document.createElement("div");
       s.className = "stamp-slot";
-      if (card.stampImg) s.style.backgroundImage = `url(${card.stampImg})`;
+      if (card.stampImg) {
+        s.style.backgroundImage = `url(${card.stampImg})`;
+        s.style.backgroundSize = "cover";
+      }
       slotWrap.appendChild(s);
     }
     d.appendChild(slotWrap);
+
     previewArea.appendChild(d);
   }
 
-  function refreshKeywordList(){
+  function refreshKeywordList() {
     keywordList.innerHTML = "";
     keywords.forEach(k => {
       const li = document.createElement("li");
@@ -310,15 +322,15 @@ function initAdmin() {
     });
   }
 
-  function refreshUpdates(){
+  function refreshUpdates() {
     adminUpdateLogs.innerHTML = "";
-    updates.slice().reverse().forEach(u=>{
-      const d = document.createElement("div"); d.textContent=u;
+    updates.slice().reverse().forEach(u => {
+      const d = document.createElement("div"); d.textContent = u;
       adminUpdateLogs.appendChild(d);
     });
   }
 
-  createCardBtn.addEventListener("click",()=>{
+  createCardBtn.addEventListener("click", () => {
     const name = (cardName.value||"").trim();
     const slots = parseInt(cardSlots.value,10);
     const pass = (addPass.value||"").trim();
@@ -339,7 +351,7 @@ function initAdmin() {
     cardName.value=""; cardSlots.value="5"; addPass.value=""; notifyMsg.value=""; maxNotifyMsg.value=""; cardBG.value=""; stampIcon.value="";
   });
 
-  addKeywordBtn.addEventListener("click",()=>{
+  addKeywordBtn.addEventListener("click", () => {
     const cardId=parseInt(keywordCardSelect.value);
     const word=(keywordInput.value||"").trim();
     if(!word){alert("合言葉を入力してください"); return;}
@@ -349,14 +361,14 @@ function initAdmin() {
     refreshKeywordList();
   });
 
-  addUpdateBtn.addEventListener("click",()=>{
+  addUpdateBtn.addEventListener("click", () => {
     const val=(updateInput.value||"").trim();
     if(!val) return;
     updates.push(val); saveJSON(LS_KEYS.updates,updates); updateInput.value="";
     refreshUpdates();
   });
 
-  previewClearBtn.addEventListener("click",()=>{previewArea.innerHTML="";});
+  previewClearBtn.addEventListener("click", ()=>{ previewArea.innerHTML=""; });
 
   refreshCardListUI(); refreshKeywordList(); refreshUpdates();
 }
