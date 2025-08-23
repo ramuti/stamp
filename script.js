@@ -13,7 +13,7 @@ const LS_KEYS = {
   userUIColors: "userUIColors"
 };
 
-const APP_VERSION = "v1.1.0";
+const APP_VERSION = "v1.2.0";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -94,7 +94,8 @@ function initUser() {
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
     cardTitle.style.color = userUIColors.text;
-    document.querySelectorAll("button").forEach(btn => btn.style.background = userUIColors.btn);
+    document.querySelectorAll("button").forEach(btn => { btn.style.background = userUIColors.btn; btn.style.color = userUIColors.text; });
+    document.querySelectorAll(".card, .card h3, .serial").forEach(el=>el.style.color=userUIColors.text);
   }
 
   textColorPicker.addEventListener("input", () => {
@@ -167,12 +168,18 @@ function initUser() {
     });
     container.appendChild(delBtn);
 
+    // 文字色適用
+    container.style.color = userUIColors.text;
+    title.style.color = userUIColors.text;
+    serial.style.color = userUIColors.text;
+    btn.style.color = userUIColors.text;
+    delBtn.style.color = userUIColors.text;
+
     return container;
   }
 
   function renderUserCards() {
     userCards.innerHTML="";
-    // 消去されたカードは履歴も消す
     userAddedCards = userAddedCards.filter(id => cards.some(c=>c.id===id));
     userStampHistory = userStampHistory.filter(h=>cards.some(c=>c.id===h.cardId));
     saveAll();
@@ -181,6 +188,8 @@ function initUser() {
       const card = cards.find(c=>c.id===id);
       if(card) userCards.appendChild(renderUserCard(card));
     });
+
+    applyUserColors();
   }
 
   function updateHistory() {
@@ -188,11 +197,13 @@ function initUser() {
     [...userStampHistory].reverse().forEach(h=>{
       const card = cards.find(c=>c.id===h.cardId); if(!card) return;
       const li = document.createElement("li"); li.textContent=`${card.name} — ${h.date}`;
+      li.style.color = userUIColors.text;
       historyList.appendChild(li);
     });
     updateLogs.innerHTML="";
     updates.slice().reverse().forEach(u=>{
       const div=document.createElement("div"); div.textContent=u;
+      div.style.color = userUIColors.text;
       updateLogs.appendChild(div);
     });
   }
@@ -235,7 +246,7 @@ function initAdmin() {
     cards.forEach(card=>{
       const li=document.createElement("li");
       const info=document.createElement("div"); info.className="info";
-      info.textContent=`${card.name} [枠:${card.slots}]`;
+      info.textContent=`${card.name} | 追加パス: ${card.addPass} | 枠:${card.slots}`;
       li.appendChild(info);
 
       const btns = document.createElement("div"); btns.className="btns";
@@ -243,10 +254,7 @@ function initAdmin() {
       delBtn.addEventListener("click",()=>{
         if(!confirm("このカードを削除しますか？")) return;
         cards = cards.filter(c=>c.id!==card.id);
-        // ユーザー側の履歴も消去
-        let userHist = loadJSON(LS_KEYS.userStampHistory,[]);
-        userHist = userHist.filter(h=>h.cardId!==card.id);
-        saveJSON(LS_KEYS.userStampHistory,userHist);
+        userStampHistory = userStampHistory.filter(h=>h.cardId!==card.id);
         saveAll(); renderAdminCards();
       });
       btns.appendChild(delBtn);
