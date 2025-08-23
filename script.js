@@ -59,13 +59,22 @@ function initUser(){
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const updateLogs = document.getElementById("updateLogs");
+  const historyTitle = document.getElementById("historyTitle");
+  const updateTitle = document.getElementById("updateTitle");
 
   cardTitle.textContent = userName?`${userName}のスタンプカード`:"スタンプカード";
   userNameInput.value = userName;
 
   function applyUserColors(){
-    document.body.style.color = userUIColors.text;
+    // 文字色をカード外に適用
+    cardTitle.style.color = userUIColors.text;
+    historyTitle.style.color = userUIColors.text;
+    updateTitle.style.color = userUIColors.text;
+    historyList.style.color = userUIColors.text;
+    updateLogs.style.color = userUIColors.text;
+
     document.body.style.background = userUIColors.bg;
+
     document.querySelectorAll("button").forEach(btn=>{
       btn.style.background = userUIColors.btn;
       btn.style.color = userUIColors.text;
@@ -112,8 +121,6 @@ function initUser(){
 
       const btn = document.createElement("button");
       btn.textContent="スタンプを押す";
-      btn.style.background=userUIColors.btn;
-      btn.style.color=userUIColors.text;
       btn.addEventListener("click", ()=>{
         const idx = userStampHistory.filter(s=>s.cardId===card.id).length;
         if(idx>=card.slots){ alert("満了です"); return; }
@@ -124,8 +131,6 @@ function initUser(){
 
       const delBtn = document.createElement("button");
       delBtn.textContent="カード削除";
-      delBtn.style.background="#999";
-      delBtn.style.color=userUIColors.text;
       delBtn.addEventListener("click", ()=>{
         if(!confirm("本当に削除しますか？履歴も消えます")) return;
         userAddedCards=userAddedCards.filter(c=>c.id!==card.id);
