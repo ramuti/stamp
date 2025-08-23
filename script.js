@@ -66,7 +66,6 @@ function initUser(){
   userNameInput.value = userName;
 
   function applyUserColors(){
-    // 文字色をカード外に適用
     cardTitle.style.color = userUIColors.text;
     historyTitle.style.color = userUIColors.text;
     updateTitle.style.color = userUIColors.text;
@@ -122,9 +121,23 @@ function initUser(){
       const btn = document.createElement("button");
       btn.textContent="スタンプを押す";
       btn.addEventListener("click", ()=>{
+        // 合言葉入力
+        const cardKeywords = keywords.filter(k=>k.cardId===card.id).map(k=>k.keyword);
+        if(cardKeywords.length===0){ alert("このカードには合言葉が設定されていません"); return; }
+
+        let entered = prompt("合言葉を入力してください:");
+        if(!entered) return;
+
+        // 既に使用済みかチェック
+        const usedKeywords = userStampHistory.filter(s=>s.cardId===card.id).map(s=>s.keywordUsed);
+        if(usedKeywords.includes(entered)){ alert("この合言葉は既に使用済みです"); return; }
+
+        if(!cardKeywords.includes(entered)){ alert("合言葉が間違っています"); return; }
+
         const idx = userStampHistory.filter(s=>s.cardId===card.id).length;
         if(idx>=card.slots){ alert("満了です"); return; }
-        userStampHistory.push({cardId:card.id, slot:idx, date:Date.now()});
+
+        userStampHistory.push({cardId:card.id, slot:idx, date:Date.now(), keywordUsed:entered});
         saveAll(); renderUserCards(); renderStampHistory();
       });
       container.appendChild(btn);
