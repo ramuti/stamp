@@ -13,58 +13,20 @@ body {
 
 h1 { color: #ff69b4; }
 
-input[type=text], input[type=color] {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #ffa6c9;
-  margin-right: 6px;
-}
+input[type=text] { padding:6px 10px; border-radius:6px; border:1px solid #ffa6c9; margin-right:6px; }
+button { padding:6px 10px; border-radius:6px; border:none; background:#ff99cc; color:#fff; cursor:pointer; transition:0.2s; margin:2px; }
+button:hover { background:#ff66b3; }
 
-button {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  background: #ff99cc;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 2px;
-}
+.card { border:2px dashed #ffb6c1; border-radius:12px; padding:12px; margin:12px 0; background:#fff0f5; }
+.stamp-slot { display:inline-block; width:28px; height:28px; border:2px solid #ff99cc; border-radius:6px; margin:2px; background:#fff; vertical-align:middle; }
+.stamp-filled { background:#ff69b4; }
 
-button:hover { background: #ff66b3; }
+.serial { font-size:0.85em; color:#ff66b3; margin-top:6px; }
 
-.card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
-}
+#userCards { margin-top:12px; }
 
-.stamp-slot {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  background: #fff;
-  vertical-align: middle;
-}
-
-.serial {
-  font-size: 0.85em;
-  color: #ff66b3;
-  margin-top: 6px;
-}
-
-#userCards {
-  margin-top: 12px;
-}
-
-#stampHistory { margin-top: 12px; }
-
-#updateLogs { margin-top: 12px; }
+#colorSettings { margin-top:12px; }
+.helper { font-size:0.85em; color:#ff66b3; }
 </style>
 </head>
 <body class="user">
@@ -83,12 +45,6 @@ button:hover { background: #ff66b3; }
   <button id="addCardBtn">カード追加</button>
 </div>
 
-<div style="margin-top: 20px;">
-  <label>背景色: <input type="color" id="userBgColor" value="#fff0f5"></label>
-  <label>文字色: <input type="color" id="userTextColor" value="#ff69b4"></label>
-  <label>ボタン色: <input type="color" id="userBtnColor" value="#ff99cc"></label>
-</div>
-
 <div id="userCards"></div>
 
 <h3>スタンプ履歴</h3>
@@ -96,6 +52,13 @@ button:hover { background: #ff66b3; }
 
 <h3>更新履歴</h3>
 <div id="updateLogs"></div>
+
+<h3>見た目設定</h3>
+<div id="colorSettings">
+  <label>背景色: <input type="color" id="bgColorPicker" value="#fff0f5"></label>
+  <label>文字色: <input type="color" id="textColorPicker" value="#ff69b4"></label>
+  <label>ボタン色: <input type="color" id="buttonColorPicker" value="#ff99cc"></label>
+</div>
 
 <script src="script.js"></script>
 </body>
