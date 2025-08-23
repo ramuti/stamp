@@ -6,23 +6,25 @@
 <title>スタンプカード管理</title>
 <style>
 body {
-  font-family: 'Yu Gothic', sans-serif;
+  font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
   background: #fff0f5;
   padding: 20px;
+  color: #c44a7b;
 }
+h1, h3 { color: #ff69b4; margin: 8px 0; }
 
-h1, h3 { color: #ff69b4; }
-
-input[type=text], input[type=number] {
+input[type=text], input[type=number], input[type=color] {
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ffa6c9;
-  margin-right: 6px;
+  margin: 4px 6px 4px 0;
+  background: #fff;
+  color: #000;
 }
 
 button {
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   background: #ff99cc;
   color: #fff;
@@ -30,7 +32,6 @@ button {
   transition: 0.2s;
   margin: 2px;
 }
-
 button:hover { background: #ff66b3; }
 
 .card {
@@ -40,7 +41,6 @@ button:hover { background: #ff66b3; }
   margin: 12px 0;
   background: #fff0f5;
 }
-
 .stamp-slot {
   display: inline-block;
   width: 28px;
@@ -52,28 +52,32 @@ button:hover { background: #ff66b3; }
   vertical-align: middle;
 }
 
-#adminCards li, #keywordList li {
+#adminCards { list-style: none; padding-left: 0; }
+#adminCards li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px;
-  margin: 4px 0;
+  gap: 8px;
+  padding: 8px 10px;
+  margin: 6px 0;
   background: #ffe6f0;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #ffb6c1;
 }
+#adminCards .info { flex: 1; font-size: 0.95rem; }
+#adminCards .btns button { margin-left: 6px; }
 
-#previewArea {
-  margin-top: 12px;
-}
+#previewArea { margin-top: 12px; }
 
 #adminUpdateLogs div {
   background: #ffe6f0;
-  border-radius: 6px;
-  padding: 4px 6px;
-  margin: 2px 0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 4px 0;
   border: 1px solid #ffb6c1;
 }
+.helper { font-size: 12px; opacity: .9; margin-left: 4px; }
+.block { display: block; margin: 6px 0; }
 </style>
 </head>
 <body class="admin">
@@ -87,10 +91,13 @@ button:hover { background: #ff66b3; }
   <input type="text" id="addPass" placeholder="追加パス">
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
-  <input type="text" id="cardBG" placeholder="背景色/画像">
-  <input type="text" id="stampIcon" placeholder="スタンプ画像URL">
-  <button id="createCardBtn">作成</button>
+  <input type="color" id="cardBG" value="#fff0f5" title="カード背景色">
+  <span class="helper">← 背景色はここで選べます</span>
+  <span class="block"></span>
+  <input type="text" id="stampIcon" placeholder="スタンプ画像URL（任意）">
+  <button id="previewCardBtn">プレビュー表示</button>
   <button id="previewClearBtn">プレビュークリア</button>
+  <button id="createCardBtn">作成</button>
 </div>
 
 <h3>カード一覧</h3>
@@ -113,6 +120,7 @@ button:hover { background: #ff66b3; }
 <h3>更新履歴</h3>
 <div id="adminUpdateLogs"></div>
 
+<h3>プレビュー</h3>
 <div id="previewArea"></div>
 
 <script src="script.js"></script>
