@@ -8,12 +8,11 @@
 body {
   font-family: 'Yu Gothic', sans-serif;
   background: #fff0f5;
-  color: #ff69b4;
+  color: #000;
   padding: 20px;
-  transition: background 0.3s, color 0.3s;
 }
 
-h1 { color: inherit; }
+h1 { color: #ff69b4; }
 
 input[type=text] {
   padding: 6px 10px;
@@ -29,11 +28,11 @@ button {
   background: #ff99cc;
   color: #fff;
   cursor: pointer;
-  transition: 0.2s, background 0.3s;
-  margin: 2px 0;
+  transition: 0.2s;
+  margin: 2px;
 }
 
-button:hover { opacity: 0.85; }
+button:hover { background: #ff66b3; }
 
 .card {
   border: 2px dashed #ffb6c1;
@@ -50,8 +49,9 @@ button:hover { opacity: 0.85; }
   border: 2px solid #ff99cc;
   border-radius: 6px;
   margin: 2px;
-  background: #fff;
   vertical-align: middle;
+  background: #fff;
+  transition: 0.2s;
 }
 
 .stamp-filled {
@@ -64,40 +64,38 @@ button:hover { opacity: 0.85; }
   margin-top: 6px;
 }
 
-#userCards {
-  margin-top: 12px;
-}
+#userCards { margin-top: 12px; }
 
-#settingsPanel {
-  margin-top: 20px;
-  border: 1px solid #ffb6c1;
-  padding: 12px;
-  border-radius: 12px;
-  background: #ffe6f0;
-}
-
-#settingsPanel label {
-  display: inline-block;
-  margin-right: 6px;
-}
+.color-control { margin: 8px 0; }
+.color-control label { margin-right: 4px; }
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<!-- ユーザー名変更 -->
+<!-- ユーザー名入力 -->
 <div style="margin-top: 20px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
 
-<hr>
-
 <!-- カード追加 -->
 <div style="margin-top: 20px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
+</div>
+
+<!-- カラー変更パレット -->
+<h3>表示設定</h3>
+<div class="color-control">
+  <label>背景色:</label>
+  <input type="color" id="bgColorPicker" value="#fff0f5">
+  <label>文字色:</label>
+  <input type="color" id="textColorPicker" value="#000000">
+  <label>ボタン色:</label>
+  <input type="color" id="buttonColorPicker" value="#ff99cc">
+  <button id="applyColorsBtn">適用</button>
 </div>
 
 <div id="userCards"></div>
@@ -107,23 +105,6 @@ button:hover { opacity: 0.85; }
 
 <h3>更新履歴</h3>
 <div id="updateLogs"></div>
-
-<!-- ユーザ側見た目設定パネル -->
-<div id="settingsPanel">
-  <h3>見た目設定</h3>
-  <div>
-    <label for="bgColorPicker">背景色:</label>
-    <input type="color" id="bgColorPicker" value="#fff0f5">
-  </div>
-  <div>
-    <label for="textColorPicker">文字色:</label>
-    <input type="color" id="textColorPicker" value="#ff69b4">
-  </div>
-  <div>
-    <label for="buttonColorPicker">ボタン色:</label>
-    <input type="color" id="buttonColorPicker" value="#ff99cc">
-  </div>
-</div>
 
 <script src="script.js"></script>
 </body>
