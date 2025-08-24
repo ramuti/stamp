@@ -53,7 +53,7 @@ button:hover { background: #ff66b3; }
 }
 
 #adminCards { list-style: none; padding-left: 0; }
-#adminCards li, #keywordList li {
+#adminCards li, #keywordList li, #adminUpdateLogs li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -66,17 +66,8 @@ button:hover { background: #ff66b3; }
 }
 
 #adminCards .info { flex: 1; font-size: 0.95rem; }
-#adminCards .btns button { margin-left: 6px; }
-
 #previewArea { margin-top: 12px; }
 
-#adminUpdateLogs div {
-  background: #ffe6f0;
-  border-radius: 8px;
-  padding: 6px 8px;
-  margin: 4px 0;
-  border: 1px solid #ffb6c1;
-}
 .helper { font-size: 12px; opacity: .9; margin-left: 4px; }
 .block { display: block; margin: 6px 0; }
 </style>
@@ -112,14 +103,14 @@ button:hover { background: #ff66b3; }
 </div>
 <ul id="keywordList"></ul>
 
-<h3>更新履歴追加（ここから管理者が手で書いて追加します）</h3>
+<h3>更新履歴追加</h3>
 <div>
   <input type="text" id="updateInput" placeholder="更新内容">
   <button id="addUpdateBtn">追加</button>
 </div>
 
-<h3>更新履歴（管理者はここで削除できます）</h3>
-<div id="adminUpdateLogs"></div>
+<h3>更新履歴</h3>
+<ul id="adminUpdateLogs"></ul>
 
 <h3>プレビュー</h3>
 <div id="previewArea"></div>
