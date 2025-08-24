@@ -14,7 +14,7 @@ const LS_KEYS = {
   userCardSerials: "userCardSerials"
 };
 
-const APP_VERSION = "v1.2.0";
+const APP_VERSION = "v1.3.0";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded",()=>{
    ユーザー画面
    ========================= */
 function initUser(){
+  // ユーザ画面初期化
   const setNameBtn   = document.getElementById("setNameBtn");
   const userNameInput= document.getElementById("userNameInput");
   const cardTitle    = document.getElementById("cardTitle");
@@ -89,7 +90,6 @@ function initUser(){
     if(!card){alert("パスが違います"); return;}
     if(!userAddedCards.includes(card.id)){
       userAddedCards.push(card.id);
-      // ユーザごとのカードシリアル番号生成
       if(!userCardSerials[userName]) userCardSerials[userName]={};
       if(!userCardSerials[userName][card.id]){
         const existingSerials=Object.values(userCardSerials).map(u=>u[card.id]||0);
@@ -102,6 +102,16 @@ function initUser(){
     } else alert("すでに追加済みです");
   });
 
+  [textColorPicker,bgColorPicker,btnColorPicker].forEach(p=>{
+    p.addEventListener("input",()=>{
+      userUIColors.text=textColorPicker.value;
+      userUIColors.bg=bgColorPicker.value;
+      userUIColors.btn=btnColorPicker.value;
+      saveAll();
+      applyUserColors();
+    });
+  });
+
   function applyUserColors(){
     document.body.style.background=userUIColors.bg;
     document.body.style.color=userUIColors.text;
@@ -112,15 +122,8 @@ function initUser(){
     });
   }
 
-  [textColorPicker,bgColorPicker,btnColorPicker].forEach(p=>{
-    p.addEventListener("input",()=>{
-      userUIColors.text=textColorPicker.value;
-      userUIColors.bg=bgColorPicker.value;
-      userUIColors.btn=btnColorPicker.value;
-      saveAll();
-      applyUserColors();
-    });
-  });
+  // 存在しないカードのスタンプ履歴を削除
+  userStampHistory = userStampHistory.filter(s=>cards.find(c=>c.id===s.cardId));
 
   function renderUserCard(card){
     const container=document.createElement("div");
@@ -164,12 +167,12 @@ function initUser(){
         alert("この合言葉は無効です");
         return;
       }
-      // スタンプ履歴追加
       const nextSlot=userStampHistory.filter(s=>s.cardId===card.id).length;
       if(nextSlot>=card.slots){alert("すでにMAXです"); return;}
       userStampHistory.push({cardId:card.id,slot:nextSlot});
       saveAll();
       renderUserCards();
+      renderHistory();
     });
     container.appendChild(btn);
 
@@ -188,8 +191,9 @@ function initUser(){
     historyList.innerHTML="";
     userStampHistory.forEach(s=>{
       const card=cards.find(c=>c.id===s.cardId);
+      if(!card) return; // 存在しないカードの履歴は無視
       const li=document.createElement("li");
-      li.textContent=`${card?card.name:"不明カード"} スタンプ${s.slot+1}`;
+      li.textContent=`${card.name} スタンプ${s.slot+1}`;
       historyList.appendChild(li);
     });
   }
@@ -205,154 +209,5 @@ function initUser(){
 
   renderUserCards();
   renderHistory();
-  renderUpdates();
-}
-
-/* =========================
-   管理者画面
-   ========================= */
-function initAdmin(){
-  const cardName       = document.getElementById("cardName");
-  const cardSlots      = document.getElementById("cardSlots");
-  const addPass        = document.getElementById("addPass");
-  const notifyMsg      = document.getElementById("notifyMsg");
-  const maxNotifyMsg   = document.getElementById("maxNotifyMsg");
-  const cardBG         = document.getElementById("cardBG");
-  const stampIcon      = document.getElementById("stampIcon");
-  const previewCardBtn = document.getElementById("previewCardBtn");
-  const previewClearBtn= document.getElementById("previewClearBtn");
-  const createCardBtn  = document.getElementById("createCardBtn");
-  const adminCardsList = document.getElementById("adminCards");
-  const keywordCardSelect = document.getElementById("keywordCardSelect");
-  const keywordInput   = document.getElementById("keywordInput");
-  const addKeywordBtn  = document.getElementById("addKeywordBtn");
-  const keywordList    = document.getElementById("keywordList");
-  const updateInput    = document.getElementById("updateInput");
-  const addUpdateBtn   = document.getElementById("addUpdateBtn");
-  const adminUpdateLogs= document.getElementById("adminUpdateLogs");
-  const previewArea    = document.getElementById("previewArea");
-
-  function renderAdminCards(){
-    adminCardsList.innerHTML="";
-    keywordCardSelect.innerHTML="";
-    cards.forEach(c=>{
-      const li=document.createElement("li");
-      const info=document.createElement("div"); info.className="info";
-      info.textContent=`${c.name}（枠:${c.slots} 追加パス:${c.addPass}）`;
-      li.appendChild(info);
-      const delBtn=document.createElement("button");
-      delBtn.textContent="削除";
-      delBtn.addEventListener("click",()=>{
-        if(!confirm("削除しますか？")) return;
-        // カード削除
-        cards=cards.filter(x=>x.id!==c.id);
-        // ユーザ画面にも反映
-        userAddedCards=userAddedCards.filter(x=>x!==c.id);
-        for(const uname in userCardSerials) delete userCardSerials[uname][c.id];
-        saveAll();
-        renderAdminCards();
-      });
-      li.appendChild(delBtn);
-      adminCardsList.appendChild(li);
-
-      // カード選択に追加
-      const opt=document.createElement("option");
-      opt.value=c.id; opt.textContent=c.name;
-      keywordCardSelect.appendChild(opt);
-    });
-  }
-
-  function renderKeywords(){
-    keywordList.innerHTML="";
-    keywords.forEach((k,idx)=>{
-      const li=document.createElement("li");
-      li.textContent=`[${cards.find(c=>c.id===k.cardId)?.name||"不明"}] ${k.word} (${k.enabled?"有効":"無効"})`;
-      const toggleBtn=document.createElement("button"); toggleBtn.textContent=k.enabled?"無効にする":"有効にする";
-      toggleBtn.addEventListener("click",()=>{
-        k.enabled=!k.enabled;
-        saveAll();
-        renderKeywords();
-      });
-      const delBtn=document.createElement("button"); delBtn.textContent="削除";
-      delBtn.addEventListener("click",()=>{
-        if(!confirm("削除しますか？")) return;
-        keywords.splice(idx,1);
-        saveAll();
-        renderKeywords();
-      });
-      li.appendChild(toggleBtn);
-      li.appendChild(delBtn);
-      keywordList.appendChild(li);
-    });
-  }
-
-  function renderUpdates(){
-    adminUpdateLogs.innerHTML="";
-    updates.forEach((u,idx)=>{
-      const li=document.createElement("li");
-      li.textContent=`${u.date} ${u.msg}`;
-      const delBtn=document.createElement("button"); delBtn.textContent="削除";
-      delBtn.addEventListener("click",()=>{
-        updates.splice(idx,1);
-        saveAll();
-        renderUpdates();
-      });
-      li.appendChild(delBtn);
-      adminUpdateLogs.appendChild(li);
-    });
-  }
-
-  previewCardBtn.addEventListener("click",()=>{
-    previewArea.innerHTML="";
-    const div=document.createElement("div");
-    div.className="card"; div.style.background=cardBG.value;
-    const h3=document.createElement("h3"); h3.textContent=cardName.value; div.appendChild(h3);
-    for(let i=0;i<cardSlots.value;i++){
-      const s=document.createElement("div"); s.className="stamp-slot"; div.appendChild(s);
-    }
-    previewArea.appendChild(div);
-  });
-
-  previewClearBtn.addEventListener("click",()=>{previewArea.innerHTML="";});
-
-  createCardBtn.addEventListener("click",()=>{
-    if(!cardName.value.trim()||!addPass.value.trim()){alert("カード名と追加パスは必須"); return;}
-    const id="c"+Date.now();
-    cards.push({
-      id,
-      name: cardName.value.trim(),
-      slots: Number(cardSlots.value)||5,
-      addPass: addPass.value.trim(),
-      bg: cardBG.value,
-      stampIcon: stampIcon.value||"",
-      notifyMsg: notifyMsg.value.trim(),
-      maxNotifyMsg: maxNotifyMsg.value.trim()
-    });
-    saveAll();
-    renderAdminCards();
-  });
-
-  addKeywordBtn.addEventListener("click",()=>{
-    const cardId=keywordCardSelect.value;
-    const word=keywordInput.value.trim();
-    if(!cardId||!word){alert("カードと合言葉を指定してください"); return;}
-    keywords.push({cardId,word,enabled:true});
-    saveAll();
-    renderKeywords();
-  });
-
-  addUpdateBtn.addEventListener("click",()=>{
-    const msg=updateInput.value.trim();
-    if(!msg){alert("更新内容を入力してください"); return;}
-    const now=new Date();
-    const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-    updates.push({date:dateStr,msg});
-    saveAll();
-    renderUpdates();
-    updateInput.value="";
-  });
-
-  renderAdminCards();
-  renderKeywords();
   renderUpdates();
 }
