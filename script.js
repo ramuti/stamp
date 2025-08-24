@@ -14,7 +14,7 @@ const LS_KEYS = {
   userCardSerials: "userCardSerials"
 };
 
-const APP_VERSION = "v1.3.1";
+const APP_VERSION = "v1.4.0";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -163,9 +163,14 @@ function initUser(){
         alert("この合言葉は無効です");
         return;
       }
+      const usedSlots=userStampHistory.filter(s=>s.cardId===card.id && s.word===word);
+      if(usedSlots.length>0){
+        alert("この合言葉は既に使用済みです");
+        return;
+      }
       const nextSlot=userStampHistory.filter(s=>s.cardId===card.id).length;
       if(nextSlot>=card.slots){alert("すでにMAXです"); return;}
-      userStampHistory.push({cardId:card.id,slot:nextSlot});
+      userStampHistory.push({cardId:card.id,slot:nextSlot,word:word});
       saveAll();
       renderUserCards();
       renderHistory();
@@ -186,6 +191,7 @@ function initUser(){
       const card=cards.find(c=>c.id===id);
       if(card) userCards.appendChild(renderUserCard(card));
     });
+    renderHistory();
   }
 
   function renderHistory(){
@@ -210,7 +216,6 @@ function initUser(){
   }
 
   renderUserCards();
-  renderHistory();
   renderUpdates();
 }
 
@@ -229,7 +234,7 @@ function initAdmin(){
   const previewClearBtn= document.getElementById("previewClearBtn");
   const createCardBtn  = document.getElementById("createCardBtn");
   const adminCardsList = document.getElementById("adminCards");
-  const keywordCardSelect = document.getElementById("keywordCardSelect");
+  const keywordCardSelect=document.getElementById("keywordCardSelect");
   const keywordInput   = document.getElementById("keywordInput");
   const addKeywordBtn  = document.getElementById("addKeywordBtn");
   const keywordList    = document.getElementById("keywordList");
@@ -246,12 +251,13 @@ function initAdmin(){
       const info=document.createElement("div"); info.className="info";
       info.textContent=`${c.name}（枠:${c.slots} 追加パス:${c.addPass}）`;
       li.appendChild(info);
-
       const delBtn=document.createElement("button");
       delBtn.textContent="削除";
       delBtn.addEventListener("click",()=>{
         if(!confirm("削除しますか？")) return;
+        // カード削除
         cards=cards.filter(x=>x.id!==c.id);
+        // ユーザ画面にも反映
         userAddedCards=userAddedCards.filter(x=>x!==c.id);
         for(const uname in userCardSerials) delete userCardSerials[uname][c.id];
         userStampHistory=userStampHistory.filter(s=>s.cardId!==c.id);
