@@ -510,12 +510,11 @@ function initAdmin() {
   renderUpdates();
 
   // ——— コピー用ボタン追加 ———
-  addCopyButton();
-}
+addCopyButton();
 
-// コピー用ボタン関数
+// コピー用ボタン関数（ページ下部に追加される版）
 function addCopyButton() {
-  if (document.getElementById("copyUpdateDataBtn")) return;
+  if (document.getElementById("copyUpdateDataBtn")) return; // すでにあればスキップ
 
   const container = document.createElement("div");
   container.style.margin = "16px 0";
@@ -541,11 +540,6 @@ function addCopyButton() {
 
   container.appendChild(btn);
 
-  // #adminUpdateLogs の前に追加
-  const target = document.getElementById("adminUpdateLogs");
-  if (target && target.parentNode) {
-    target.parentNode.insertBefore(container, target);
-  } else {
-    document.body.insertBefore(container, document.body.firstChild);
-  }
+  // ページの一番下に追加
+  document.body.appendChild(container);
 }
