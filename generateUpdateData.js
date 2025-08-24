@@ -1,7 +1,7 @@
 /* ============================
-   generateUpdateData.js — 管理者用コピー補助（安定版）
+   generateUpdateData.js — 管理者用コピー補助（修正版）
    - script.js の下に読み込む
-   - 管理者画面にコピー用ボタンを表示
+   - 管理者画面にコピー用ボタンを確実に表示
    ============================ */
 
 (function() {
@@ -22,10 +22,14 @@
 
     btn.addEventListener("click", () => {
       if (typeof generateUpdateData === "function") {
-        const dataStr = generateUpdateData(); // 文字列生成
-        navigator.clipboard.writeText(dataStr)
-          .then(() => alert("コピーしました！\nこの内容を generateUpdateData.js に上書きコミットしてください"))
-          .catch(err => alert("コピー失敗: " + err));
+        try {
+          const dataStr = generateUpdateData(); // 文字列生成
+          navigator.clipboard.writeText(dataStr)
+            .then(() => alert("コピーしました！\nこの内容を generateUpdateData.js に上書きコミットしてください"))
+            .catch(err => alert("コピー失敗: " + err));
+        } catch(e) {
+          alert("コピー処理でエラー: " + e);
+        }
       } else {
         alert("generateUpdateData 関数が定義されていません");
       }
@@ -42,6 +46,9 @@
     }
   }
 
-  // DOMが読み込まれたらボタンを追加（少し遅延して確実に #adminUpdateLogs が存在するように）
-  document.addEventListener("DOMContentLoaded", () => setTimeout(createCopyButton, 100));
+  // DOMが読み込まれたらボタンを追加
+  document.addEventListener("DOMContentLoaded", () => {
+    // 50ms 遅延で script.js の generateUpdateData が確実に定義されているようにする
+    setTimeout(createCopyButton, 50);
+  });
 })();
