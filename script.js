@@ -325,38 +325,76 @@ function initAdmin(){
   }
 
   /* --- カード/合言葉/更新履歴 レンダ --- */
-  function renderAdminCards(){
-    if(!el.adminCards || !el.keywordCardSelect) return;
+  function renderKeywords(){
+  if(!el.keywordList) return;
+  el.keywordList.innerHTML = "";
 
-    el.adminCards.innerHTML = "";
-    el.keywordCardSelect.innerHTML = "";
+  keywords.forEach((k, idx)=>{
+    const li = document.createElement("li");
 
-    cards.forEach(c=>{
-      const li = document.createElement("li");
+    const cname = (cards.find(c=>c.id===k.cardId)?.name) || k.cardId;
+    // 表示: 「カード名 合言葉名 [有効/無効] [削除]」
+    const span = document.createElement("span");
+    span.className = "info";
+    span.textContent = `${cname} ${k.word} [${k.enabled ? "有効" : "無効"}]`;
+    li.appendChild(span);
 
-      // 表示: 「カード名 \ 追加パス \ [削除]」
-      const info = document.createElement("div");
-      info.className = "info";
-      info.textContent = `${c.name} \\ ${c.addPass} \\`;
-      li.appendChild(info);
+    // 有効/無効切替ボタン
+    const toggle = document.createElement("button");
+    toggle.textContent = k.enabled ? "無効にする" : "有効にする";
+    toggle.addEventListener("click", ()=>{
+      k.enabled = !k.enabled;
+      saveAll();
+      renderKeywords();
+    });
+    li.appendChild(toggle);
 
-      const btnDel = document.createElement("button");
-      btnDetext = document.createTextNode("削除");
-      btnDel.appendChild(btnDetext);
-      btnDel.addEventListener("click", ()=>{
-        // 即削除（確認なし）
-        cards = cards.filter(x=>x.id!==c.id);
-        keywords = keywords.filter(k=>k.cardId!==c.id);
-        // ユーザ付随の掃除
-        userAddedCards = userAddedCards.filter(id=>id!==c.id);
-        for(const uname in userCardSerials){ if(userCardSerials[uname]) delete userCardSerials[uname][c.id]; }
-        userStampHistory = userStampHistory.filter(s=>s.cardId!==c.id);
-        saveAll();
-        renderAdminCards();
-      });
-      li.appendChild(btnDel);
+    // 削除ボタン（確認なし）
+    const del = document.createElement("button");
+    del.textContent = "削除";
+    del.addEventListener("click", ()=>{
+      keywords.splice(idx,1);
+      saveAll();
+      renderKeywords();
+    });
+    li.appendChild(del);
 
-      el.adminCards.appendChild(li);
+    el.keywordList.appendChild(li);
+  });
+}
+
+function renderUpdateLogs(){
+  if(!el.adminUpdateLogs) return;
+  el.adminUpdateLogs.innerHTML = "";
+
+  (updates||[]).forEach((u, idx)=>{
+    let text = "";
+    if(typeof u === "string"){ text = u; }
+    else { 
+      // 日付を必ず YYYY年M月D日 に修正
+      const d = new Date(u.date);
+      const dateStr = isNaN(d.getTime()) ? u.date : `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+      text = `${dateStr} ${u.msg||""}`;
+    }
+
+    const li = document.createElement("li");
+    const info = document.createElement("span");
+    info.className = "info";
+    info.textContent = text;
+    li.appendChild(info);
+
+    const del = document.createElement("button");
+    del.textContent = "消去";
+    del.addEventListener("click", ()=>{
+      updates.splice(idx,1);
+      saveAll();
+      renderUpdateLogs();
+    });
+    li.appendChild(del);
+
+    el.adminUpdateLogs.appendChild(li);
+  });
+}
 
       // 合言葉用 select
       const opt = document.createElement("option");
