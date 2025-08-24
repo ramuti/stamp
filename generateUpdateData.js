@@ -5,10 +5,9 @@
 ============================ */
 
 (function() {
-  // 仮に generateUpdateData 関数がまだなければ定義
-  if (typeof generateUpdateData !== "function") {
+  // generateUpdateData 関数が未定義なら定義
+  if (typeof window.generateUpdateData !== "function") {
     window.generateUpdateData = function() {
-      // ローカルストレージからカード・合言葉を取得して文字列化
       const cards = localStorage.getItem("cards") || "[]";
       const keywords = localStorage.getItem("keywords") || "[]";
       return `/* カード */\n${cards}\n/* キーワード */\n${keywords}`;
