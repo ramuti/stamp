@@ -49,11 +49,10 @@ button:hover { background: #ff66b3; }
   border-radius: 6px;
   margin: 2px;
   background: #fff;
-  vertical-align: middle;
 }
 
 #adminCards { list-style: none; padding-left: 0; }
-#adminCards li, #keywordList li, #adminUpdateLogs div {
+#adminCards li, #keywordList li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -66,12 +65,17 @@ button:hover { background: #ff66b3; }
 }
 
 #adminCards .info { flex: 1; font-size: 0.95rem; }
-#adminCards .btns button { margin-left: 6px; }
-
 #previewArea { margin-top: 12px; }
-
-.helper { font-size: 12px; opacity: .9; margin-left: 4px; }
-.block { display: block; margin: 6px 0; }
+#adminUpdateLogs div {
+  background: #ffe6f0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 4px 0;
+  border: 1px solid #ffb6c1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>
 </head>
 <body class="admin">
@@ -86,8 +90,6 @@ button:hover { background: #ff66b3; }
   <input type="text" id="notifyMsg" placeholder="通知メッセージ">
   <input type="text" id="maxNotifyMsg" placeholder="MAX通知メッセージ">
   <input type="color" id="cardBG" value="#fff0f5" title="カード背景色">
-  <span class="helper">← 背景色はここで選べます</span>
-  <span class="block"></span>
   <input type="text" id="stampIcon" placeholder="スタンプ画像URL（任意）">
   <button id="previewCardBtn">プレビュー表示</button>
   <button id="previewClearBtn">プレビュークリア</button>
