@@ -1,11 +1,11 @@
 /* ============================
-   generateUpdateData.js — 管理者用コピー補助（安定版）
+   generateUpdateData.js — 管理者用コピー補助（完全版）
    - script.js の下に読み込む
-   - 他の機能を壊さないように最小限
+   - 他の機能に干渉しない
 ============================ */
 
 (function() {
-  // すでに存在する場合は上書きしない
+  // generateUpdateData 関数が未定義なら定義
   if (typeof window.generateUpdateData !== "function") {
     window.generateUpdateData = function() {
       try {
@@ -13,14 +13,13 @@
         const keywords = localStorage.getItem("keywords") || "[]";
         return `/* カード */\n${cards}\n/* キーワード */\n${keywords}`;
       } catch (e) {
-        console.error("generateUpdateData error:", e);
-        return "";
+        return "データ取得失敗: " + e;
       }
     };
   }
 
   function createCopyButton() {
-    if (document.getElementById("copyUpdateDataBtn")) return; // 重複防止
+    if (document.getElementById("copyUpdateDataBtn")) return;
 
     const container = document.createElement("div");
     container.style.margin = "16px 0";
@@ -36,21 +35,17 @@
     btn.addEventListener("click", () => {
       try {
         const dataStr = window.generateUpdateData();
-        if (!dataStr) {
-          alert("コピーするデータがありません");
-          return;
-        }
         navigator.clipboard.writeText(dataStr)
           .then(() => alert("コピーしました！\nこの内容を generateUpdateData.js に上書きコミットしてください"))
           .catch(err => alert("コピー失敗: " + err));
       } catch (e) {
-        alert("コピー時エラー: " + e);
+        alert("コピー処理でエラー: " + e);
       }
     });
 
     container.appendChild(btn);
 
-    // 管理画面に配置
+    // 管理者エリアにだけ出す
     const target = document.getElementById("adminUpdateLogs");
     if (target && target.parentNode) {
       target.parentNode.insertBefore(container, target);
@@ -59,7 +54,7 @@
     }
   }
 
-  // DOM 準備完了後に実行
+  // script.js とバッティングしないように安全に追加
   document.addEventListener("DOMContentLoaded", () => {
     setTimeout(createCopyButton, 200);
   });
