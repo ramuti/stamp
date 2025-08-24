@@ -1,59 +1,47 @@
 /* ============================
-   generateUpdateData.js — 管理者用データ生成（完全版）
+   generateUpdateData.js — 管理者用コピー補助（安定版）
    - script.js の下に読み込む
-   - カード・合言葉・更新履歴を文字列化してコピー
+   - 管理者画面にコピー用ボタンを表示
    ============================ */
 
-function generateUpdateData() {
-  // 現在の cards / keywords / updates をまとめて文字列化
-  const newCards = cards.map(c => ({
-    id: c.id,
-    name: c.name,
-    slots: c.slots,
-    addPass: c.addPass,
-    bg: c.bg,
-    stampIcon: c.stampIcon,
-    notifyMsg: c.notifyMsg,
-    maxNotifyMsg: c.maxNotifyMsg
-  }));
-
-  const newKeywords = keywords.map(k => ({
-    cardId: k.cardId,
-    word: k.word,
-    enabled: k.enabled
-  }));
-
-  const newUpdates = updates.map(u => ({
-    date: u.date,
-    msg: u.msg
-  }));
-
-  // 文字列化して return
-  return `/* ============================
-   updateDataFull.js — 管理者用追加データ（フル版）
-   ============================ */
 (function() {
-  const newCards = ${JSON.stringify(newCards, null, 2)};
-  const newKeywords = ${JSON.stringify(newKeywords, null, 2)};
-  const newUpdates = ${JSON.stringify(newUpdates, null, 2)};
+  function createCopyButton() {
+    // すでにある場合はスキップ
+    if (document.getElementById("copyUpdateDataBtn")) return;
 
-  function loadJSON(key, fallback) {
-    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){return fallback;}
+    const container = document.createElement("div");
+    container.style.margin = "16px 0";
+    container.style.textAlign = "center";
+
+    const btn = document.createElement("button");
+    btn.id = "copyUpdateDataBtn";
+    btn.textContent = "カード・合言葉データをコピー";
+    btn.style.padding = "8px 16px";
+    btn.style.fontSize = "14px";
+    btn.style.cursor = "pointer";
+
+    btn.addEventListener("click", () => {
+      if (typeof generateUpdateData === "function") {
+        const dataStr = generateUpdateData(); // 文字列生成
+        navigator.clipboard.writeText(dataStr)
+          .then(() => alert("コピーしました！\nこの内容を generateUpdateData.js に上書きコミットしてください"))
+          .catch(err => alert("コピー失敗: " + err));
+      } else {
+        alert("generateUpdateData 関数が定義されていません");
+      }
+    });
+
+    container.appendChild(btn);
+
+    // #adminUpdateLogs の前に追加、なければ body の先頭に追加
+    const target = document.getElementById("adminUpdateLogs");
+    if (target && target.parentNode) {
+      target.parentNode.insertBefore(container, target);
+    } else {
+      document.body.insertBefore(container, document.body.firstChild);
+    }
   }
-  function saveJSON(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
 
-  let cards = loadJSON("cards", []);
-  newCards.forEach(nc => { if (!cards.some(c => c.id === nc.id)) cards.push(nc); });
-  saveJSON("cards", cards);
-
-  let keywords = loadJSON("keywords", []);
-  newKeywords.forEach(nk => { if (!keywords.some(k => k.cardId === nk.cardId && k.word === nk.word)) keywords.push(nk); });
-  saveJSON("keywords", keywords);
-
-  let updates = loadJSON("updates", []);
-  newUpdates.forEach(nu => updates.push(nu));
-  saveJSON("updates", updates);
-
-  console.log("管理者追加データ（フル版）を適用しました");
-})();`;
-}
+  // DOMが読み込まれたらボタンを追加（少し遅延して確実に #adminUpdateLogs が存在するように）
+  document.addEventListener("DOMContentLoaded", () => setTimeout(createCopyButton, 100));
+})();
