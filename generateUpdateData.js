@@ -1,11 +1,10 @@
 /* ============================
-   generateUpdateData.js — 管理者用コピー補助
+   generateUpdateData.js — 管理者用コピー補助（完全版）
    - script.js の下に読み込む
-   - 画面にコピーボタンを出すだけ
+   - 画面にコピー用ボタンを表示
    ============================ */
 
 (function() {
-  // コピー用ボタンを画面に表示
   function createCopyButton() {
     // すでにある場合はスキップ
     if (document.getElementById("copyUpdateDataBtn")) return;
@@ -22,9 +21,8 @@
     btn.style.cursor = "pointer";
 
     btn.addEventListener("click", () => {
-      // generateUpdateData関数が存在する場合のみコピー
       if (typeof generateUpdateData === "function") {
-        const dataStr = generateUpdateData(); // 文字列を生成
+        const dataStr = generateUpdateData(); // 文字列生成
         navigator.clipboard.writeText(dataStr)
           .then(() => alert("コピーしました！\nこの内容を generateUpdateData.js に上書きコミットしてください"))
           .catch(err => alert("コピー失敗: " + err));
@@ -35,16 +33,15 @@
 
     container.appendChild(btn);
 
-    // 管理者画面の上部に追加（#adminUpdateLogs の前）
-    const adminArea = document.getElementById("adminUpdateLogs");
-    if (adminArea && adminArea.parentNode) {
-      adminArea.parentNode.insertBefore(container, adminArea);
+    // まずは #adminUpdateLogs の前に追加、なければ body の先頭に追加
+    const target = document.getElementById("adminUpdateLogs");
+    if (target && target.parentNode) {
+      target.parentNode.insertBefore(container, target);
     } else {
-      document.body.appendChild(container);
+      document.body.insertBefore(container, document.body.firstChild);
     }
   }
 
-  // DOM が読み込まれたらボタンを追加
-  document.addEventListener("DOMContentLoaded", createCopyButton);
-
+  // DOMが読み込まれたらボタンを追加（少し遅延して確実に）
+  document.addEventListener("DOMContentLoaded", () => setTimeout(createCopyButton, 50));
 })();
