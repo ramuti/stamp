@@ -13,7 +13,7 @@ const LS_KEYS = {
   userUIColors: "userUIColors"
 };
 
-const APP_VERSION = "v1.1.2";
+const APP_VERSION = "v1.1.1";
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; }
@@ -28,15 +28,21 @@ let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []);
 let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []);
 let userUIColors = loadJSON(LS_KEYS.userUIColors, {text:"#c44a7b",bg:"#fff0f5",btn:"#ff99cc"});
 
+// ★ 修正：ページ種別ごとに保存するキーを分離（相互上書き防止）
 function saveAll() {
   try {
-    localStorage.setItem(LS_KEYS.userName, userName);
-    saveJSON(LS_KEYS.cards, cards);
-    saveJSON(LS_KEYS.keywords, keywords);
-    saveJSON(LS_KEYS.updates, updates);
-    saveJSON(LS_KEYS.userAddedCards, userAddedCards);
-    saveJSON(LS_KEYS.userStampHistory, userStampHistory);
-    saveJSON(LS_KEYS.userUIColors, userUIColors);
+    const body = document.body;
+    if (body.classList.contains("user")) {
+      localStorage.setItem(LS_KEYS.userName, userName);
+      saveJSON(LS_KEYS.userAddedCards, userAddedCards);
+      saveJSON(LS_KEYS.userStampHistory, userStampHistory);
+      saveJSON(LS_KEYS.userUIColors, userUIColors);
+    }
+    if (body.classList.contains("admin")) {
+      saveJSON(LS_KEYS.cards, cards);
+      saveJSON(LS_KEYS.keywords, keywords);
+      saveJSON(LS_KEYS.updates, updates);
+    }
     localStorage.setItem(LS_KEYS.appVersion, APP_VERSION);
   } catch (e) { alert("データ保存に失敗"); console.error(e); }
 }
@@ -96,11 +102,11 @@ function initUser() {
 
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
-    document.body.style.color = userUIColors.text;
+    document.body.style.color = userUIColors.text; // 文字色変更
     cardTitle.style.color = userUIColors.text;
     document.querySelectorAll("button").forEach(btn=>{
       btn.style.background = userUIColors.btn;
-      btn.style.color = userUIColors.text;
+      btn.style.color = userUIColors.text; // ボタン文字色も変更
     });
   }
 
@@ -139,7 +145,6 @@ function initUser() {
     serial.textContent = genSerialForUser();
     container.appendChild(serial);
 
-    // ★ スタンプ押すボタン
     const btn = document.createElement("button");
     btn.textContent = "スタンプを押す";
     btn.style.marginTop = "8px";
@@ -241,9 +246,12 @@ function initAdmin() {
     keywordCardSelect.innerHTML="";
     cards.forEach(card=>{
       const li=document.createElement("li");
+
+      // --- 修正部分 ---
       const info = document.createElement("div"); info.className="info";
       info.innerHTML=`${card.name} | ${card.addPass} | <button class="previewBtn">プレビュー</button>`;
       li.appendChild(info);
+      // --- 修正部分終わり ---
 
       const delBtn=document.createElement("button"); delBtn.textContent="削除";
       delBtn.addEventListener("click",()=>{
@@ -254,6 +262,7 @@ function initAdmin() {
       });
       li.appendChild(delBtn);
 
+      // プレビュー機能
       li.querySelector(".previewBtn").addEventListener("click",()=>{
         previewArea.innerHTML="";
         const div=document.createElement("div"); div.className="card"; if(card.bg) div.style.background=card.bg;
@@ -269,19 +278,31 @@ function initAdmin() {
     });
   }
 
+  // ★ 修正：合言葉一覧に「有効/無効」チェックボックスと状態表示を追加
   function renderKeywordList() {
     keywordList.innerHTML="";
     keywords.forEach(k=>{
       const li=document.createElement("li");
-      const cardName = cards.find(c=>c.id===k.cardId)?.name||k.cardId;
-      li.textContent=`${cardName} : ${k.word} `;
+
+      const cardNameTxt = cards.find(c=>c.id===k.cardId)?.name||k.cardId;
+
+      const labelSpan = document.createElement("span");
+      const statusSpan = document.createElement("span");
+      statusSpan.style.marginLeft = "6px";
+      statusSpan.textContent = k.active ? "（有効）" : "（無効）";
+
+      labelSpan.textContent = `${cardNameTxt} : ${k.word}`;
+      li.appendChild(labelSpan);
+      li.appendChild(statusSpan);
 
       const activeCheckbox=document.createElement("input");
       activeCheckbox.type="checkbox";
-      activeCheckbox.checked=k.active;
+      activeCheckbox.checked = !!k.active;
       activeCheckbox.title="有効/無効切替";
+      activeCheckbox.style.marginLeft = "8px";
       activeCheckbox.addEventListener("change",()=>{
-        k.active=activeCheckbox.checked;
+        k.active = activeCheckbox.checked;
+        statusSpan.textContent = k.active ? "（有効）" : "（無効）";
         saveAll();
       });
       li.appendChild(activeCheckbox);
