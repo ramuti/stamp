@@ -1,13 +1,15 @@
 /* ============================
-   generateUpdateData.js — 管理者用コピー補助（安定版）
+   generateUpdateData.js — 管理者用コピー補助
 ============================ */
 
+// グローバル関数として定義
 function generateUpdateData() {
   const cards = localStorage.getItem("cards") || "[]";
   const keywords = localStorage.getItem("keywords") || "[]";
   return `/* カード */\n${cards}\n/* キーワード */\n${keywords}`;
 }
 
+// コピー用ボタン生成関数
 function createCopyButton() {
   if (document.getElementById("copyUpdateDataBtn")) return;
 
@@ -43,9 +45,9 @@ function createCopyButton() {
   }
 }
 
-// DOMContentLoaded を壊さず安全に実行
+// DOM 準備ができたらボタン生成
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => setTimeout(createCopyButton, 100));
+  document.addEventListener("DOMContentLoaded", createCopyButton);
 } else {
-  setTimeout(createCopyButton, 100);
+  createCopyButton();
 }
