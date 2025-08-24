@@ -504,8 +504,48 @@ function initAdmin() {
     updateInput.value = "";
   });
 
-  // initial render
+    // initial render
   renderAdminCards();
   renderKeywords();
   renderUpdates();
+
+  // ——— コピー用ボタン追加 ———
+  addCopyButton();
+}
+
+// コピー用ボタン関数
+function addCopyButton() {
+  if (document.getElementById("copyUpdateDataBtn")) return;
+
+  const container = document.createElement("div");
+  container.style.margin = "16px 0";
+  container.style.textAlign = "center";
+
+  const btn = document.createElement("button");
+  btn.id = "copyUpdateDataBtn";
+  btn.textContent = "カード・合言葉データをコピー";
+  btn.style.padding = "8px 16px";
+  btn.style.fontSize = "14px";
+  btn.style.cursor = "pointer";
+
+  btn.addEventListener("click", () => {
+    if (typeof generateUpdateData === "function") {
+      const dataStr = generateUpdateData(); // 文字列生成
+      navigator.clipboard.writeText(dataStr)
+        .then(() => alert("コピーしました！\nこの内容を generateUpdateData.js に上書きコミットしてください"))
+        .catch(err => alert("コピー失敗: " + err));
+    } else {
+      alert("generateUpdateData 関数が定義されていません");
+    }
+  });
+
+  container.appendChild(btn);
+
+  // #adminUpdateLogs の前に追加
+  const target = document.getElementById("adminUpdateLogs");
+  if (target && target.parentNode) {
+    target.parentNode.insertBefore(container, target);
+  } else {
+    document.body.insertBefore(container, document.body.firstChild);
+  }
 }
