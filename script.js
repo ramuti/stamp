@@ -509,7 +509,7 @@ function initAdmin() {
   renderKeywords();
   renderUpdates();
 
-  // ——— コピー用ボタン追加 ———
+ // ——— コピー用ボタン追加 ———
 addCopyButton();
 
 // コピー用ボタン関数（ページ下部に追加される版）
@@ -542,4 +542,26 @@ function addCopyButton() {
 
   // ページの一番下に追加
   document.body.appendChild(container);
+}
+
+// ——— コピー用データ生成関数 ———
+function generateUpdateData() {
+  const data = {
+    cards: cards.map(c => ({
+      id: c.id,
+      name: c.name,
+      slots: c.slots,
+      addPass: c.addPass,
+      bg: c.bg,
+      stampIcon: c.stampIcon,
+      notifyMsg: c.notifyMsg,
+      maxNotifyMsg: c.maxNotifyMsg
+    })),
+    keywords: keywords.map(k => ({
+      cardId: k.cardId,
+      word: k.word,
+      enabled: k.enabled
+    }))
+  };
+  return JSON.stringify(data, null, 2);
 }
