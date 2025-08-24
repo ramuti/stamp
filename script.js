@@ -254,10 +254,12 @@ function initAdmin(){
       const info=document.createElement("div"); info.className="info";
       info.textContent=`${c.name}（枠:${c.slots} 追加パス:${c.addPass}）`;
       li.appendChild(info);
+
       const delBtn=document.createElement("button");
       delBtn.textContent="削除";
       delBtn.addEventListener("click",()=>{
         if(!confirm("削除しますか？")) return;
+        // カード削除
         cards=cards.filter(x=>x.id!==c.id);
         // ユーザ側反映
         userAddedCards=userAddedCards.filter(x=>x!==c.id);
@@ -267,6 +269,7 @@ function initAdmin(){
         renderAdminCards();
       });
       li.appendChild(delBtn);
+
       adminCardsList.appendChild(li);
 
       const opt=document.createElement("option");
@@ -280,12 +283,15 @@ function initAdmin(){
     keywords.forEach((k,idx)=>{
       const li=document.createElement("li");
       li.textContent=`[${cards.find(c=>c.id===k.cardId)?.name||"不明"}] ${k.word} (${k.enabled?"有効":"無効"})`;
-      const toggleBtn=document.createElement("button"); toggleBtn.textContent=k.enabled?"無効にする":"有効にする";
+
+      const toggleBtn=document.createElement("button"); 
+      toggleBtn.textContent=k.enabled?"無効にする":"有効にする";
       toggleBtn.addEventListener("click",()=>{
         k.enabled=!k.enabled;
         saveAll();
         renderKeywords();
       });
+
       const delBtn=document.createElement("button"); delBtn.textContent="削除";
       delBtn.addEventListener("click",()=>{
         if(!confirm("削除しますか？")) return;
@@ -293,6 +299,7 @@ function initAdmin(){
         saveAll();
         renderKeywords();
       });
+
       li.appendChild(toggleBtn);
       li.appendChild(delBtn);
       keywordList.appendChild(li);
