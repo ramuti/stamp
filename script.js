@@ -509,5 +509,3 @@ function initAdmin() {
   renderKeywords();
   renderUpdates();
 }
-<script src="script.js"></script>
-<script src="generateUpdateData.js"></script>
