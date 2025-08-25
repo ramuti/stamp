@@ -31,9 +31,9 @@ function mergeUniqueArray(existingArray, newArray) {
 }
 function mergeStampHistories(existing, current) {
   const map = new Map();
-  (existing || []).forEach(e => { map.set(`${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`, e); });
+  (existing || []).forEach(e => { map.set(`${e.user}||${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`, e); });
   (current || []).forEach(e => {
-    const key = `${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`;
+    const key = `${e.user}||${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`;
     if(!map.has(key)) map.set(key,e);
   });
   return Array.from(map.values());
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
    ユーザー画面
 ========================= */
 function initUser() {
-  const cardTitle = document.getElementById("pageTitle");
+  const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const textColorPicker = document.getElementById("textColor");
@@ -153,10 +153,11 @@ function initUser() {
       slotsDiv.className="slots";
       for(let i=0;i<c.slots;i++){
         const span = document.createElement("span");
-        span.className="slot";
+        span.className="stamp-slot";
         const filled = userCardSerials[userName]?.[c.id]?.includes(i);
-        if(filled) span.classList.add("stamped");
+        if(filled) span.classList.add("stamp-filled");
 
+        // --- スタンプ枠クリック時の合言葉入力 ---
         span.addEventListener("click", ()=>{
           const inputWord = prompt("合言葉を入力してください:");
           if(!inputWord) return;
@@ -169,24 +170,20 @@ function initUser() {
           userCardSerials[userName][c.id]=userCardSerials[userName][c.id]||[];
           if(!userCardSerials[userName][c.id].includes(i)){
             userCardSerials[userName][c.id].push(i);
-            span.classList.add("stamped");
-            const now=new Date();
-            const datetime=`${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
-            userStampHistory.push({user:userName,cardId:c.id,slot:i,datetime});
+            span.classList.add("stamp-filled");
+
+            const now = new Date();
+            const datetime = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
+            userStampHistory.push({user:userName, cardId:c.id, slot:i, word:inputWord, datetime});
           }
-          saveAll(); renderStampHistory();
+
+          saveAll();
+          renderStampHistory();
         });
 
         slotsDiv.appendChild(span);
       }
       cardDiv.appendChild(slotsDiv);
-
-      const stampBtn = document.createElement("button");
-      stampBtn.textContent="スタンプを押す";
-      stampBtn.addEventListener("click", ()=>{
-        if(c.stamped < c.slots){ c.stamped++; saveAll(); renderUserCards(); }
-      });
-      cardDiv.appendChild(stampBtn);
 
       userCards.appendChild(cardDiv);
     });
@@ -222,10 +219,6 @@ function initUser() {
   renderUserCards(); renderStampHistory();
 }
 
-/* =========================
-   管理者画面
-========================= */
-// （管理者画面は以前のまま。ここでは省略）
 /* =========================
    管理者画面
 ========================= */
