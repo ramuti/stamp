@@ -116,9 +116,6 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================
    ユーザー画面
 ========================= */
-/* =========================
-   ユーザー画面
-========================= */
 function initUser() {
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
@@ -129,6 +126,7 @@ function initUser() {
   const addCardBtn = document.getElementById("addCardBtn");
   const addCardPassInput = document.getElementById("addCardPass");
 
+  // 色変更反映
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
     document.body.style.color = userUIColors.text;
