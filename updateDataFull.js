@@ -1,25 +1,21 @@
 {
   "cards": [
     {
-      "id": 1756048813016,
-      "name": "追加",
+      "id": "card_1756054456196",
+      "name": "あいう",
       "slots": 5,
-      "addPass": "して",
+      "addPass": "",
       "bg": "#fff0f5",
       "stampIcon": "",
-      "notifyMsg": "",
-      "maxNotifyMsg": ""
-    },
-    {
-      "id": 1756048829087,
-      "name": "か追加",
-      "slots": 5,
-      "addPass": "して",
-      "bg": "#fff0f5",
-      "stampIcon": "",
-      "notifyMsg": "",
+      "notifyMsg": "追加",
       "maxNotifyMsg": ""
     }
   ],
-  "keywords": []
+  "keywords": [
+    {
+      "cardId": "card_1756054456196",
+      "word": "う",
+      "enabled": true
+    }
+  ]
 }
