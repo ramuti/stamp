@@ -117,23 +117,103 @@ document.addEventListener("DOMContentLoaded", () => {
    ユーザー画面
 ========================= */
 function initUser() {
-  // 合言葉の状態表示を更新する関数
-function updateKeywordStatus(inputWord, cardId) {
-  const statusDiv = document.getElementById("keywordStatus");
-  const keyword = keywords.find(k => k.word === inputWord && k.cardId === cardId);
-  if (keyword) {
-    statusDiv.textContent = `現在の状態: ${keyword.enabled ? "有効" : "無効"}`;
-  } else {
-    statusDiv.textContent = "現在の状態: 無効";
-  }
-}
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
   const textColorPicker = document.getElementById("textColor");
   const bgColorPicker = document.getElementById("bgColor");
   const btnColorPicker = document.getElementById("btnColor");
+  const addCardPassInput = document.getElementById("addCardPass");
 
+  // --- カード表示条件 ---
+  function getAvailableCards(passInput) {
+    return cards.filter(c => c.addPass && c.addPass === passInput);
+  }
+
+  // --- 合言葉状態表示 ---
+  function updateKeywordStatus(inputWord, cardId) {
+    const statusDiv = document.getElementById("keywordStatus");
+    const keyword = keywords.find(k => k.word === inputWord && k.cardId === cardId);
+    if (keyword) {
+      statusDiv.textContent = `現在の状態: ${keyword.enabled ? "有効" : "無効"}`;
+    } else {
+      statusDiv.textContent = "現在の状態: 無効";
+    }
+  }
+
+  // --- 履歴描画 ---
+  function renderStampHistory() {
+    historyList.innerHTML = "";
+    userStampHistory
+      .filter(s => s.user === userName)
+      .forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = `${s.datetime} | カード: ${cards.find(c=>c.id===s.cardId)?.name || s.cardId} | スタンプ枠: ${s.slot+1}`;
+        historyList.appendChild(li);
+      });
+  }
+
+  // --- カード描画 ---
+  function renderUserCards(passInput) {
+    userCards.innerHTML = "";
+    const currentUserCards = getAvailableCards(passInput);
+
+    currentUserCards.forEach(c => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = c.bg || "#fff0f5";
+      div.textContent = c.name;
+
+      const slotsContainer = document.createElement("div");
+      for (let i = 0; i < (c.slots || 5); i++) {
+        const span = document.createElement("span");
+        span.className = "stamp-slot";
+
+        // すでに押されているスタンプがあれば反映
+        const filled = userCardSerials[userName]?.[c.id]?.includes(i);
+        if (filled) span.classList.add("stamp-filled");
+
+        // クリックでスタンプ押下
+        span.addEventListener("click", () => {
+          const inputWord = prompt("合言葉を入力してください:");
+          if (!inputWord) return;
+
+          const keyword = keywords.find(k => k.cardId === c.id && k.word === inputWord);
+          if (!keyword) {
+            alert("合言葉が違います");
+            return;
+          }
+          if (!keyword.enabled) {
+            alert("この合言葉は既に使用済みです");
+            return;
+          }
+
+          // 合言葉1回のみ有効化
+          keyword.enabled = false;
+
+          userCardSerials[userName] = userCardSerials[userName] || {};
+          userCardSerials[userName][c.id] = userCardSerials[userName][c.id] || [];
+          if (!userCardSerials[userName][c.id].includes(i)) {
+            userCardSerials[userName][c.id].push(i);
+            span.classList.add("stamp-filled");
+
+            const now = new Date();
+            const datetime = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
+            userStampHistory.push({user:userName, cardId:c.id, slot:i, datetime});
+          }
+          saveAll();
+          renderStampHistory();
+          updateKeywordStatus(inputWord, c.id);
+        });
+
+        slotsContainer.appendChild(span);
+      }
+      div.appendChild(slotsContainer);
+      userCards.appendChild(div);
+    });
+  }
+
+  // --- UI色設定 ---
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
     document.body.style.color = userUIColors.text;
@@ -154,10 +234,15 @@ function updateKeywordStatus(inputWord, cardId) {
     userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors();
   });
 
-  applyUserColors();
-  // カード描画などは既存のユーザー処理をここに入れる
-}
+  addCardPassInput?.addEventListener("input", () => {
+    renderUserCards(addCardPassInput.value);
+  });
 
+  // --- 初期描画 ---
+  applyUserColors();
+  renderUserCards(addCardPassInput.value || "");
+  renderStampHistory();
+}
 /* =========================
    管理者画面
 ========================= */
