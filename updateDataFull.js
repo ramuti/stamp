@@ -1,20 +1,20 @@
 {
   "cards": [
     {
-      "id": "card_1756054456196",
-      "name": "あいう",
+      "id": "card_1756106009078",
+      "name": "あああ",
       "slots": 5,
-      "addPass": "",
+      "addPass": "スタバ",
       "bg": "#fff0f5",
       "stampIcon": "",
-      "notifyMsg": "追加",
+      "notifyMsg": "",
       "maxNotifyMsg": ""
     }
   ],
   "keywords": [
     {
-      "cardId": "card_1756054456196",
-      "word": "う",
+      "cardId": "card_1756106009078",
+      "word": "とみ",
       "enabled": true
     }
   ]
