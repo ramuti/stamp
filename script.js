@@ -145,7 +145,24 @@ function initUser() {
   });
 
   applyUserColors();
-  // カード描画などは既存のユーザー処理をここに入れる
+// ユーザー画面：カード追加
+addCardBtn?.addEventListener("click", ()=>{
+  const pass = addCardPassInput.value.trim();
+  if(!pass) return alert("追加パスを入力してください");
+
+  // パスが一致するカードを検索
+  const matchedCard = cards.find(c => c.addPass === pass);
+  if(!matchedCard) return alert("合言葉が違います"); // ←ここで追加できないようにする
+
+  // 既に追加済みかチェック
+  if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+
+  // 追加処理
+  userAddedCards.push(matchedCard.id);
+  saveAll();
+  renderUserCards();
+  addCardPassInput.value = "";
+});
 }
 
 /* =========================
