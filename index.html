@@ -6,14 +6,14 @@
 <title>スタンプカード</title>
 <style>
 body {
-  font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif;
   background: #fff0f5;
   padding: 20px;
   color: #c44a7b;
 }
 h1 { margin: 8px 0; }
 
-input[type=text] {
+input[type=text], input[type=color] {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid #ffa6c9;
@@ -93,5 +93,17 @@ ul { padding-left: 20px; }
 </div>
 
 <script src="script.js"></script>
+<script>
+/* =========================
+   初期JSON読み込み
+========================= */
+if(typeof updateDataFull !== "undefined") {
+  // カード・キーワード・更新履歴を読み込む
+  const data = updateDataFull;
+  localStorage.setItem("cards", JSON.stringify(data.cards||[]));
+  localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
+  localStorage.setItem("updates", JSON.stringify(data.updates||[]));
+}
+</script>
 </body>
 </html>
