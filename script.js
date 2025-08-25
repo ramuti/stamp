@@ -227,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (body.classList.contains("user")) initUser();
   if (body.classList.contains("admin")) initAdmin();
 });
-
 /* =========================
    ユーザー画面
 ========================= */
@@ -251,8 +250,9 @@ function initUser() {
 
   // --- 名前変更 ---
   setNameBtn.addEventListener("click", () => {
-    if (!userNameInput.value) return alert("名前を入力してください");
-    userName = userNameInput.value;
+    const newName = userNameInput.value.trim();
+    if (!newName) return alert("名前を入力してください");
+    userName = newName;
     saveAll();
     renderStampHistory();
     renderUserCards(addCardPassInput.value || "");
@@ -261,7 +261,7 @@ function initUser() {
 
   // --- カード描画条件 ---
   function getAvailableCards(passInput) {
-    return cards.filter(c => c.addPass && c.addPass === passInput);
+    return (cards || []).filter(c => c.addPass && c.addPass === passInput);
   }
 
   // --- カード追加（ユーザーが追加） ---
@@ -273,20 +273,28 @@ function initUser() {
 
   // --- スタンプ履歴描画 ---
   function renderStampHistory() {
+    if (!historyList) return;
     historyList.innerHTML = "";
-    userStampHistory
+    (userStampHistory || [])
       .filter(s => s.user === userName)
+      .sort((a,b)=> new Date(a.datetime) - new Date(b.datetime))
       .forEach(s => {
         const li = document.createElement("li");
-        li.textContent = `${s.datetime} | カード: ${cards.find(c => c.id === s.cardId)?.name || s.cardId} | スタンプ枠: ${s.slot + 1}`;
+        const cardNameText = (cards.find(c => c.id === s.cardId)?.name) || s.cardId;
+        li.textContent = `${s.datetime} | カード: ${cardNameText} | スタンプ枠: ${s.slot + 1}`;
         historyList.appendChild(li);
       });
   }
 
   // --- カード描画 ---
   function renderUserCards(passInput) {
+    if (!userCards) return;
     userCards.innerHTML = "";
     const currentUserCards = getAvailableCards(passInput);
+    if (!currentUserCards.length) {
+      userCards.textContent = "該当するカードがありません";
+      return;
+    }
 
     currentUserCards.forEach(c => {
       const div = document.createElement("div");
@@ -306,7 +314,7 @@ function initUser() {
           const inputWord = prompt("合言葉を入力してください:");
           if (!inputWord) return;
 
-          const keyword = keywords.find(k => k.cardId === c.id && k.word === inputWord);
+          const keyword = (keywords || []).find(k => k.cardId === c.id && k.word === inputWord);
           if (!keyword) return alert("合言葉が違います");
           if (!keyword.enabled) return alert("この合言葉は既に使用済みです");
 
@@ -335,18 +343,30 @@ function initUser() {
 
   // --- UI色設定 ---
   function applyUserColors() {
-    document.body.style.background = userUIColors.bg;
-    document.body.style.color = userUIColors.text;
-    if (cardTitle) cardTitle.style.color = userUIColors.text;
+    document.body.style.background = userUIColors.bg || "#fff0f5";
+    document.body.style.color = userUIColors.text || "#c44a7b";
+    if (cardTitle) cardTitle.style.color = userUIColors.text || "#c44a7b";
     document.querySelectorAll("button").forEach(btn => {
-      btn.style.background = userUIColors.btn;
-      btn.style.color = userUIColors.text;
+      btn.style.background = userUIColors.btn || "#ff99cc";
+      btn.style.color = userUIColors.text || "#c44a7b";
     });
   }
 
-  textColorPicker.addEventListener("input", () => { userUIColors.text = textColorPicker.value; saveAll(); applyUserColors(); });
-  bgColorPicker.addEventListener("input", () => { userUIColors.bg = bgColorPicker.value; saveAll(); applyUserColors(); });
-  btnColorPicker.addEventListener("input", () => { userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors(); });
+  textColorPicker?.addEventListener("input", () => { 
+    userUIColors.text = textColorPicker.value; 
+    saveAll(); 
+    applyUserColors(); 
+  });
+  bgColorPicker?.addEventListener("input", () => { 
+    userUIColors.bg = bgColorPicker.value; 
+    saveAll(); 
+    applyUserColors(); 
+  });
+  btnColorPicker?.addEventListener("input", () => { 
+    userUIColors.btn = btnColorPicker.value; 
+    saveAll(); 
+    applyUserColors(); 
+  });
 
   addCardPassInput.addEventListener("input", () => { renderUserCards(addCardPassInput.value); });
 
