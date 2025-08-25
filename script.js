@@ -97,6 +97,105 @@ document.addEventListener("DOMContentLoaded", ()=>{
 /* =========================
    ユーザー画面
 ========================= */
+/* ============================
+   script.js — ユーザー＋管理者 共通（安定版）
+============================ */
+
+const LS_KEYS = {
+  appVersion: "appVersion",
+  userName: "userName",
+  cards: "cards",
+  keywords: "keywords",
+  updates: "updates",
+  userAddedCards: "userAddedCards",
+  userStampHistory: "userStampHistory",
+  userUIColors: "userUIColors",
+  userCardSerials: "userCardSerials"
+};
+
+const APP_VERSION = "v1.6.0";
+
+/* Helpers for localStorage */
+function loadJSON(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } 
+  catch (e) { return fallback; }
+}
+function saveJSON(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
+
+/* Merge helpers */
+function mergeUniqueArray(existingArray, newArray) {
+  const set = new Set(existingArray || []);
+  (newArray || []).forEach(v => set.add(v));
+  return Array.from(set);
+}
+function mergeStampHistories(existing, current) {
+  const map = new Map();
+  (existing || []).forEach(e => { map.set(`${e.user}||${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`, e); });
+  (current || []).forEach(e => {
+    const key = `${e.user}||${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`;
+    if(!map.has(key)) map.set(key,e);
+  });
+  return Array.from(map.values());
+}
+function mergeUserCardSerials(existing, current) {
+  const merged = JSON.parse(JSON.stringify(existing||{}));
+  for(const user in (current||{})){
+    if(!merged[user]) merged[user]={};
+    for(const cid in current[user]){
+      if(merged[user][cid]===undefined||merged[user][cid]===null){
+        merged[user][cid]=current[user][cid];
+      }
+    }
+  }
+  return merged;
+}
+
+/* Central save function */
+function saveAll() {
+  try {
+    localStorage.setItem(LS_KEYS.appVersion, APP_VERSION);
+    localStorage.setItem(LS_KEYS.userName, userName);
+
+    saveJSON(LS_KEYS.cards, cards);
+    saveJSON(LS_KEYS.keywords, keywords);
+    saveJSON(LS_KEYS.updates, updates);
+
+    userAddedCards = mergeUniqueArray(loadJSON(LS_KEYS.userAddedCards, []), userAddedCards);
+    saveJSON(LS_KEYS.userAddedCards, userAddedCards);
+
+    userStampHistory = mergeStampHistories(loadJSON(LS_KEYS.userStampHistory, []), userStampHistory);
+    saveJSON(LS_KEYS.userStampHistory, userStampHistory);
+
+    userCardSerials = mergeUserCardSerials(loadJSON(LS_KEYS.userCardSerials, {}), userCardSerials);
+    saveJSON(LS_KEYS.userCardSerials, userCardSerials);
+
+    userUIColors = Object.assign({}, loadJSON(LS_KEYS.userUIColors,{text:"#c44a7b",bg:"#fff0f5",btn:"#ff99cc"}), userUIColors||{});
+    saveJSON(LS_KEYS.userUIColors, userUIColors);
+  } catch(e) { alert("データ保存に失敗"); console.error(e); }
+}
+
+/* Global state */
+let userName = localStorage.getItem(LS_KEYS.userName)||"";
+let cards = loadJSON(LS_KEYS.cards, []);
+let keywords = loadJSON(LS_KEYS.keywords, []);
+let updates = loadJSON(LS_KEYS.updates, []);
+let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []);
+let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []);
+let userUIColors = loadJSON(LS_KEYS.userUIColors,{text:"#c44a7b",bg:"#fff0f5",btn:"#ff99cc"});
+let userCardSerials = loadJSON(LS_KEYS.userCardSerials, {});
+
+/* =========================
+   DOM ready
+========================= */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const body = document.body;
+  if(body.classList.contains("user")) initUser();
+  if(body.classList.contains("admin")) initAdmin();
+});
+
+/* =========================
+   ユーザー画面
+========================= */
 function initUser() {
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
@@ -109,7 +208,7 @@ function initUser() {
   const setNameBtn = document.getElementById("setNameBtn");
   const addCardBtn = document.getElementById("addCardBtn");
 
-  if(userName) { 
+  if(userName){ 
     cardTitle.textContent = `${userName}のスタンプカード`; 
     userNameInput.value = userName; 
   }
@@ -117,7 +216,7 @@ function initUser() {
   function generateSerial(){ return Math.random().toString(36).substr(2,8).toUpperCase(); }
 
   // 名前変更
-  setNameBtn.addEventListener("click", ()=>{
+  setNameBtn?.addEventListener("click", ()=>{
     const newName = userNameInput.value.trim();
     if(!newName) return alert("名前を入力してください");
     userName = newName; 
@@ -129,13 +228,12 @@ function initUser() {
   });
 
   // カード追加
-  addCardBtn.addEventListener("click", ()=>{
+  addCardBtn?.addEventListener("click", ()=>{
     const pass = addCardPassInput.value.trim();
     if(!pass) return alert("追加パスを入力してください");
 
     const matchedCard = cards.find(c => c.addPass === pass);
     if(!matchedCard) return alert("合言葉が違います");
-
     if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
     userAddedCards.push(matchedCard.id);
@@ -157,8 +255,9 @@ function initUser() {
       cardDiv.className="card";
       cardDiv.style.background=c.bg||"#fff0f5";
 
+      const serial = c.serial || generateSerial();
       const title = document.createElement("h3");
-      title.textContent = `${c.name} (${c.serial||generateSerial()})`;
+      title.textContent = `${c.name} (${serial})`;
       cardDiv.appendChild(title);
 
       const slotsDiv = document.createElement("div");
@@ -186,7 +285,7 @@ function initUser() {
             span.classList.add("stamp-filled");
             const now = new Date();
             const datetime = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
-            userStampHistory.push({user:userName, cardId:c.id, slot:i, datetime});
+            userStampHistory.push({user:userName, cardId:c.id, slot:i, word:inputWord, datetime});
           }
 
           saveAll();
@@ -200,18 +299,19 @@ function initUser() {
     });
   }
 
-  // スタンプ履歴描画
-  function renderStampHistory(){
-    historyList.innerHTML="";
-    userStampHistory.filter(s=>s.user===userName)
-      .sort((a,b)=>new Date(a.datetime)-new Date(b.datetime))
-      .forEach(s=>{
-        const li=document.createElement("li");
-        const cName = cards.find(c=>c.id===s.cardId)?.name || s.cardId;
-        li.textContent=`${s.datetime} | カード: ${cName} | スタンプ枠: ${s.slot+1}`;
-        historyList.appendChild(li);
-      });
-  }
+  // スタンプ履歴描画（合言葉は非表示）
+function renderStampHistory(){
+  historyList.innerHTML="";
+  userStampHistory.filter(s=>s.user===userName)
+    .sort((a,b)=>new Date(a.datetime)-new Date(b.datetime))
+    .forEach(s=>{
+      const li=document.createElement("li");
+      const cName = cards.find(c=>c.id===s.cardId)?.name || s.cardId;
+      // 表示: 年-月-日 時:分:秒 | カード名
+      li.textContent=`${s.datetime} | カード: ${cName}`;
+      historyList.appendChild(li);
+    });
+}
 
   // 見た目設定
   function applyUserColors(){
