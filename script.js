@@ -166,12 +166,29 @@ function initUser() {
      ユーザー名設定
   ============================ */
   userNameInput.value = userName || "";
+
+  // ユーザー名タイトル表示
+  const userCardsTitle = document.createElement("h2");
+  userCardsTitle.id = "userCardsTitle";
+  userCardsTitle.style.marginBottom = "16px";
+  userCardsDiv.parentNode.insertBefore(userCardsTitle, userCardsDiv);
+
+  function updateUserCardsTitle() {
+    if(userName && userCardsDiv){
+      userCardsTitle.textContent = `${userName}のスタンプカード`;
+    } else {
+      userCardsTitle.textContent = "スタンプカード";
+    }
+  }
+  updateUserCardsTitle();
+
   setNameBtn.addEventListener("click", () => {
     const val = userNameInput.value.trim();
     if(!val) return alert("名前を入力してください");
     userName = val;
     saveAll();
-    renderUserID(); // 右下に表示
+    renderUserID(); 
+    updateUserCardsTitle(); // 名前反映
   });
 
   /* ============================
@@ -215,27 +232,23 @@ function initUser() {
   });
 
   /* ============================
-     ユーザーのカード描画＋スタンプ押印修正版
-     - 削除済みカードは表示しない
-     - スタンプ押すごとに合言葉確認
-     - 消されたカードの履歴は残さない
+     ユーザーのカード描画＋スタンプ押印
+     （削除済みカード非表示、押印ごとに合言葉確認）
   ============================ */
   function renderUserCards() {
     userCardsDiv.innerHTML = "";
 
-    // 追加済みカードのうち、まだ削除されていないカードのみ表示
     userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
     userAddedCards.forEach(cid => {
       const c = cards.find(x => x.id === cid);
-      if(!c) return; // 念のため
+      if(!c) return;
 
       const div = document.createElement("div");
       div.className = "card";
       div.style.background = c.bg || "#fff0f5";
       div.innerHTML = `<div>${c.name}</div>`;
 
-      // スタンプスロット
       const slotsDiv = document.createElement("div");
       for(let i=0;i<c.slots;i++){
         const span = document.createElement("span");
@@ -246,20 +259,17 @@ function initUser() {
       }
       div.appendChild(slotsDiv);
 
-      // スタンプ押印ボタン
       const stampBtn = document.createElement("button");
       stampBtn.textContent = "スタンプ押す";
       stampBtn.style.display="block";
       stampBtn.style.marginTop="8px";
       stampBtn.addEventListener("click", () => {
-        // 合言葉再確認
         const inputPass = prompt("カード合言葉を入力してください");
         if(inputPass !== c.addPass) return alert("合言葉が違います");
 
         const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
         if(stampedCount >= c.slots) return alert("もう押せません");
 
-        // 正常押印
         userStampHistory.push({
           cardId: cid,
           slot: stampedCount,
@@ -267,7 +277,6 @@ function initUser() {
           datetime: new Date().toISOString()
         });
 
-        // 消されたカードの履歴は残さないよう再クリーン
         userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
 
         saveAll();
@@ -281,14 +290,14 @@ function initUser() {
   }
 
   /* ============================
-     スタンプ履歴描画修正版
+     スタンプ履歴描画
      - 存在しないカードは表示しない
   ============================ */
   function renderStampHistory() {
     stampHistoryList.innerHTML = "";
     userStampHistory.slice().reverse().forEach(s=>{
       const cardExists = cards.find(c => c.id === s.cardId);
-      if(!cardExists) return; // 削除されたカードはスキップ
+      if(!cardExists) return;
       const li = document.createElement("li");
       const cName = cardExists.name || s.cardId;
       const dt = new Date(s.datetime).toLocaleString();
@@ -297,12 +306,11 @@ function initUser() {
     });
   }
 
-  // 初期描画
   renderUserCards();
   renderStampHistory();
 
   /* ============================
-     更新履歴描画（読み取り専用）
+     更新履歴描画
   ============================ */
   const updateLogsList = document.getElementById("updateLogs");
   function renderUpdates() {
