@@ -101,9 +101,6 @@ function initUser() {
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
-  const textColorPicker = document.getElementById("textColor");
-  const bgColorPicker = document.getElementById("bgColor");
-  const btnColorPicker = document.getElementById("btnColor");
   const addCardPassInput = document.getElementById("addCardPass");
   const userNameInput = document.getElementById("userNameInput");
   const setNameBtn = document.getElementById("setNameBtn");
@@ -126,7 +123,6 @@ function initUser() {
     if(!pass) return alert("追加パスを入力してください");
     const matchedCard = cards.find(c => c.addPass === pass);
     if(!matchedCard) return alert("合言葉が違います");
-    // 追加済みチェック
     if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
     userAddedCards.push(matchedCard.id);
     saveAll();
@@ -151,41 +147,45 @@ function initUser() {
 
       const slotsDiv = document.createElement("div");
       slotsDiv.className="slots";
+
       for(let i=0;i<c.slots;i++){
         const span = document.createElement("span");
         span.className="stamp-slot";
+
         if(userCardSerials[userName]?.[c.id]?.includes(i)) span.classList.add("stamp-filled");
-        slotsDiv.appendChild(span);
-      }
-      cardDiv.appendChild(slotsDiv);
 
-      const stampBtn = document.createElement("button");
-      stampBtn.textContent="スタンプを押す";
-      stampBtn.addEventListener("click", ()=>{
-        const inputWord = prompt("合言葉を入力してください:");
-        if(!inputWord) return;
-        const keyword = keywords.find(k=>k.cardId===c.id && k.word===inputWord);
-        if(!keyword) return alert("合言葉が違います");
-        if(!keyword.enabled) return alert("この合言葉は既に使用済みです");
+        // 枠内にスタンプボタン配置
+        const btn = document.createElement("button");
+        btn.textContent = "押す";
+        btn.style.fontSize = "10px";
+        btn.style.padding = "2px 4px";
+        btn.style.margin = "0";
+        btn.addEventListener("click", ()=>{
+          if(span.classList.contains("stamp-filled")) return alert("この枠は既に押されています");
 
-        // スタンプ押下処理
-        userCardSerials[userName] = userCardSerials[userName]||{};
-        userCardSerials[userName][c.id] = userCardSerials[userName][c.id]||[];
-        if(userCardSerials[userName][c.id].length < c.slots){
-          const nextSlot = userCardSerials[userName][c.id].length;
-          userCardSerials[userName][c.id].push(nextSlot);
+          const inputWord = prompt("合言葉を入力してください:");
+          if(!inputWord) return;
+          const keyword = keywords.find(k=>k.cardId===c.id && k.word===inputWord);
+          if(!keyword) return alert("合言葉が違います");
+          if(!keyword.enabled) return alert("この合言葉は既に使用済みです");
+
+          // スタンプ処理
+          userCardSerials[userName] = userCardSerials[userName]||{};
+          userCardSerials[userName][c.id] = userCardSerials[userName][c.id]||[];
+          userCardSerials[userName][c.id].push(i);
           keyword.enabled = false;
+          span.classList.add("stamp-filled");
 
           const now=new Date();
           const datetime=`${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
-          userStampHistory.push({user:userName,cardId:c.id,slot:nextSlot,word:inputWord,datetime});
-          saveAll(); renderUserCards(); renderStampHistory();
-        }else{
-          alert("全ての枠にスタンプ済みです");
-        }
-      });
-      cardDiv.appendChild(stampBtn);
+          userStampHistory.push({user:userName,cardId:c.id,slot:i,word:inputWord,datetime});
+          saveAll(); renderStampHistory();
+        });
 
+        span.appendChild(btn);
+        slotsDiv.appendChild(span);
+      }
+      cardDiv.appendChild(slotsDiv);
       userCards.appendChild(cardDiv);
     });
   }
@@ -202,23 +202,9 @@ function initUser() {
       });
   }
 
-  function applyUserColors(){
-    document.body.style.background=userUIColors.bg||"#fff0f5";
-    document.body.style.color=userUIColors.text||"#c44a7b";
-    document.querySelectorAll("button").forEach(btn=>{
-      btn.style.background=userUIColors.btn||"#ff99cc";
-      btn.style.color=userUIColors.text||"#c44a7b";
-    });
-  }
-
-  textColorPicker?.addEventListener("input", ()=>{ userUIColors.text=textColorPicker.value; saveAll(); applyUserColors(); });
-  bgColorPicker?.addEventListener("input", ()=>{ userUIColors.bg=bgColorPicker.value; saveAll(); applyUserColors(); });
-  btnColorPicker?.addEventListener("input", ()=>{ userUIColors.btn=btnColorPicker.value; saveAll(); applyUserColors(); });
-
-  applyUserColors();
   renderUserCards();
   renderStampHistory();
-}}
+}
 
 /* =========================
    管理者画面
