@@ -130,17 +130,6 @@ function initUser() {
     return cards.filter(c => c.addPass && c.addPass === passInput);
   }
 
-  // --- 合言葉状態表示 ---
-  function updateKeywordStatus(inputWord, cardId) {
-    const statusDiv = document.getElementById("keywordStatus");
-    const keyword = keywords.find(k => k.word === inputWord && k.cardId === cardId);
-    if (keyword) {
-      statusDiv.textContent = `現在の状態: ${keyword.enabled ? "有効" : "無効"}`;
-    } else {
-      statusDiv.textContent = "現在の状態: 無効";
-    }
-  }
-
   // --- 履歴描画 ---
   function renderStampHistory() {
     historyList.innerHTML = "";
@@ -203,7 +192,6 @@ function initUser() {
           }
           saveAll();
           renderStampHistory();
-          updateKeywordStatus(inputWord, c.id);
         });
 
         slotsContainer.appendChild(span);
