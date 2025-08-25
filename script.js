@@ -208,22 +208,39 @@ function initAdmin() {
   }
 
   /* Render keywords */
-  function renderKeywords() {
-    keywordList.innerHTML = "";
-    keywords.forEach((k, idx) => {
-      const li = document.createElement("li");
-      const cName = cards.find(c => c.id === k.cardId)?.name || k.cardId;
-      li.textContent = `${cName}: ${k.word}`;
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "削除";
-      delBtn.addEventListener("click", () => {
-        keywords.splice(idx,1); saveAll(); renderKeywords();
-      });
-      li.appendChild(delBtn);
-      keywordList.appendChild(li);
-    });
-  }
+function renderKeywords() {
+  keywordList.innerHTML = "";
+  keywords.forEach((k, idx) => {
+    const li = document.createElement("li");
+    const cName = cards.find(c => c.id === k.cardId)?.name || k.cardId;
 
+    const info = document.createElement("span");
+    info.textContent = `${cName} : ${k.word} : 状態:${k.enabled ? "有効" : "無効"}`;
+    li.appendChild(info);
+
+    // 切替ボタン
+    const toggleBtn = document.createElement("button");
+    toggleBtn.textContent = k.enabled ? "無効にする" : "有効にする";
+    toggleBtn.addEventListener("click", () => {
+      k.enabled = !k.enabled;
+      saveAll();
+      renderKeywords();
+    });
+    li.appendChild(toggleBtn);
+
+    // 削除ボタン
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "消去";
+    delBtn.addEventListener("click", () => {
+      keywords.splice(idx, 1);
+      saveAll();
+      renderKeywords();
+    });
+    li.appendChild(delBtn);
+
+    keywordList.appendChild(li);
+  });
+}
   /* Render updates */
   function renderUpdates() {
     adminUpdateLogs.innerHTML = "";
