@@ -101,48 +101,64 @@ function initUser() {
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
+  const textColorPicker = document.getElementById("textColor");
+  const bgColorPicker = document.getElementById("bgColor");
+  const btnColorPicker = document.getElementById("btnColor");
   const addCardPassInput = document.getElementById("addCardPass");
   const userNameInput = document.getElementById("userNameInput");
   const setNameBtn = document.getElementById("setNameBtn");
   const addCardBtn = document.getElementById("addCardBtn");
 
-  if(userName){ cardTitle.textContent = `${userName}のスタンプカード`; userNameInput.value = userName; }
+  if(userName) { 
+    cardTitle.textContent = `${userName}のスタンプカード`; 
+    userNameInput.value = userName; 
+  }
 
   function generateSerial(){ return Math.random().toString(36).substr(2,8).toUpperCase(); }
 
+  // 名前変更
   setNameBtn.addEventListener("click", ()=>{
     const newName = userNameInput.value.trim();
     if(!newName) return alert("名前を入力してください");
-    userName = newName; saveAll();
+    userName = newName; 
+    saveAll();
     cardTitle.textContent = `${userName}のスタンプカード`;
-    renderUserCards(); renderStampHistory();
+    renderUserCards(); 
+    renderStampHistory();
+    alert("名前を変更しました: "+userName);
   });
 
+  // カード追加
   addCardBtn.addEventListener("click", ()=>{
     const pass = addCardPassInput.value.trim();
     if(!pass) return alert("追加パスを入力してください");
+
     const matchedCard = cards.find(c => c.addPass === pass);
     if(!matchedCard) return alert("合言葉が違います");
+
     if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+
     userAddedCards.push(matchedCard.id);
     saveAll();
     renderUserCards();
     addCardPassInput.value="";
   });
 
+  // ユーザーカード描画
   function renderUserCards(){
     userCards.innerHTML="";
-    if(!cards.length){ userCards.textContent="カードがありません"; return; }
+    if(!userAddedCards.length){ userCards.textContent="カードがありません"; return; }
 
-    cards.forEach(c=>{
-      if(!userAddedCards.includes(c.id)) return; // 追加していないカードは表示しない
+    userAddedCards.forEach(cid=>{
+      const c = cards.find(card => card.id===cid);
+      if(!c) return;
 
       const cardDiv = document.createElement("div");
       cardDiv.className="card";
       cardDiv.style.background=c.bg||"#fff0f5";
 
       const title = document.createElement("h3");
-      title.textContent = `${c.name} (${c.serial})`;
+      title.textContent = `${c.name} (${c.serial||generateSerial()})`;
       cardDiv.appendChild(title);
 
       const slotsDiv = document.createElement("div");
@@ -151,38 +167,32 @@ function initUser() {
       for(let i=0;i<c.slots;i++){
         const span = document.createElement("span");
         span.className="stamp-slot";
+        const filled = userCardSerials[userName]?.[c.id]?.includes(i);
+        if(filled) span.classList.add("stamp-filled");
 
-        if(userCardSerials[userName]?.[c.id]?.includes(i)) span.classList.add("stamp-filled");
-
-        // 枠内にスタンプボタン配置
-        const btn = document.createElement("button");
-        btn.textContent = "押す";
-        btn.style.fontSize = "10px";
-        btn.style.padding = "2px 4px";
-        btn.style.margin = "0";
-        btn.addEventListener("click", ()=>{
-          if(span.classList.contains("stamp-filled")) return alert("この枠は既に押されています");
-
+        // スタンプ押下
+        span.addEventListener("click", ()=>{
           const inputWord = prompt("合言葉を入力してください:");
           if(!inputWord) return;
           const keyword = keywords.find(k=>k.cardId===c.id && k.word===inputWord);
           if(!keyword) return alert("合言葉が違います");
           if(!keyword.enabled) return alert("この合言葉は既に使用済みです");
 
-          // スタンプ処理
+          keyword.enabled=false;
           userCardSerials[userName] = userCardSerials[userName]||{};
           userCardSerials[userName][c.id] = userCardSerials[userName][c.id]||[];
-          userCardSerials[userName][c.id].push(i);
-          keyword.enabled = false;
-          span.classList.add("stamp-filled");
+          if(!userCardSerials[userName][c.id].includes(i)){
+            userCardSerials[userName][c.id].push(i);
+            span.classList.add("stamp-filled");
+            const now = new Date();
+            const datetime = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
+            userStampHistory.push({user:userName, cardId:c.id, slot:i, datetime});
+          }
 
-          const now=new Date();
-          const datetime=`${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,"0")}-${now.getDate().toString().padStart(2,"0")} ${now.getHours().toString().padStart(2,"0")}:${now.getMinutes().toString().padStart(2,"0")}:${now.getSeconds().toString().padStart(2,"0")}`;
-          userStampHistory.push({user:userName,cardId:c.id,slot:i,word:inputWord,datetime});
-          saveAll(); renderStampHistory();
+          saveAll();
+          renderStampHistory();
         });
 
-        span.appendChild(btn);
         slotsDiv.appendChild(span);
       }
       cardDiv.appendChild(slotsDiv);
@@ -190,6 +200,7 @@ function initUser() {
     });
   }
 
+  // スタンプ履歴描画
   function renderStampHistory(){
     historyList.innerHTML="";
     userStampHistory.filter(s=>s.user===userName)
@@ -202,6 +213,21 @@ function initUser() {
       });
   }
 
+  // 見た目設定
+  function applyUserColors(){
+    document.body.style.background=userUIColors.bg||"#fff0f5";
+    document.body.style.color=userUIColors.text||"#c44a7b";
+    document.querySelectorAll("button").forEach(btn=>{
+      btn.style.background=userUIColors.btn||"#ff99cc";
+      btn.style.color=userUIColors.text||"#c44a7b";
+    });
+  }
+
+  textColorPicker?.addEventListener("input", ()=>{ userUIColors.text=textColorPicker.value; saveAll(); applyUserColors(); });
+  bgColorPicker?.addEventListener("input", ()=>{ userUIColors.bg=bgColorPicker.value; saveAll(); applyUserColors(); });
+  btnColorPicker?.addEventListener("input", ()=>{ userUIColors.btn=btnColorPicker.value; saveAll(); applyUserColors(); });
+
+  applyUserColors();
   renderUserCards();
   renderStampHistory();
 }
