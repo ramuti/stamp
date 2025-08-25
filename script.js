@@ -116,6 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================
    ユーザー画面
 ========================= */
+/* =========================
+   ユーザー画面
+========================= */
 function initUser() {
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
@@ -123,6 +126,8 @@ function initUser() {
   const textColorPicker = document.getElementById("textColor");
   const bgColorPicker = document.getElementById("bgColor");
   const btnColorPicker = document.getElementById("btnColor");
+  const addCardBtn = document.getElementById("addCardBtn");
+  const addCardPassInput = document.getElementById("addCardPass");
 
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
@@ -145,24 +150,80 @@ function initUser() {
   });
 
   applyUserColors();
-// ユーザー画面：カード追加
-addCardBtn?.addEventListener("click", ()=>{
-  const pass = addCardPassInput.value.trim();
-  if(!pass) return alert("追加パスを入力してください");
 
-  // パスが一致するカードを検索
-  const matchedCard = cards.find(c => c.addPass === pass);
-  if(!matchedCard) return alert("合言葉が違います"); // ←ここで追加できないようにする
+  // カード追加処理（追加パス用）
+  addCardBtn?.addEventListener("click", ()=>{
+    const pass = addCardPassInput.value.trim();
+    if(!pass) return alert("追加パスを入力してください");
 
-  // 既に追加済みかチェック
-  if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+    const matchedCard = cards.find(c => c.addPass === pass);
+    if(!matchedCard) return alert("カード追加パスが違います");
 
-  // 追加処理
-  userAddedCards.push(matchedCard.id);
-  saveAll();
+    if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+
+    userAddedCards.push(matchedCard.id);
+    saveAll();
+    renderUserCards();
+    addCardPassInput.value = "";
+  });
+
+  // カード描画関数
+  function renderUserCards() {
+    userCards.innerHTML = "";
+    userAddedCards.forEach(cid => {
+      const card = cards.find(c => c.id === cid);
+      if(!card) return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = card.bg;
+
+      const name = document.createElement("div");
+      name.textContent = card.name;
+      div.appendChild(name);
+
+      // スタンプ枠
+      for(let i=0; i<card.slots; i++){
+        const span = document.createElement("span");
+        span.className = "stamp-slot";
+        const stamped = userStampHistory.find(s => s.cardId===cid && s.slot===i);
+        if(stamped) span.classList.add("stamp-filled");
+        div.appendChild(span);
+      }
+
+      // スタンプボタン
+      const btn = document.createElement("button");
+      btn.textContent = "スタンプを押す";
+      btn.style.display = "block";
+      btn.style.marginTop = "8px";
+      btn.addEventListener("click", ()=>{
+        const code = prompt("スタンプの合言葉を入力してください");
+        if(!code) return;
+
+        // 合言葉一致カードかチェック
+        if(code !== card.addPass) return alert("合言葉が違います");
+
+        // 空きスロットを探して押す
+        for(let i=0; i<card.slots; i++){
+          const exists = userStampHistory.find(s => s.cardId===cid && s.slot===i);
+          if(!exists){
+            userStampHistory.push({cardId: cid, slot: i, datetime: new Date().toISOString()});
+            saveAll();
+            renderUserCards();
+            break;
+          }
+          if(i === card.slots - 1){
+            alert("全ての枠にスタンプ済みです");
+          }
+        }
+      });
+
+      div.appendChild(btn);
+      userCards.appendChild(div);
+    });
+  }
+
   renderUserCards();
-  addCardPassInput.value = "";
-});
 }
 
 /* =========================
