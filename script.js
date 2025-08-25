@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* =========================
-   ユーザー画面
+   ユーザー画面（正式版）
 ========================= */
 function initUser() {
   const cardTitle = document.getElementById("cardTitle");
@@ -123,7 +123,24 @@ function initUser() {
   const textColorPicker = document.getElementById("textColor");
   const bgColorPicker = document.getElementById("bgColor");
   const btnColorPicker = document.getElementById("btnColor");
+  const addCardBtn = document.getElementById("addCardBtn");
+  const addCardPassInput = document.getElementById("addCardPassInput");
 
+  /* =========================
+     ユーザーID表示（右下・永続化）
+  ========================== */
+  const userIdDiv = document.createElement("div");
+  userIdDiv.style.position = "fixed";
+  userIdDiv.style.right = "8px";
+  userIdDiv.style.bottom = "8px";
+  userIdDiv.style.fontSize = "12px";
+  userIdDiv.style.color = "#999";
+  userIdDiv.textContent = `User: ${userName || "名無し"}`;
+  document.body.appendChild(userIdDiv);
+
+  /* =========================
+     UIカラー適用
+  ========================== */
   function applyUserColors() {
     document.body.style.background = userUIColors.bg;
     document.body.style.color = userUIColors.text;
@@ -133,7 +150,6 @@ function initUser() {
       btn.style.color = userUIColors.text;
     });
   }
-
   textColorPicker?.addEventListener("input", () => {
     userUIColors.text = textColorPicker.value; saveAll(); applyUserColors();
   });
@@ -143,9 +159,86 @@ function initUser() {
   btnColorPicker?.addEventListener("input", () => {
     userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors();
   });
-
   applyUserColors();
-  // カード描画などは既存のユーザー処理をここに入れる
+
+  /* =========================
+     カード追加（追加パス必須）
+  ========================== */
+  addCardBtn?.addEventListener("click", () => {
+    const pass = addCardPassInput.value.trim();
+    if(!pass) return alert("追加パスを入力してください");
+
+    const matchedCard = cards.find(c => c.addPass === pass);
+    if(!matchedCard) return alert("合言葉が違います");
+
+    if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+
+    userAddedCards.push(matchedCard.id);
+    saveAll();
+    renderUserCards();
+    addCardPassInput.value = "";
+  });
+
+  /* =========================
+     ユーザー追加カード描画
+  ========================== */
+  function renderUserCards() {
+    userCards.innerHTML = "";
+    userAddedCards.forEach(cid => {
+      const c = cards.find(x => x.id === cid);
+      if(!c) return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = c.bg;
+      div.innerHTML = `<strong>${c.name}</strong><br>`;
+      
+      // スタンプスロット
+      for(let i=0;i<c.slots;i++){
+        const slot = document.createElement("span");
+        slot.className="stamp-slot";
+        slot.textContent = "○";
+        div.appendChild(slot);
+      }
+
+      // スタンプボタン
+      const stampBtn = document.createElement("button");
+      stampBtn.textContent = "スタンプ";
+      stampBtn.addEventListener("click", ()=>{
+        const filled = div.querySelectorAll(".stamp-slot.filled").length;
+        if(filled >= c.slots) return alert("もう押せません");
+        div.querySelectorAll(".stamp-slot")[filled].classList.add("filled");
+        userStampHistory.push({
+          cardId:c.id,
+          slot:filled,
+          word:"",
+          datetime:new Date().toISOString()
+        });
+        saveAll();
+        renderStampHistory();
+      });
+      div.appendChild(stampBtn);
+
+      userCards.appendChild(div);
+    });
+  }
+
+  /* =========================
+     スタンプ履歴描画
+  ========================== */
+  function renderStampHistory() {
+    historyList.innerHTML = "";
+    userStampHistory.forEach(h=>{
+      const li = document.createElement("li");
+      const cName = cards.find(c => c.id === h.cardId)?.name || h.cardId;
+      li.textContent = `[${new Date(h.datetime).toLocaleString()}] ${cName} スロット${h.slot+1}`;
+      historyList.appendChild(li);
+    });
+  }
+
+  /* 初期描画 */
+  renderUserCards();
+  renderStampHistory();
 }
 
 /* =========================
