@@ -174,11 +174,7 @@ function initUser() {
   userCardsDiv.parentNode.insertBefore(userCardsTitle, userCardsDiv);
 
   function updateUserCardsTitle() {
-    if(userName && userCardsDiv){
-      userCardsTitle.textContent = `${userName}のスタンプカード`;
-    } else {
-      userCardsTitle.textContent = "スタンプカード";
-    }
+    userCardsTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
   }
   updateUserCardsTitle();
 
@@ -211,9 +207,7 @@ function initUser() {
   renderUserID();
 
   /* ============================
-     カード追加
-     - 追加パス必須
-     - 重複チェック
+     カード追加（追加パス使用）
   ============================ */
   addCardBtn.addEventListener("click", () => {
     const pass = addCardPassInput.value.trim();
@@ -233,7 +227,6 @@ function initUser() {
 
   /* ============================
      ユーザーのカード描画＋スタンプ押印
-     （削除済みカード非表示、押印ごとに合言葉確認）
   ============================ */
   function renderUserCards() {
     userCardsDiv.innerHTML = "";
@@ -264,8 +257,9 @@ function initUser() {
       stampBtn.style.display="block";
       stampBtn.style.marginTop="8px";
       stampBtn.addEventListener("click", () => {
-        const inputPass = prompt("カード合言葉を入力してください");
-        if(inputPass !== c.addPass) return alert("合言葉が違います");
+        // スタンプ押す合言葉は stampPass
+        const inputPass = prompt("スタンプ合言葉を入力してください");
+        if(inputPass !== c.stampPass) return alert("合言葉が違います");
 
         const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
         if(stampedCount >= c.slots) return alert("もう押せません");
@@ -276,6 +270,9 @@ function initUser() {
           word: "",
           datetime: new Date().toISOString()
         });
+
+        // 管理者設定の押印アラート
+        if(c.notifyMsg) alert(c.notifyMsg);
 
         userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
 
@@ -291,7 +288,6 @@ function initUser() {
 
   /* ============================
      スタンプ履歴描画
-     - 存在しないカードは表示しない
   ============================ */
   function renderStampHistory() {
     stampHistoryList.innerHTML = "";
