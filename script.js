@@ -113,9 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (body.classList.contains("admin")) initAdmin();
 });
 
-/* =========================
-   ユーザー画面
-========================= */
 function initUser() {
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
@@ -125,12 +122,33 @@ function initUser() {
   const btnColorPicker = document.getElementById("btnColor");
   const addCardPassInput = document.getElementById("addCardPass");
 
-  // --- カード表示条件 ---
+  const userNameInput = document.getElementById("userNameInput");
+  const setNameBtn = document.getElementById("setNameBtn");
+  const addCardBtn = document.getElementById("addCardBtn");
+
+  // --- 名前変更 ---
+  setNameBtn?.addEventListener("click", () => {
+    if(!userNameInput.value) return;
+    userName = userNameInput.value;
+    saveAll();
+    renderStampHistory();
+    renderUserCards(addCardPassInput.value || "");
+    alert("名前を変更しました: " + userName);
+  });
+
+  // --- カード描画条件 ---
   function getAvailableCards(passInput) {
     return cards.filter(c => c.addPass && c.addPass === passInput);
   }
 
-  // --- 履歴描画 ---
+  // --- カード追加（ユーザーが追加） ---
+  addCardBtn?.addEventListener("click", () => {
+    const pass = addCardPassInput.value;
+    if(!pass) return alert("追加パスを入力してください");
+    renderUserCards(pass);
+  });
+
+  // --- スタンプ履歴描画 ---
   function renderStampHistory() {
     historyList.innerHTML = "";
     userStampHistory
@@ -162,22 +180,14 @@ function initUser() {
         const filled = userCardSerials[userName]?.[c.id]?.includes(i);
         if (filled) span.classList.add("stamp-filled");
 
-        // クリックでスタンプ押下
         span.addEventListener("click", () => {
           const inputWord = prompt("合言葉を入力してください:");
           if (!inputWord) return;
 
           const keyword = keywords.find(k => k.cardId === c.id && k.word === inputWord);
-          if (!keyword) {
-            alert("合言葉が違います");
-            return;
-          }
-          if (!keyword.enabled) {
-            alert("この合言葉は既に使用済みです");
-            return;
-          }
+          if (!keyword) return alert("合言葉が違います");
+          if (!keyword.enabled) return alert("この合言葉は既に使用済みです");
 
-          // 合言葉1回のみ有効化
           keyword.enabled = false;
 
           userCardSerials[userName] = userCardSerials[userName] || {};
