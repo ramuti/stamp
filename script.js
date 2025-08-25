@@ -149,25 +149,15 @@ function initUser() {
     userNameInput.style.color = userUIColors.text;
     addCardPassInput.style.color = userUIColors.text;
   }
-
-  textColorPicker?.addEventListener("input", () => {
-    userUIColors.text = textColorPicker.value; saveAll(); applyUserColors();
-  });
-  bgColorPicker?.addEventListener("input", () => {
-    userUIColors.bg = bgColorPicker.value; saveAll(); applyUserColors();
-  });
-  btnColorPicker?.addEventListener("input", () => {
-    userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors();
-  });
-
+  textColorPicker?.addEventListener("input", () => { userUIColors.text = textColorPicker.value; saveAll(); applyUserColors(); });
+  bgColorPicker?.addEventListener("input", () => { userUIColors.bg = bgColorPicker.value; saveAll(); applyUserColors(); });
+  btnColorPicker?.addEventListener("input", () => { userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors(); });
   applyUserColors();
 
   /* ============================
      ユーザー名設定
   ============================ */
   userNameInput.value = userName || "";
-
-  // ユーザー名タイトル表示
   const userCardsTitle = document.createElement("h2");
   userCardsTitle.id = "userCardsTitle";
   userCardsTitle.style.marginBottom = "16px";
@@ -183,8 +173,8 @@ function initUser() {
     if(!val) return alert("名前を入力してください");
     userName = val;
     saveAll();
-    renderUserID(); 
-    updateUserCardsTitle(); // 名前反映
+    renderUserID();
+    updateUserCardsTitle();
   });
 
   /* ============================
@@ -214,7 +204,7 @@ function initUser() {
     if(!pass) return alert("追加パスを入力してください");
 
     const matchedCard = cards.find(c => c.addPass === pass);
-    if(!matchedCard) return alert("合言葉が違います");
+    if(!matchedCard) return alert("追加パスが違います");
 
     if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
@@ -227,10 +217,11 @@ function initUser() {
 
   /* ============================
      ユーザーのカード描画＋スタンプ押印
+     - 押印時は管理者設定の「合言葉」を使用
+     - 合言葉は 1 端末につき 1 回だけ使用可能
   ============================ */
   function renderUserCards() {
     userCardsDiv.innerHTML = "";
-
     userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
     userAddedCards.forEach(cid => {
@@ -257,21 +248,31 @@ function initUser() {
       stampBtn.style.display="block";
       stampBtn.style.marginTop="8px";
       stampBtn.addEventListener("click", () => {
-        // スタンプ押す合言葉は stampPass
-        const inputPass = prompt("スタンプ合言葉を入力してください");
-        if(inputPass !== c.stampPass) return alert("合言葉が違います");
+        const inputWord = prompt("スタンプ合言葉を入力してください");
+        if(!inputWord) return;
+
+        // このカードの有効な合言葉一覧
+        const matchedKeyword = keywords.find(k => k.cardId===cid && k.word===inputWord && k.enabled);
+        if(!matchedKeyword) return alert("合言葉が違います");
+
+        // すでにこの端末で使ったかチェック
+        const alreadyUsed = userStampHistory.some(s => s.cardId===cid && s.word===inputWord);
+        if(alreadyUsed) return alert("この合言葉は既に使われました");
 
         const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
-        if(stampedCount >= c.slots) return alert("もう押せません");
+        if(stampedCount >= c.slots) {
+          if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
+          return alert("もう押せません");
+        }
 
+        // 押印記録
         userStampHistory.push({
           cardId: cid,
           slot: stampedCount,
-          word: "",
+          word: inputWord,
           datetime: new Date().toISOString()
         });
 
-        // 管理者設定の押印アラート
         if(c.notifyMsg) alert(c.notifyMsg);
 
         userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
@@ -285,6 +286,40 @@ function initUser() {
       userCardsDiv.appendChild(div);
     });
   }
+
+  /* ============================
+     スタンプ履歴描画
+  ============================ */
+  function renderStampHistory() {
+    stampHistoryList.innerHTML = "";
+    userStampHistory.slice().reverse().forEach(s=>{
+      const cardExists = cards.find(c => c.id === s.cardId);
+      if(!cardExists) return;
+      const li = document.createElement("li");
+      const cName = cardExists.name || s.cardId;
+      const dt = new Date(s.datetime).toLocaleString();
+      li.textContent = `${cName} スロット${s.slot+1} ${dt}`;
+      stampHistoryList.appendChild(li);
+    });
+  }
+
+  renderUserCards();
+  renderStampHistory();
+
+  /* ============================
+     更新履歴描画
+  ============================ */
+  const updateLogsList = document.getElementById("updateLogs");
+  function renderUpdates() {
+    updateLogsList.innerHTML = "";
+    updates.forEach(u=>{
+      const li = document.createElement("li");
+      li.textContent = `${u.date} ${u.msg}`;
+      updateLogsList.appendChild(li);
+    });
+  }
+  renderUpdates();
+}
 
   /* ============================
      スタンプ履歴描画
