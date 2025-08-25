@@ -319,41 +319,7 @@ function initUser() {
     });
   }
   renderUpdates();
-}
-
-  /* ============================
-     スタンプ履歴描画
-  ============================ */
-  function renderStampHistory() {
-    stampHistoryList.innerHTML = "";
-    userStampHistory.slice().reverse().forEach(s=>{
-      const cardExists = cards.find(c => c.id === s.cardId);
-      if(!cardExists) return;
-      const li = document.createElement("li");
-      const cName = cardExists.name || s.cardId;
-      const dt = new Date(s.datetime).toLocaleString();
-      li.textContent = `${cName} スロット${s.slot+1} ${dt}`;
-      stampHistoryList.appendChild(li);
-    });
-  }
-
-  renderUserCards();
-  renderStampHistory();
-
-  /* ============================
-     更新履歴描画
-  ============================ */
-  const updateLogsList = document.getElementById("updateLogs");
-  function renderUpdates() {
-    updateLogsList.innerHTML = "";
-    updates.forEach(u=>{
-      const li = document.createElement("li");
-      li.textContent = `${u.date} ${u.msg}`;
-      updateLogsList.appendChild(li);
-    });
-  }
-  renderUpdates();
-}
+}}
 
 function initAdmin() {
   const cardName       = document.getElementById("cardName");
