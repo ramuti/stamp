@@ -114,115 +114,120 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================
    ユーザー画面
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("userPage")) {
-    const cardContainer = document.getElementById("cardContainer");
-    const userNameInput = document.getElementById("userNameInput");
-    const addPassInput = document.getElementById("addPassInput");
-    const addCardBtn = document.getElementById("addCardBtn");
 
-    // --- 保存データを取得 ---
-    let cards = JSON.parse(localStorage.getItem("cards")) || [];
-    let userName = localStorage.getItem("userName") || "";
-
-    // --- ユーザー名を反映 ---
-    if (userName) {
-      document.title = `${userName}のスタンプカード`;
-      userNameInput.value = userName;
-    }
-
-    userNameInput.addEventListener("input", () => {
-      const name = userNameInput.value.trim();
-      if (name) {
-        localStorage.setItem("userName", name);
-        document.title = `${name}のスタンプカード`;
-      } else {
-        localStorage.removeItem("userName");
-        document.title = "スタンプカード";
-      }
-    });
-
-    // --- カード描画 ---
-    function renderCards() {
-      cardContainer.innerHTML = "";
-      cards.forEach(card => {
-        const cardDiv = document.createElement("div");
-        cardDiv.className = "card";
-        cardDiv.style.backgroundColor = card.bg || "#fff";
-
-        // シリアル番号
-        const serial = document.createElement("p");
-        serial.textContent = `シリアル: ${card.id}`;
-        cardDiv.appendChild(serial);
-
-        // タイトル
-        const title = document.createElement("h3");
-        title.textContent = card.name;
-        cardDiv.appendChild(title);
-
-        // スロット（スタンプ部分）
-        const slotsDiv = document.createElement("div");
-        slotsDiv.className = "slots";
-        for (let i = 0; i < card.slots; i++) {
-          const slot = document.createElement("span");
-          slot.className = "slot";
-          if (i < (card.stamps || 0)) {
-            slot.textContent = "✔"; // スタンプ押された印
-          }
-          slotsDiv.appendChild(slot);
-        }
-        cardDiv.appendChild(slotsDiv);
-
-        // スタンプボタン
-        const stampBtn = document.createElement("button");
-        stampBtn.textContent = "スタンプを押す";
-        stampBtn.addEventListener("click", () => {
-          card.stamps = (card.stamps || 0) + 1;
-          if (card.stamps > card.slots) card.stamps = card.slots;
-          saveCards();
-          renderCards();
-        });
-        cardDiv.appendChild(stampBtn);
-
-        cardContainer.appendChild(cardDiv);
-      });
-    }
-
-    // --- 保存処理 ---
-    function saveCards() {
-      localStorage.setItem("cards", JSON.stringify(cards));
-    }
-
-    // --- カード追加（合言葉 + ボタン）---
-    addCardBtn.addEventListener("click", () => {
-      const pass = addPassInput.value.trim();
-      if (!pass) return;
-
-      // 管理者が設定したカードを取得
-      let adminCards = JSON.parse(localStorage.getItem("adminCards")) || [];
-      const targetCard = adminCards.find(c => c.addPass === pass);
-
-      if (targetCard) {
-        // 新しいカードをユーザーに追加
-        const newCard = {
-          id: Date.now(), // ランダムシリアル番号代わり
-          name: targetCard.name,
-          slots: targetCard.slots,
-          bg: targetCard.bg,
-          stamps: 0
-        };
-        cards.push(newCard);
-        saveCards();
-        renderCards();
-        addPassInput.value = "";
-      } else {
-        alert("合言葉が正しくありません。");
-      }
-    });
-
-    // --- 初期表示 ---
-    renderCards();
+// ユーザー名を保存してタイトルに反映
+function saveUserName() {
+  const userName = document.getElementById("userName").value.trim();
+  if (userName) {
+    localStorage.setItem("userName", userName);
+    document.title = `${userName}のスタンプカード`;
+    document.getElementById("pageTitle").innerText = `${userName}のスタンプカード`;
   }
+}
+
+// ユーザー名を復元
+function loadUserName() {
+  const savedName = localStorage.getItem("userName");
+  if (savedName) {
+    document.getElementById("userName").value = savedName;
+    document.title = `${savedName}のスタンプカード`;
+    document.getElementById("pageTitle").innerText = `${savedName}のスタンプカード`;
+  }
+}
+
+// カードを描画
+function renderCards(cards) {
+  const container = document.getElementById("userCards");
+  container.innerHTML = "";
+  cards.forEach(card => {
+    const cardEl = document.createElement("div");
+    cardEl.className = "card";
+    cardEl.style.background = card.bg || "#fff";
+
+    // シリアル番号
+    const serial = card.serial || generateSerial();
+    card.serial = serial;
+
+    const title = document.createElement("h3");
+    title.textContent = `${card.name}（No.${serial}）`;
+    cardEl.appendChild(title);
+
+    // スタンプボタン
+    const button = document.createElement("button");
+    button.textContent = "スタンプを押す";
+    button.onclick = () => addStamp(card.id);
+    cardEl.appendChild(button);
+
+    // スタンプ数表示
+    const slots = document.createElement("p");
+    slots.textContent = `スタンプ：${card.stamps || 0}/${card.slots}`;
+    cardEl.appendChild(slots);
+
+    container.appendChild(cardEl);
+  });
+
+  saveCards(cards);
+}
+
+// カード追加（追加パスの入力はボタン押下時のみ判定）
+function tryAddCard() {
+  const passInput = document.getElementById("addPassInput").value.trim();
+  if (!passInput) return;
+
+  const cards = loadCards();
+  // 管理側で設定したパスワード一致判定
+  const adminCards = JSON.parse(localStorage.getItem("adminCards")) || [];
+  const target = adminCards.find(c => c.addPass === passInput);
+  if (target) {
+    // すでに追加済みならスキップ
+    if (cards.some(c => c.id === target.id)) {
+      alert("このカードはすでに追加されています。");
+    } else {
+      const newCard = { ...target, stamps: 0, serial: generateSerial() };
+      cards.push(newCard);
+      renderCards(cards);
+      alert(`${newCard.name} を追加しました！`);
+    }
+  } else {
+    alert("追加パスが間違っています。");
+  }
+  document.getElementById("addPassInput").value = "";
+}
+
+// ランダムシリアル番号
+function generateSerial() {
+  return Math.floor(100000 + Math.random() * 900000); // 6桁
+}
+
+// カード保存
+function saveCards(cards) {
+  localStorage.setItem("userCards", JSON.stringify(cards));
+}
+
+// カード読み込み
+function loadCards() {
+  return JSON.parse(localStorage.getItem("userCards")) || [];
+}
+
+// スタンプを押す
+function addStamp(cardId) {
+  const cards = loadCards();
+  const card = cards.find(c => c.id === cardId);
+  if (card) {
+    if (!card.stamps) card.stamps = 0;
+    if (card.stamps < card.slots) {
+      card.stamps++;
+    } else {
+      alert("スタンプがいっぱいです！");
+    }
+    renderCards(cards);
+  }
+}
+
+// 初期化
+window.addEventListener("DOMContentLoaded", () => {
+  loadUserName();
+  renderCards(loadCards());
 });
 
 /* =========================
