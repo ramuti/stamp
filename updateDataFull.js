@@ -1,27 +1,21 @@
 {
   "cards": [
     {
-      "id": "card_1756118865064",
-      "name": "なる",
+      "id": "card_1756129883217",
+      "name": "さゆ",
       "slots": 5,
-      "addPass": "ああ",
+      "addPass": "お",
       "bg": "#fff0f5",
       "stampIcon": "",
-      "notifyMsg": "スタンプを押しました！",
-      "maxNotifyMsg": "もう押せません"
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
     }
   ],
   "keywords": [
     {
-      "cardId": "card_1756118865064",
-      "word": "あ",
+      "cardId": "card_1756129883217",
+      "word": "かかか",
       "enabled": true
-    }
-  ],
-  "updates": [
-    {
-      "date": "2025-08-25",
-      "msg": "初期カード追加"
     }
   ]
 }
