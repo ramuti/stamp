@@ -251,9 +251,11 @@ function initUser() {
         const inputWord = prompt("スタンプ合言葉を入力してください");
         if(!inputWord) return;
 
-        // このカードの有効な合言葉一覧
-        const matchedKeyword = keywords.find(k => k.cardId===cid && k.word===inputWord && k.enabled);
-        if(!matchedKeyword) return alert("合言葉が違います");
+        // このカードの有効な合言葉一覧（addPass も含む）
+const matchedKeyword = (keywords.find(k => k.cardId===cid && k.word===inputWord && k.enabled))
+                     || (cards.find(c => c.id===cid && c.addPass === inputWord));
+
+if(!matchedKeyword) return alert("合言葉が違います");
 
         // すでにこの端末で使ったかチェック
         const alreadyUsed = userStampHistory.some(s => s.cardId===cid && s.word===inputWord);
