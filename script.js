@@ -117,6 +117,16 @@ document.addEventListener("DOMContentLoaded", () => {
    ユーザー画面
 ========================= */
 function initUser() {
+  // 合言葉の状態表示を更新する関数
+function updateKeywordStatus(inputWord, cardId) {
+  const statusDiv = document.getElementById("keywordStatus");
+  const keyword = keywords.find(k => k.word === inputWord && k.cardId === cardId);
+  if (keyword) {
+    statusDiv.textContent = `現在の状態: ${keyword.enabled ? "有効" : "無効"}`;
+  } else {
+    statusDiv.textContent = "現在の状態: 無効";
+  }
+}
   const cardTitle = document.getElementById("cardTitle");
   const userCards = document.getElementById("userCards");
   const historyList = document.getElementById("stampHistory");
