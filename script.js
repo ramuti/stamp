@@ -215,14 +215,20 @@ function initUser() {
   });
 
   /* ============================
-     ユーザーのカード描画
-     - スタンプ押印ボタン付き
+     ユーザーのカード描画＋スタンプ押印修正版
+     - 削除済みカードは表示しない
+     - スタンプ押すごとに合言葉確認
+     - 消されたカードの履歴は残さない
   ============================ */
   function renderUserCards() {
     userCardsDiv.innerHTML = "";
+
+    // 追加済みカードのうち、まだ削除されていないカードのみ表示
+    userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
+
     userAddedCards.forEach(cid => {
       const c = cards.find(x => x.id === cid);
-      if(!c) return;
+      if(!c) return; // 念のため
 
       const div = document.createElement("div");
       div.className = "card";
@@ -246,14 +252,24 @@ function initUser() {
       stampBtn.style.display="block";
       stampBtn.style.marginTop="8px";
       stampBtn.addEventListener("click", () => {
+        // 合言葉再確認
+        const inputPass = prompt("カード合言葉を入力してください");
+        if(inputPass !== c.addPass) return alert("合言葉が違います");
+
         const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
         if(stampedCount >= c.slots) return alert("もう押せません");
+
+        // 正常押印
         userStampHistory.push({
           cardId: cid,
           slot: stampedCount,
           word: "",
           datetime: new Date().toISOString()
         });
+
+        // 消されたカードの履歴は残さないよう再クリーン
+        userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
+
         saveAll();
         renderUserCards();
         renderStampHistory();
@@ -265,19 +281,23 @@ function initUser() {
   }
 
   /* ============================
-     スタンプ履歴描画
+     スタンプ履歴描画修正版
+     - 存在しないカードは表示しない
   ============================ */
   function renderStampHistory() {
     stampHistoryList.innerHTML = "";
     userStampHistory.slice().reverse().forEach(s=>{
+      const cardExists = cards.find(c => c.id === s.cardId);
+      if(!cardExists) return; // 削除されたカードはスキップ
       const li = document.createElement("li");
-      const cName = cards.find(c=>c.id===s.cardId)?.name || s.cardId;
+      const cName = cardExists.name || s.cardId;
       const dt = new Date(s.datetime).toLocaleString();
       li.textContent = `${cName} スロット${s.slot+1} ${dt}`;
       stampHistoryList.appendChild(li);
     });
   }
 
+  // 初期描画
   renderUserCards();
   renderStampHistory();
 
