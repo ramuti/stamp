@@ -118,7 +118,7 @@ let userCardSerials = loadJSON(LS_KEYS.userCardSerials, {});
 document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   if (body.classList.contains("user")) initUser();
-  if (body.classList.contains("admin")) initAdmin(); // 既存管理者初期化（変更なし）
+  if (body.classList.contains("admin")) initAdmin(); // 管理者初期化（変更なし）
 });
 
 /* ============================
@@ -195,19 +195,18 @@ function initUser() {
 
   /* ============================
      カード追加
+     - 追加パス必須
+     - 重複チェック
   ============================ */
   addCardBtn.addEventListener("click", () => {
     const pass = addCardPassInput.value.trim();
     if(!pass) return alert("追加パスを入力してください");
 
-    // パスに一致するカードを検索
     const matchedCard = cards.find(c => c.addPass === pass);
     if(!matchedCard) return alert("合言葉が違います");
 
-    // 既に追加済みか確認
     if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
-    // 追加
     userAddedCards.push(matchedCard.id);
     saveAll();
     addCardPassInput.value = "";
@@ -217,12 +216,14 @@ function initUser() {
 
   /* ============================
      ユーザーのカード描画
+     - スタンプ押印ボタン付き
   ============================ */
   function renderUserCards() {
     userCardsDiv.innerHTML = "";
     userAddedCards.forEach(cid => {
       const c = cards.find(x => x.id === cid);
       if(!c) return;
+
       const div = document.createElement("div");
       div.className = "card";
       div.style.background = c.bg || "#fff0f5";
@@ -233,7 +234,6 @@ function initUser() {
       for(let i=0;i<c.slots;i++){
         const span = document.createElement("span");
         span.className = "stamp-slot";
-        // 既に押している場合は色をつける
         const filled = userStampHistory.find(s => s.cardId===cid && s.slot===i);
         if(filled) span.classList.add("stamp-filled");
         slotsDiv.appendChild(span);
@@ -248,14 +248,12 @@ function initUser() {
       stampBtn.addEventListener("click", () => {
         const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
         if(stampedCount >= c.slots) return alert("もう押せません");
-        // 押印履歴追加
-        const hist = {
+        userStampHistory.push({
           cardId: cid,
           slot: stampedCount,
           word: "",
           datetime: new Date().toISOString()
-        };
-        userStampHistory.push(hist);
+        });
         saveAll();
         renderUserCards();
         renderStampHistory();
@@ -271,7 +269,6 @@ function initUser() {
   ============================ */
   function renderStampHistory() {
     stampHistoryList.innerHTML = "";
-    // 最新順
     userStampHistory.slice().reverse().forEach(s=>{
       const li = document.createElement("li");
       const cName = cards.find(c=>c.id===s.cardId)?.name || s.cardId;
@@ -281,7 +278,6 @@ function initUser() {
     });
   }
 
-  // 初期描画
   renderUserCards();
   renderStampHistory();
 
