@@ -5,89 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
-body {
-  font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif;
-  background: #fff0f5;
-  padding: 20px;
-  color: #c44a7b;
-}
+body { font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif; background: #fff0f5; padding: 20px; color: #c44a7b; }
 h1 { margin: 8px 0; }
-
-input[type=text], input[type=color], textarea {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ffa6c9;
-  margin-right: 6px;
-  background: #fff;
-  color: #000;
-  font-size: 16px;
-}
-
-button {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: none;
-  background: #ff99cc;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-}
-button:hover { background: #ff66b3; }
-
-.card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
-}
-.stamp-slot {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  background: #fff;
-  vertical-align: middle;
-  transition: 0.2s;
-}
-.stamp-filled { background: #ff69b4; }
-
-.serial { 
-  font-size: 0.85em; 
-  margin-left: 10px; 
-  color:#666; 
-}
-#userCards { margin-top: 12px; }
-
-#colorSettings { 
-  margin-top: 16px; 
-  border:1px solid #ffa6c9; 
-  padding: 8px; 
-  border-radius: 8px; 
-  background:#ffe6f0;
-}
-#colorSettings label { 
-  margin-right: 8px; 
-  font-size: 0.9rem; 
-}
-
-ul { padding-left: 20px; }
+input[type=text], input[type=color], textarea { padding:6px 10px; border-radius:8px; border:1px solid #ffa6c9; margin-right:6px; background:#fff; color:#000; font-size:16px; }
+button { padding:6px 10px; border-radius:8px; border:none; background:#ff99cc; color:#fff; cursor:pointer; transition:0.2s; }
+button:hover { background:#ff66b3; }
+.card { border:2px dashed #ffb6c1; border-radius:12px; padding:12px; margin:12px 0; background:#fff0f5; }
+.stamp-slot { display:inline-block; width:28px; height:28px; border:2px solid #ff99cc; border-radius:6px; margin:2px; background:#fff; vertical-align:middle; transition:0.2s; }
+.stamp-filled { background:#ff69b4; }
+.serial { font-size:0.85em; margin-left:10px; color:#666; }
+#userCards { margin-top:12px; }
+#colorSettings { margin-top:16px; border:1px solid #ffa6c9; padding:8px; border-radius:8px; background:#ffe6f0; }
+#colorSettings label { margin-right:8px; font-size:0.9rem; }
+ul { padding-left:20px; }
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<div style="margin-top: 16px;">
+<div style="margin-top:16px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
 
 <hr>
 
-<div style="margin-top: 16px;">
+<div style="margin-top:16px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
@@ -109,19 +53,9 @@ ul { padding-left: 20px; }
 
 <!-- updateDataFull.js 読み込み -->
 <script>
-const ts = Date.now();
+const ts = new Date().getTime();
 const s = document.createElement("script");
 s.src = `updateDataFull.js?ts=${ts}`;
-s.onload = ()=>{
-  if(typeof updateDataFull==="undefined") return;
-
-  const data=updateDataFull;
-
-  // 最新データで localStorage 上書き（ユーザー個別は保持）
-  localStorage.setItem("cards", JSON.stringify(data.cards||[]));
-  localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
-  localStorage.setItem("updates", JSON.stringify(data.updates||[]));
-};
 document.head.appendChild(s);
 </script>
 
