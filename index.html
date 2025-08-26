@@ -20,7 +20,7 @@ input[type=text], input[type=color] {
   margin-right: 6px;
   background: #fff;
   color: #000;
-  font-size: 16px; /* これでiOSの自動ズーム防止 */
+  font-size: 16px; /* iOSの自動ズーム防止 */
 }
 button {
   padding: 6px 10px;
@@ -53,7 +53,7 @@ button:hover { background: #ff66b3; }
 }
 .stamp-filled { background: #ff69b4; }
 
-.serial { font-size: 0.85em; margin-top: 6px; }
+.serial { font-size: 0.85em; margin-left: 10px; color:#666; }
 #userCards { margin-top: 12px; }
 
 #colorSettings { margin-top: 16px; border:1px solid #ffa6c9; padding: 8px; border-radius: 8px; background:#ffe6f0;}
@@ -93,7 +93,10 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
+<!-- カード・合言葉・更新履歴の元データ -->
+<script src="updateDataFull.js"></script>
 <script src="script.js"></script>
+
 <script>
 /* =========================
    初期JSON読み込み
@@ -104,13 +107,6 @@ if(typeof updateDataFull !== "undefined") {
   localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
   localStorage.setItem("updates", JSON.stringify(data.updates||[]));
 }
-
-// 入力欄フォント16pxで固定（自動ズーム防止）
-const userNameInput = document.getElementById("userNameInput");
-const addCardPassInput = document.getElementById("addCardPass");
-[userNameInput, addCardPassInput].forEach(el=>{
-  if(el) el.style.fontSize="16px";
-});
 </script>
 </body>
 </html>
