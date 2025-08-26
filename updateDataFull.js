@@ -1,10 +1,10 @@
 {
   "cards": [
     {
-      "id": "card_1756198878953",
-      "name": "あああ",
+      "id": "card_1756201790352",
+      "name": "かす",
       "slots": 5,
-      "addPass": "さす",
+      "addPass": "なす",
       "bg": "#fff0f5",
       "stampIcon": "",
       "notifyMsg": "",
