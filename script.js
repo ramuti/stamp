@@ -119,9 +119,6 @@ function initUser(){
   const btnColorPicker=document.getElementById("btnColor");
 
 
-  // 入力欄フォント16px固定（スマホ自動ズーム防止）
-  [userNameInput, addCardPassInput].forEach(el=>{
-    if(el) el.style.fontSize="16px";
 
   // ユーザー色適用
   function applyUserColors(){
