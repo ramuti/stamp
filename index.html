@@ -111,20 +111,19 @@ ul { padding-left: 20px; }
 
 <!-- カード・合言葉・更新履歴の元データ -->
 <script src="updateDataFull.js"></script>
-<script src="script.js"></script>
-
 <script>
 /* =========================
-   初期JSON読み込み（ユーザー端末向け）
+   初期JSON読み込み（updateDataFull.js）
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  if(typeof updateDataFull !== "undefined") {
-    const data = updateDataFull;
-    if(data.cards) localStorage.setItem("cards", JSON.stringify(data.cards));
-    if(data.keywords) localStorage.setItem("keywords", JSON.stringify(data.keywords));
-    if(data.updates) localStorage.setItem("updates", JSON.stringify(data.updates));
-  }
-});
+if(typeof updateDataFull !== "undefined") {
+  const data = updateDataFull;
+  // 初回のみ localStorage に書き込む
+  if(!localStorage.getItem("cards")) localStorage.setItem("cards", JSON.stringify(data.cards||[]));
+  if(!localStorage.getItem("keywords")) localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
+  if(!localStorage.getItem("updates")) localStorage.setItem("updates", JSON.stringify(data.updates||[]));
+}
 </script>
+<script src="script.js"></script>
+
 </body>
 </html>
