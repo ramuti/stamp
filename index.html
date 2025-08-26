@@ -13,16 +13,14 @@ body {
 }
 h1 { margin: 8px 0; }
 
-input[type=text], 
-input[type=color], 
-textarea {
+input[type=text], input[type=color], textarea {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid #ffa6c9;
   margin-right: 6px;
   background: #fff;
   color: #000;
-  font-size: 16px;
+  font-size: 16px; /* iOS Safariの自動ズーム防止 */
 }
 
 button {
@@ -109,46 +107,41 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- updateDataFull.js 読み込み (キャッシュ回避用タイムスタンプ付与) -->
+<!-- 最新データ読み込み（キャッシュ回避） -->
 <script>
-const ts = new Date().getTime();
-const s = document.createElement("script");
-s.src = `updateDataFull.js?ts=${ts}`;
-s.onload = () => {
-  if (typeof updateDataFull !== "undefined") {
-    const data = updateDataFull;
+const ts = Date.now();
+const script = document.createElement('script');
+script.src = `updateDataFull.js?ts=${ts}`;
+document.head.appendChild(script);
 
-    // 現在の localStorage
-    const oldCards = JSON.parse(localStorage.getItem("cards") || "[]");
-    const oldKeywords = JSON.parse(localStorage.getItem("keywords") || "[]");
-    const oldUpdates = JSON.parse(localStorage.getItem("updates") || "[]");
+script.onload = () => {
+  if(typeof updateDataFull !== "undefined"){
+    // localStorage の古いデータ
+    const oldCards = JSON.parse(localStorage.getItem("cards")||"[]");
+    const oldKeywords = JSON.parse(localStorage.getItem("keywords")||"[]");
+    const oldUpdates = JSON.parse(localStorage.getItem("updates")||"[]");
 
-    // カード: id が同じなら上書き、存在しないものは削除
-    const mergedCards = data.cards.slice(); // 最新データを優先
+    // ----------------------------
+    // カード：上書き＋削除反映
+    // ----------------------------
+    const mergedCards = [...updateDataFull.cards]; // updateDataFull.js にないカードは消える
     localStorage.setItem("cards", JSON.stringify(mergedCards));
 
-    // キーワード: cardId+word で重複排除
-    const mergedKeywords = [];
-    data.keywords.forEach(k=>{
-      if(!mergedKeywords.some(x=>x.cardId===k.cardId && x.word===k.word)){
-        mergedKeywords.push(k);
-      }
-    });
+    // キーワード： cardId+word で重複排除＋存在しないカードのキーワード削除
+    const mergedKeywords = (updateDataFull.keywords||[]).filter(k=>mergedCards.some(c=>c.id===k.cardId));
     localStorage.setItem("keywords", JSON.stringify(mergedKeywords));
 
-    // 更新履歴: date+msg で重複排除
-    const mergedUpdates = [];
-    data.updates.forEach(u=>{
-      if(!mergedUpdates.some(x=>x.date===u.date && x.msg===u.msg)){
-        mergedUpdates.push(u);
-      }
-    });
+    // 更新履歴： date+msg で重複排除
+    const mergedUpdates = [...updateDataFull.updates||[]];
     localStorage.setItem("updates", JSON.stringify(mergedUpdates));
+
+    // ここで script.js を読み込む
+    const userScript = document.createElement('script');
+    userScript.src = "script.js";
+    document.body.appendChild(userScript);
   }
 };
-document.head.appendChild(s);
 </script>
 
-<script src="script.js"></script>
 </body>
 </html>
