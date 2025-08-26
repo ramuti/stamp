@@ -186,34 +186,46 @@ function initUser(){
       stampBtn.style.display="block"; stampBtn.style.marginTop="8px";
 
       stampBtn.addEventListener("click",()=>{
-        const inputPass=prompt("スタンプ合言葉を入力してください");
-        if(!inputPass) return;
+  const inputPass = prompt("スタンプ合言葉を入力してください");
+  if (!inputPass) return;
 
-        // 合言葉チェック
-        let matched=null;
-        matched=keywords.find(k=>k.cardId===cid && k.word===inputPass && k.enabled);
-        if(!matched && c.addPass===inputPass){ matched={cardId:cid,word:inputPass}; }
-        if(!matched) return alert("合言葉が違います");
+  // --- 合言葉チェック（カード個別 addPass + keywords 両方対応） ---
+  let matched = null;
+  matched = keywords.find(k => k.cardId === cid && k.word === inputPass && k.enabled);
+  if (!matched && c.addPass === inputPass) {
+    matched = { cardId: cid, word: inputPass };
+  }
+  if (!matched) return alert("合言葉が違います");
 
-        const stampedCount=userStampHistory.filter(s=>s.cardId===cid).length;
-        if(stampedCount>=c.slots){
-          if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
-          return alert("もう押せません");
-        }
+  // --- 1合言葉1回制限 ---
+  const alreadyUsed = userStampHistory.find(s => s.cardId === cid && s.word === inputPass);
+  if (alreadyUsed) {
+    return alert("この合言葉はすでに使用済みです");
+  }
 
-        userStampHistory.push({
-          cardId:cid,
-          slot:stampedCount,
-          word:inputPass,
-          datetime:new Date().toISOString()
-        });
+  // --- スロット上限チェック ---
+  const stampedCount = userStampHistory.filter(s => s.cardId === cid).length;
+  if (stampedCount >= c.slots) {
+    if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
+    return alert("もう押せません");
+  }
 
-        if(c.notifyMsg) alert(c.notifyMsg);
-        userStampHistory=userStampHistory.filter(s=>cards.some(c=>c.id===s.cardId));
-        saveAll();
-        renderUserCards();
-        renderStampHistory();
-      });
+  // --- スタンプを記録 ---
+  userStampHistory.push({
+    cardId: cid,
+    slot: stampedCount,
+    word: inputPass,
+    datetime: new Date().toISOString()
+  });
+
+  if (c.notifyMsg) alert(c.notifyMsg);
+
+  // データ整理＆保存
+  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
+  saveAll();
+  renderUserCards();
+  renderStampHistory();
+});
 
       div.appendChild(stampBtn);
       userCardsDiv.appendChild(div);
