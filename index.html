@@ -109,36 +109,41 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- updateDataFull.js 読み込み（キャッシュ回避タイムスタンプ付き） -->
+<!-- updateDataFull.js 読み込み & localStorage 同期 -->
 <script>
-const ts = Date.now();
-const s = document.createElement("script");
-s.src = `updateDataFull.js?ts=${ts}`;
-s.onload = () => {
-  if (typeof updateDataFull !== "undefined") {
-    const data = updateDataFull;
+(function(){
+  const ts = Date.now();
+  const s = document.createElement("script");
+  s.src = `updateDataFull.js?ts=${ts}`;
+  s.onload = () => {
+    if (typeof updateDataFull !== "undefined") {
+      const data = updateDataFull || {cards:[], keywords:[], updates:[]};
 
-    // カード同期
-    localStorage.setItem("cards", JSON.stringify(data.cards || []));
+      // カード: 最新データを優先
+      localStorage.setItem("cards", JSON.stringify(data.cards));
 
-    // キーワード同期（存在するカードのみ）
-    const filteredKeywords = (data.keywords || []).filter(k => 
-      (data.cards || []).some(c => c.id === k.cardId)
-    );
-    localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
+      // キーワード: 存在するカードだけ残す
+      const filteredKeywords = (data.keywords || []).filter(k => 
+        (data.cards || []).some(c => c.id === k.cardId)
+      );
+      localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
 
-    // 更新履歴同期
-    localStorage.setItem("updates", JSON.stringify(data.updates || []));
+      // 更新履歴
+      localStorage.setItem("updates", JSON.stringify(data.updates || []));
 
-    // script.js を読み込む（最新データ反映後）
-    const userScript = document.createElement("script");
-    userScript.src = "script.js";
-    document.body.appendChild(userScript);
-  } else {
-    console.error("updateDataFull.js が読み込まれていません");
-  }
-};
-document.head.appendChild(s);
+      // DOMContentLoaded 後に script.js を読み込む
+      document.addEventListener("DOMContentLoaded", () => {
+        const scriptJs = document.createElement("script");
+        scriptJs.src = "script.js";
+        document.body.appendChild(scriptJs);
+      });
+
+    } else {
+      console.error("updateDataFull.js が読み込まれていません");
+    }
+  };
+  document.head.appendChild(s);
+})();
 </script>
 
 </body>
