@@ -1,21 +1,21 @@
 {
   "cards": [
     {
-      "id": "card_1756129883217",
-      "name": "さゆ",
+      "id": "card_1756181485655",
+      "name": "か",
       "slots": 5,
-      "addPass": "お",
+      "addPass": "スタンプ",
       "bg": "#fff0f5",
       "stampIcon": "",
       "notifyMsg": "",
       "maxNotifyMsg": ""
     }
   ],
-  "keywords": [
+  "keywords": [],
+  "updates": [
     {
-      "cardId": "card_1756129883217",
-      "word": "かかか",
-      "enabled": true
+      "date": "2025/8/26 13:11:46",
+      "msg": "こうしん"
     }
   ]
 }
