@@ -113,20 +113,43 @@ ul { padding-left: 20px; }
 <script src="updateDataFull.js"></script>
 <script>
 /* =========================
-   初回アクセス時に updateDataFull を反映
-   （既存の localStorage は上書きしない）
+   初期JSON読み込み・マージ版
 ========================= */
-if(typeof updateDataFull !== "undefined") {
+if (typeof updateDataFull !== "undefined") {
   const data = updateDataFull;
-  const LS_KEYS = {
-    cards: "cards",
-    keywords: "keywords",
-    updates: "updates"
-  };
 
-  if(!localStorage.getItem(LS_KEYS.cards)) localStorage.setItem(LS_KEYS.cards, JSON.stringify(data.cards||[]));
-  if(!localStorage.getItem(LS_KEYS.keywords)) localStorage.setItem(LS_KEYS.keywords, JSON.stringify(data.keywords||[]));
-  if(!localStorage.getItem(LS_KEYS.updates)) localStorage.setItem(LS_KEYS.updates, JSON.stringify(data.updates||[]));
+  // 現在の localStorage データ
+  const oldCards = JSON.parse(localStorage.getItem("cards") || "[]");
+  const oldKeywords = JSON.parse(localStorage.getItem("keywords") || "[]");
+  const oldUpdates = JSON.parse(localStorage.getItem("updates") || "[]");
+
+  // カードは id が同じものを上書き、なければ追加
+  const mergedCards = data.cards.reduce((arr, c) => {
+    const idx = arr.findIndex(x => x.id === c.id);
+    if (idx >= 0) arr[idx] = c;
+    else arr.push(c);
+    return arr;
+  }, [...oldCards]);
+
+  // キーワードは cardId+word で重複を排除してマージ
+  const mergedKeywords = [...oldKeywords];
+  data.keywords.forEach(k=>{
+    if(!mergedKeywords.some(x=>x.cardId===k.cardId && x.word===k.word)){
+      mergedKeywords.push(k);
+    }
+  });
+
+  // 更新履歴は date+msg で重複を排除してマージ
+  const mergedUpdates = [...oldUpdates];
+  data.updates.forEach(u=>{
+    if(!mergedUpdates.some(x=>x.date===u.date && x.msg===u.msg)){
+      mergedUpdates.push(u);
+    }
+  });
+
+  localStorage.setItem("cards", JSON.stringify(mergedCards));
+  localStorage.setItem("keywords", JSON.stringify(mergedKeywords));
+  localStorage.setItem("updates", JSON.stringify(mergedUpdates));
 }
 </script>
 <script src="script.js"></script>
