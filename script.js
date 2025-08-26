@@ -205,13 +205,11 @@ function initUser(){
       const div=document.createElement("div");
       div.className="card";
       div.style.background=c.bg||"#fff0f5";
-      div.innerHTML=`<div>${c.name}</div>`;
 
-      // シリアル表示
-      const serialDiv=document.createElement("div");
-      serialDiv.className="serial";
-      serialDiv.textContent=`シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
-      div.appendChild(serialDiv);
+      // カード名
+      const nameDiv=document.createElement("div");
+      nameDiv.textContent=c.name;
+      div.appendChild(nameDiv);
 
       // スタンプスロット
       const slotsDiv=document.createElement("div");
@@ -224,11 +222,15 @@ function initUser(){
       }
       div.appendChild(slotsDiv);
 
-      // スタンプボタン
+      // スタンプボタン＋シリアル横並び
+      const btnContainer=document.createElement("div");
+      btnContainer.style.display="flex";
+      btnContainer.style.justifyContent="space-between";
+      btnContainer.style.alignItems="center";
+      btnContainer.style.marginTop="8px";
+
       const stampBtn=document.createElement("button");
       stampBtn.textContent="スタンプ押す";
-      stampBtn.style.display="block";
-      stampBtn.style.marginTop="8px";
       stampBtn.addEventListener("click",()=>{
         const inputPass=prompt("スタンプ合言葉を入力してください");
         if(!inputPass) return;
@@ -247,6 +249,7 @@ function initUser(){
           return alert("もう押せません");
         }
 
+        // スタンプ履歴追加
         userStampHistory.push({
           cardId:cid,
           slot:stampedCount,
@@ -261,7 +264,15 @@ function initUser(){
 
         alert(c.notifyMsg||"スタンプを押しました！");
       });
-      div.appendChild(stampBtn);
+
+      const serialSpan=document.createElement("span");
+      serialSpan.textContent=`シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
+      serialSpan.style.fontSize="0.85em";
+      serialSpan.style.color="#666";
+
+      btnContainer.appendChild(stampBtn);
+      btnContainer.appendChild(serialSpan);
+      div.appendChild(btnContainer);
 
       userCardsDiv.appendChild(div);
     });
