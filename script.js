@@ -212,6 +212,14 @@ function initUser(){
     datetime: new Date().toISOString()
   });
 
+  alert(c.notifyMsg || "スタンプを押しました！");
+
+  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
+  saveAll();
+  renderUserCards();
+  renderStampHistory();
+});
+
   // notifyMsg があればそれを表示、なければデフォルト
   alert(c.notifyMsg || "スタンプを押しました！");
 
