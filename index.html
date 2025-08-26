@@ -113,33 +113,19 @@ ul { padding-left: 20px; }
 <script src="updateDataFull.js"></script>
 <script>
 /* =========================
-   初期JSON読み込み・マージ版
+   初期JSON読み込み・完全同期版
 ========================= */
 if (typeof updateDataFull !== "undefined") {
   const data = updateDataFull;
 
-  // 現在の localStorage データ
-  const oldCards = JSON.parse(localStorage.getItem("cards") || "[]");
-  const oldKeywords = JSON.parse(localStorage.getItem("keywords") || "[]");
+  // カードは updateDataFull.js にあるものだけ残す
+  const mergedCards = [...data.cards];
+
+  // キーワードも updateDataFull.js にあるものだけ残す
+  const mergedKeywords = [...data.keywords];
+
+  // 更新履歴は既存とマージ（重複排除）
   const oldUpdates = JSON.parse(localStorage.getItem("updates") || "[]");
-
-  // カードは id が同じものを上書き、なければ追加
-  const mergedCards = data.cards.reduce((arr, c) => {
-    const idx = arr.findIndex(x => x.id === c.id);
-    if (idx >= 0) arr[idx] = c;
-    else arr.push(c);
-    return arr;
-  }, [...oldCards]);
-
-  // キーワードは cardId+word で重複を排除してマージ
-  const mergedKeywords = [...oldKeywords];
-  data.keywords.forEach(k=>{
-    if(!mergedKeywords.some(x=>x.cardId===k.cardId && x.word===k.word)){
-      mergedKeywords.push(k);
-    }
-  });
-
-  // 更新履歴は date+msg で重複を排除してマージ
   const mergedUpdates = [...oldUpdates];
   data.updates.forEach(u=>{
     if(!mergedUpdates.some(x=>x.date===u.date && x.msg===u.msg)){
@@ -147,6 +133,7 @@ if (typeof updateDataFull !== "undefined") {
     }
   });
 
+  // localStorage に保存
   localStorage.setItem("cards", JSON.stringify(mergedCards));
   localStorage.setItem("keywords", JSON.stringify(mergedKeywords));
   localStorage.setItem("updates", JSON.stringify(mergedUpdates));
