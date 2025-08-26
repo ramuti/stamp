@@ -20,7 +20,7 @@ input[type=text], input[type=color], textarea {
   margin-right: 6px;
   background: #fff;
   color: #000;
-  font-size: 16px; /* iOS Safariの自動ズーム防止 */
+  font-size: 16px;
 }
 
 button {
@@ -116,26 +116,21 @@ document.head.appendChild(script);
 
 script.onload = () => {
   if(typeof updateDataFull !== "undefined"){
-    // localStorage の古いデータ
-    const oldCards = JSON.parse(localStorage.getItem("cards")||"[]");
-    const oldKeywords = JSON.parse(localStorage.getItem("keywords")||"[]");
-    const oldUpdates = JSON.parse(localStorage.getItem("updates")||"[]");
+    const newCards = updateDataFull.cards || [];
+    const newKeywords = updateDataFull.keywords || [];
+    const newUpdates = updateDataFull.updates || [];
 
-    // ----------------------------
-    // カード：上書き＋削除反映
-    // ----------------------------
-    const mergedCards = [...updateDataFull.cards]; // updateDataFull.js にないカードは消える
-    localStorage.setItem("cards", JSON.stringify(mergedCards));
+    // カード上書き＋削除反映
+    localStorage.setItem("cards", JSON.stringify(newCards));
 
-    // キーワード： cardId+word で重複排除＋存在しないカードのキーワード削除
-    const mergedKeywords = (updateDataFull.keywords||[]).filter(k=>mergedCards.some(c=>c.id===k.cardId));
-    localStorage.setItem("keywords", JSON.stringify(mergedKeywords));
+    // 存在しないカードのキーワードは削除
+    const filteredKeywords = newKeywords.filter(k => newCards.some(c=>c.id===k.cardId));
+    localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
 
-    // 更新履歴： date+msg で重複排除
-    const mergedUpdates = [...updateDataFull.updates||[]];
-    localStorage.setItem("updates", JSON.stringify(mergedUpdates));
+    // 更新履歴も上書き
+    localStorage.setItem("updates", JSON.stringify(newUpdates));
 
-    // ここで script.js を読み込む
+    // script.js 後読み
     const userScript = document.createElement('script');
     userScript.src = "script.js";
     document.body.appendChild(userScript);
