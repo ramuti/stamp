@@ -118,6 +118,8 @@ function initUser(){
   const bgColorPicker=document.getElementById("bgColor");
   const btnColorPicker=document.getElementById("btnColor");
 
+
+
   // ユーザー色適用
   function applyUserColors(){
     document.body.style.background=userUIColors.bg;
