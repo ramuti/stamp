@@ -185,37 +185,41 @@ function initUser(){
       stampBtn.textContent="スタンプ押す";
       stampBtn.style.display="block"; stampBtn.style.marginTop="8px";
 
-      stampBtn.addEventListener("click",()=>{
-        const inputPass=prompt("スタンプ合言葉を入力してください");
-        if(!inputPass) return;
+    stampBtn.addEventListener("click",()=>{
+  const inputPass = prompt("スタンプ合言葉を入力してください");
+  if(!inputPass) return;
 
-        // 合言葉チェック
-        let matched=null;
-        matched=keywords.find(k=>k.cardId===cid && k.word===inputPass && k.enabled);
-        if(!matched && c.addPass===inputPass){ matched={cardId:cid,word:inputPass}; }
-        if(!matched) return alert("合言葉が違います");
+  // 合言葉チェック
+  let matched = keywords.find(k=>k.cardId===cid && k.word===inputPass && k.enabled);
+  if(!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
+  if(!matched) return alert("合言葉が違います");
 
-        const stampedCount=userStampHistory.filter(s=>s.cardId===cid).length;
-        if(stampedCount>=c.slots){
-          if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
-          return alert("もう押せません");
-        }
+  // 同じ合言葉で既に押していないかチェック
+  if(userStampHistory.some(s=>s.cardId===cid && s.word===inputPass)){
+    return alert("この合言葉では既に押しています");
+  }
 
-        userStampHistory.push({
-          cardId:cid,
-          slot:stampedCount,
-          word:inputPass,
-          datetime:new Date().toISOString()
-        });
+  const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
+  if(stampedCount >= c.slots){
+    if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
+    return alert("もう押せません");
+  }
 
-        // --- 押しましたアラート ---
-        alert("スタンプを押しました！");
-        userStampHistory=userStampHistory.filter(s=>cards.some(c=>c.id===s.cardId));
-        saveAll();
-        renderUserCards();
-        renderStampHistory();
-      });
+  userStampHistory.push({
+    cardId: cid,
+    slot: stampedCount,
+    word: inputPass,
+    datetime: new Date().toISOString()
+  });
 
+  // notifyMsg があればそれを表示、なければデフォルト
+  alert(c.notifyMsg || "スタンプを押しました！");
+
+  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
+  saveAll();
+  renderUserCards();
+  renderStampHistory();
+});
       div.appendChild(stampBtn);
       userCardsDiv.appendChild(div);
     });
