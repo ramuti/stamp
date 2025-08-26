@@ -13,14 +13,16 @@ body {
 }
 h1 { margin: 8px 0; }
 
-input[type=text], input[type=color] {
+input[type=text], input[type=color], textarea {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid #ffa6c9;
   margin-right: 6px;
   background: #fff;
   color: #000;
+  font-size: 16px;
 }
+
 button {
   padding: 6px 10px;
   border-radius: 8px;
@@ -52,11 +54,24 @@ button:hover { background: #ff66b3; }
 }
 .stamp-filled { background: #ff69b4; }
 
-.serial { font-size: 0.85em; margin-top: 6px; }
+.serial { 
+  font-size: 0.85em; 
+  margin-left: 10px; 
+  color:#666; 
+}
 #userCards { margin-top: 12px; }
 
-#colorSettings { margin-top: 16px; border:1px solid #ffa6c9; padding: 8px; border-radius: 8px; background:#ffe6f0;}
-#colorSettings label { margin-right: 8px; font-size: 0.9rem; }
+#colorSettings { 
+  margin-top: 16px; 
+  border:1px solid #ffa6c9; 
+  padding: 8px; 
+  border-radius: 8px; 
+  background:#ffe6f0;
+}
+#colorSettings label { 
+  margin-right: 8px; 
+  font-size: 0.9rem; 
+}
 
 ul { padding-left: 20px; }
 </style>
@@ -92,18 +107,38 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<script src="script.js"></script>
+<!-- 最新データ読み込み・同期 -->
 <script>
-/* =========================
-   初期JSON読み込み
-========================= */
-if(typeof updateDataFull !== "undefined") {
-  // カード・キーワード・更新履歴を読み込む
-  const data = updateDataFull;
-  localStorage.setItem("cards", JSON.stringify(data.cards||[]));
-  localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
-  localStorage.setItem("updates", JSON.stringify(data.updates||[]));
-}
+const ts = Date.now();
+const script = document.createElement('script');
+script.src = `updateDataFull.js?ts=${ts}`;
+document.head.appendChild(script);
+
+script.onload = () => {
+  if(typeof updateDataFull !== "undefined"){
+    const newCards = updateDataFull.cards || [];
+    const newKeywords = updateDataFull.keywords || [];
+    const newUpdates = updateDataFull.updates || [];
+
+    // カード同期：存在しないカードは削除
+    localStorage.setItem("cards", JSON.stringify(newCards));
+
+    // キーワード同期：存在するカードだけ残す
+    const filteredKeywords = newKeywords.filter(k => newCards.some(c=>c.id===k.cardId));
+    localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
+
+    // 更新履歴上書き
+    localStorage.setItem("updates", JSON.stringify(newUpdates));
+
+    // script.js を確実に動作させる
+    const userScript = document.createElement('script');
+    userScript.src = "script.js";
+    document.body.appendChild(userScript);
+  } else {
+    console.error("updateDataFull.jsが読み込まれていません");
+  }
+};
 </script>
+
 </body>
 </html>
