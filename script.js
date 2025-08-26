@@ -165,44 +165,48 @@ function initUser(){
 ============================ */
 function renderUserCards(){
   userCardsDiv.innerHTML="";
-  userAddedCards=userAddedCards.filter(cid=>cards.some(c=>c.id===cid));
+  // userAddedCards の有効なカードIDのみ残す
+  userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
-  userAddedCards.forEach(cid=>{
-    const c=cards.find(x=>x.id===cid);
+  userAddedCards.forEach(cid => {
+    const c = cards.find(x => x.id === cid);
     if(!c) return;
 
-    const div=document.createElement("div");
-    div.className="card"; div.style.background=c.bg||"#fff0f5";
-    div.innerHTML=`<div>${c.name}</div>`;
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.background = c.bg || "#fff0f5";
+    div.innerHTML = `<div>${c.name}</div>`;
 
-    const slotsDiv=document.createElement("div");
-    for(let i=0;i<c.slots;i++){
-      const span=document.createElement("span"); span.className="stamp-slot";
-      const filled=userStampHistory.find(s=>s.cardId===cid && s.slot===i);
+    const slotsDiv = document.createElement("div");
+    for(let i = 0; i < c.slots; i++){
+      const span = document.createElement("span");
+      span.className = "stamp-slot";
+      const filled = userStampHistory.find(s => s.cardId === cid && s.slot === i);
       if(filled) span.classList.add("stamp-filled");
       slotsDiv.appendChild(span);
     }
     div.appendChild(slotsDiv);
 
-    const stampBtn=document.createElement("button");
-    stampBtn.textContent="スタンプ押す";
-    stampBtn.style.display="block"; stampBtn.style.marginTop="8px";
+    const stampBtn = document.createElement("button");
+    stampBtn.textContent = "スタンプ押す";
+    stampBtn.style.display = "block";
+    stampBtn.style.marginTop = "8px";
 
-    stampBtn.addEventListener("click",()=>{
+    stampBtn.addEventListener("click", () => {
       const inputPass = prompt("スタンプ合言葉を入力してください");
       if(!inputPass) return;
 
       // 合言葉チェック
-      let matched = keywords.find(k=>k.cardId===cid && k.word===inputPass && k.enabled);
-      if(!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
+      let matched = keywords.find(k => k.cardId === cid && k.word === inputPass && k.enabled);
+      if(!matched && c.addPass === inputPass) matched = {cardId: cid, word: inputPass};
       if(!matched) return alert("合言葉が違います");
 
       // 同じ合言葉で既に押していないかチェック
-      if(userStampHistory.some(s=>s.cardId===cid && s.word===inputPass)){
+      if(userStampHistory.some(s => s.cardId === cid && s.word === inputPass)){
         return alert("この合言葉では既に押しています");
       }
 
-      const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
+      const stampedCount = userStampHistory.filter(s => s.cardId === cid).length;
       if(stampedCount >= c.slots){
         if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
         return alert("もう押せません");
@@ -217,7 +221,7 @@ function renderUserCards(){
 
       alert(c.notifyMsg || "スタンプを押しました！");
 
-      userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
+      userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
       saveAll();
       renderUserCards();
       renderStampHistory();
@@ -227,14 +231,6 @@ function renderUserCards(){
     userCardsDiv.appendChild(div);
   });
 }
-
-  alert(c.notifyMsg || "スタンプを押しました！");
-
-  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
-  saveAll();
-  renderUserCards();
-  renderStampHistory();
-});
 
   // notifyMsg があればそれを表示、なければデフォルト
   alert(c.notifyMsg || "スタンプを押しました！");
