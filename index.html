@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>スタンプカード</title>
 <style>
 body {
@@ -20,6 +20,7 @@ input[type=text], input[type=color] {
   margin-right: 6px;
   background: #fff;
   color: #000;
+  font-size: 16px; /* iOS自動ズーム防止 */
 }
 button {
   padding: 6px 10px;
@@ -104,6 +105,13 @@ if(typeof updateDataFull !== "undefined") {
   localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
   localStorage.setItem("updates", JSON.stringify(data.updates||[]));
 }
+
+// 入力欄フォント固定（念のため）
+const userNameInput = document.getElementById("userNameInput");
+const addCardPassInput = document.getElementById("addCardPass");
+[userNameInput, addCardPassInput].forEach(el=>{
+  if(el) el.style.fontSize="16px";
+});
 </script>
 </body>
 </html>
