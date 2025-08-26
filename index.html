@@ -13,9 +13,7 @@ body {
 }
 h1 { margin: 8px 0; }
 
-input[type=text], 
-input[type=color], 
-textarea {
+input[type=text], input[type=color], textarea {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid #ffa6c9;
@@ -109,34 +107,24 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- updateDataFull.js 読み込み & script.js 実行 -->
+<!-- updateDataFull.js 読み込み -->
 <script>
 const ts = Date.now();
 const s = document.createElement("script");
 s.src = `updateDataFull.js?ts=${ts}`;
-s.onload = () => {
-  if(typeof updateDataFull !== "undefined"){
-    const data = updateDataFull;
+s.onload = ()=>{
+  if(typeof updateDataFull==="undefined") return;
 
-    // localStorage に最新データを書き込み
-    localStorage.setItem("cards", JSON.stringify(data.cards||[]));
-    localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
-    localStorage.setItem("updates", JSON.stringify(data.updates||[]));
+  const data=updateDataFull;
 
-    // script.js 読み込み
-    const userScript = document.createElement("script");
-    userScript.src = "script.js";
-    userScript.onload = () => {
-      // initUser() があれば直接呼んで、ボタン反応を保証
-      if(typeof initUser === "function") initUser();
-    };
-    document.body.appendChild(userScript);
-  } else {
-    console.error("updateDataFull.js が読み込めませんでした");
-  }
+  // 最新データで localStorage 上書き（ユーザー個別は保持）
+  localStorage.setItem("cards", JSON.stringify(data.cards||[]));
+  localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
+  localStorage.setItem("updates", JSON.stringify(data.updates||[]));
 };
 document.head.appendChild(s);
 </script>
 
+<script src="script.js"></script>
 </body>
 </html>
