@@ -161,7 +161,7 @@ function initUser(){
   /* ============================
    スタンプ押印処理（合言葉取得修正版）
 ============================ */
-function renderUserCards()
+function renderUserCards(){
   userCardsDiv.innerHTML="";
   userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
@@ -226,7 +226,6 @@ function renderUserCards()
     div.appendChild(stampBtn);
     userCardsDiv.appendChild(div);
   });
-}}
 
   function renderStampHistory(){
     stampHistoryList.innerHTML="";
