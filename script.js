@@ -251,7 +251,7 @@ function initUser(){
   renderUpdates();
 }
 
-// --- 管理者側は元のコードのまま ---
+
 
 
 
