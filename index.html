@@ -13,7 +13,9 @@ body {
 }
 h1 { margin: 8px 0; }
 
-input[type=text], input[type=color], textarea {
+input[type=text], 
+input[type=color], 
+textarea {
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid #ffa6c9;
@@ -107,40 +109,46 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- 最新データ読み込み・同期 -->
+<!-- updateDataFull.js 読み込み (キャッシュ回避用タイムスタンプ付与) -->
 <script>
-(() => {
-  const ts = Date.now();
-  const script = document.createElement('script');
-  script.src = `updateDataFull.js?ts=${ts}`;
-  document.head.appendChild(script);
+const ts = new Date().getTime();
+const s = document.createElement("script");
+s.src = `updateDataFull.js?ts=${ts}`;
+s.onload = () => {
+  if (typeof updateDataFull !== "undefined") {
+    const data = updateDataFull;
 
-  script.onload = () => {
-    if(typeof updateDataFull !== "undefined"){
-      const newCards = updateDataFull.cards || [];
-      const newKeywords = updateDataFull.keywords || [];
-      const newUpdates = updateDataFull.updates || [];
+    // 現在の localStorage
+    const oldCards = JSON.parse(localStorage.getItem("cards") || "[]");
+    const oldKeywords = JSON.parse(localStorage.getItem("keywords") || "[]");
+    const oldUpdates = JSON.parse(localStorage.getItem("updates") || "[]");
 
-      // cards を完全同期（存在しないカードは削除）
-      localStorage.setItem("cards", JSON.stringify(newCards));
+    // カード: id が同じなら上書き、存在しないものは削除
+    const mergedCards = data.cards.slice(); // 最新データを優先
+    localStorage.setItem("cards", JSON.stringify(mergedCards));
 
-      // keywords は存在するカードのみ保持
-      const filteredKeywords = newKeywords.filter(k => newCards.some(c=>c.id===k.cardId));
-      localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
+    // キーワード: cardId+word で重複排除
+    const mergedKeywords = [];
+    data.keywords.forEach(k=>{
+      if(!mergedKeywords.some(x=>x.cardId===k.cardId && x.word===k.word)){
+        mergedKeywords.push(k);
+      }
+    });
+    localStorage.setItem("keywords", JSON.stringify(mergedKeywords));
 
-      // updates は最新で上書き
-      localStorage.setItem("updates", JSON.stringify(newUpdates));
-
-      // script.js を確実に実行
-      const mainScript = document.createElement('script');
-      mainScript.src = "script.js";
-      document.body.appendChild(mainScript);
-    } else {
-      console.error("updateDataFull.js が読み込まれていません");
-    }
-  };
-})();
+    // 更新履歴: date+msg で重複排除
+    const mergedUpdates = [];
+    data.updates.forEach(u=>{
+      if(!mergedUpdates.some(x=>x.date===u.date && x.msg===u.msg)){
+        mergedUpdates.push(u);
+      }
+    });
+    localStorage.setItem("updates", JSON.stringify(mergedUpdates));
+  }
+};
+document.head.appendChild(s);
 </script>
 
+<script src="script.js"></script>
 </body>
 </html>
