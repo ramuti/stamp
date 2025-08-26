@@ -1,10 +1,10 @@
 {
   "cards": [
     {
-      "id": "card_1756181485655",
-      "name": "か",
+      "id": "card_1756183229977",
+      "name": "あいう",
       "slots": 5,
-      "addPass": "スタンプ",
+      "addPass": "しり",
       "bg": "#fff0f5",
       "stampIcon": "",
       "notifyMsg": "",
@@ -12,10 +12,5 @@
     }
   ],
   "keywords": [],
-  "updates": [
-    {
-      "date": "2025/8/26 13:11:46",
-      "msg": "こうしん"
-    }
-  ]
+  "updates": []
 }
