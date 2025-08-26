@@ -115,14 +115,16 @@ ul { padding-left: 20px; }
 
 <script>
 /* =========================
-   初期JSON読み込み
+   初期JSON読み込み（ユーザー端末向け）
 ========================= */
-if(typeof updateDataFull !== "undefined") {
-  const data = updateDataFull;
-  localStorage.setItem("cards", JSON.stringify(data.cards||[]));
-  localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
-  localStorage.setItem("updates", JSON.stringify(data.updates||[]));
-}
+document.addEventListener("DOMContentLoaded", () => {
+  if(typeof updateDataFull !== "undefined") {
+    const data = updateDataFull;
+    if(data.cards) localStorage.setItem("cards", JSON.stringify(data.cards));
+    if(data.keywords) localStorage.setItem("keywords", JSON.stringify(data.keywords));
+    if(data.updates) localStorage.setItem("updates", JSON.stringify(data.updates));
+  }
+});
 </script>
 </body>
 </html>
