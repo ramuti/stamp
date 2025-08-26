@@ -109,41 +109,29 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- updateDataFull.js 読み込み & localStorage 同期 -->
+<!-- updateDataFull.js 読み込み（キャッシュ回避） -->
 <script>
-(function(){
-  const ts = Date.now();
-  const s = document.createElement("script");
-  s.src = `updateDataFull.js?ts=${ts}`;
-  s.onload = () => {
-    if (typeof updateDataFull !== "undefined") {
-      const data = updateDataFull || {cards:[], keywords:[], updates:[]};
+const ts = Date.now();
+const updateScript = document.createElement("script");
+updateScript.src = `updateDataFull.js?ts=${ts}`;
+updateScript.onload = () => {
+  if(typeof updateDataFull !== "undefined"){
+    const data = updateDataFull;
 
-      // カード: 最新データを優先
-      localStorage.setItem("cards", JSON.stringify(data.cards));
+    // 最新データを localStorage に書き込む
+    localStorage.setItem("cards", JSON.stringify(data.cards||[]));
+    localStorage.setItem("keywords", JSON.stringify(data.keywords||[]));
+    localStorage.setItem("updates", JSON.stringify(data.updates||[]));
 
-      // キーワード: 存在するカードだけ残す
-      const filteredKeywords = (data.keywords || []).filter(k => 
-        (data.cards || []).some(c => c.id === k.cardId)
-      );
-      localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
-
-      // 更新履歴
-      localStorage.setItem("updates", JSON.stringify(data.updates || []));
-
-      // DOMContentLoaded 後に script.js を読み込む
-      document.addEventListener("DOMContentLoaded", () => {
-        const scriptJs = document.createElement("script");
-        scriptJs.src = "script.js";
-        document.body.appendChild(scriptJs);
-      });
-
-    } else {
-      console.error("updateDataFull.js が読み込まれていません");
-    }
-  };
-  document.head.appendChild(s);
-})();
+    // script.js をこのタイミングで読み込む
+    const userScript = document.createElement("script");
+    userScript.src = "script.js";
+    document.body.appendChild(userScript);
+  } else {
+    console.error("updateDataFull.js が読み込めませんでした");
+  }
+};
+document.head.appendChild(updateScript);
 </script>
 
 </body>
