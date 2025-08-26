@@ -5,89 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
-body {
-  font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif;
-  background: #fff0f5;
-  padding: 20px;
-  color: #c44a7b;
-}
-h1 { margin: 8px 0; }
-
-input[type=text], input[type=color], textarea {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ffa6c9;
-  margin-right: 6px;
-  background: #fff;
-  color: #000;
-  font-size: 16px;
-}
-
-button {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: none;
-  background: #ff99cc;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-}
-button:hover { background: #ff66b3; }
-
-.card {
-  border: 2px dashed #ffb6c1;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 12px 0;
-  background: #fff0f5;
-}
-.stamp-slot {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  border: 2px solid #ff99cc;
-  border-radius: 6px;
-  margin: 2px;
-  background: #fff;
-  vertical-align: middle;
-  transition: 0.2s;
-}
-.stamp-filled { background: #ff69b4; }
-
-.serial { 
-  font-size: 0.85em; 
-  margin-left: 10px; 
-  color:#666; 
-}
-#userCards { margin-top: 12px; }
-
-#colorSettings { 
-  margin-top: 16px; 
-  border:1px solid #ffa6c9; 
-  padding: 8px; 
-  border-radius: 8px; 
-  background:#ffe6f0;
-}
-#colorSettings label { 
-  margin-right: 8px; 
-  font-size: 0.9rem; 
-}
-
-ul { padding-left: 20px; }
+body { font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif; background:#fff0f5; padding:20px; color:#c44a7b; }
+h1{margin:8px 0;}
+input[type=text],input[type=color],textarea{padding:6px 10px;border-radius:8px;border:1px solid #ffa6c9;margin-right:6px;background:#fff;color:#000;font-size:16px;}
+button{padding:6px 10px;border-radius:8px;border:none;background:#ff99cc;color:#fff;cursor:pointer;transition:0.2s;}
+button:hover{background:#ff66b3;}
+.card{border:2px dashed #ffb6c1;border-radius:12px;padding:12px;margin:12px 0;background:#fff0f5;}
+.stamp-slot{display:inline-block;width:28px;height:28px;border:2px solid #ff99cc;border-radius:6px;margin:2px;background:#fff;vertical-align:middle;transition:0.2s;}
+.stamp-filled{background:#ff69b4;}
+.serial{font-size:0.85em;margin-left:10px;color:#666;}
+#userCards{margin-top:12px;}
+#colorSettings{margin-top:16px;border:1px solid #ffa6c9;padding:8px;border-radius:8px;background:#ffe6f0;}
+#colorSettings label{margin-right:8px;font-size:0.9rem;}
+ul{padding-left:20px;}
 </style>
 </head>
 <body class="user">
 
 <h1 id="cardTitle">スタンプカード</h1>
 
-<div style="margin-top: 16px;">
+<div style="margin-top:16px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
 
 <hr>
 
-<div style="margin-top: 16px;">
+<div style="margin-top:16px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
   <button id="addCardBtn">カード追加</button>
 </div>
@@ -107,30 +51,32 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- ==========================
-     最新データ読み込み・同期
-========================== -->
-<script src="updateDataFull.js"></script>
 <script>
-if (typeof updateDataFull !== "undefined") {
-  const newCards = updateDataFull.cards || [];
-  const newKeywords = updateDataFull.keywords || [];
-  const newUpdates = updateDataFull.updates || [];
+(function(){
+  const ts = Date.now();
+  const script = document.createElement('script');
+  script.src = `updateDataFull.js?ts=${ts}`;
+  script.onload = () => {
+    if(typeof updateDataFull !== "undefined"){
+      const newCards = updateDataFull.cards||[];
+      const newKeywords = updateDataFull.keywords||[];
+      const newUpdates = updateDataFull.updates||[];
 
-  // カード：最新データに合わせて上書き＋存在しないカードは削除
-  localStorage.setItem("cards", JSON.stringify(newCards));
+      localStorage.setItem("cards", JSON.stringify(newCards));
+      localStorage.setItem("keywords", JSON.stringify(newKeywords.filter(k=>newCards.some(c=>c.id===k.cardId))));
+      localStorage.setItem("updates", JSON.stringify(newUpdates));
 
-  // キーワード：存在するカードだけ残す
-  const filteredKeywords = newKeywords.filter(k => newCards.some(c => c.id === k.cardId));
-  localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
-
-  // 更新履歴：そのまま上書き
-  localStorage.setItem("updates", JSON.stringify(newUpdates));
-}
+      // script.js を後から確実に読み込む
+      const s = document.createElement('script');
+      s.src = "script.js";
+      document.body.appendChild(s);
+    } else {
+      console.error("updateDataFull.js が読み込めませんでした");
+    }
+  };
+  document.head.appendChild(script);
+})();
 </script>
-
-<!-- script.js を確実に動作させる -->
-<script src="script.js"></script>
 
 </body>
 </html>
