@@ -109,46 +109,37 @@ ul { padding-left: 20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- updateDataFull.js 読み込み (キャッシュ回避用タイムスタンプ付与) -->
+<!-- updateDataFull.js 読み込み（キャッシュ回避タイムスタンプ付き） -->
 <script>
-const ts = new Date().getTime();
+const ts = Date.now();
 const s = document.createElement("script");
 s.src = `updateDataFull.js?ts=${ts}`;
 s.onload = () => {
   if (typeof updateDataFull !== "undefined") {
     const data = updateDataFull;
 
-    // 現在の localStorage
-    const oldCards = JSON.parse(localStorage.getItem("cards") || "[]");
-    const oldKeywords = JSON.parse(localStorage.getItem("keywords") || "[]");
-    const oldUpdates = JSON.parse(localStorage.getItem("updates") || "[]");
+    // カード同期
+    localStorage.setItem("cards", JSON.stringify(data.cards || []));
 
-    // カード: id が同じなら上書き、存在しないものは削除
-    const mergedCards = data.cards.slice(); // 最新データを優先
-    localStorage.setItem("cards", JSON.stringify(mergedCards));
+    // キーワード同期（存在するカードのみ）
+    const filteredKeywords = (data.keywords || []).filter(k => 
+      (data.cards || []).some(c => c.id === k.cardId)
+    );
+    localStorage.setItem("keywords", JSON.stringify(filteredKeywords));
 
-    // キーワード: cardId+word で重複排除
-    const mergedKeywords = [];
-    data.keywords.forEach(k=>{
-      if(!mergedKeywords.some(x=>x.cardId===k.cardId && x.word===k.word)){
-        mergedKeywords.push(k);
-      }
-    });
-    localStorage.setItem("keywords", JSON.stringify(mergedKeywords));
+    // 更新履歴同期
+    localStorage.setItem("updates", JSON.stringify(data.updates || []));
 
-    // 更新履歴: date+msg で重複排除
-    const mergedUpdates = [];
-    data.updates.forEach(u=>{
-      if(!mergedUpdates.some(x=>x.date===u.date && x.msg===u.msg)){
-        mergedUpdates.push(u);
-      }
-    });
-    localStorage.setItem("updates", JSON.stringify(mergedUpdates));
+    // script.js を読み込む（最新データ反映後）
+    const userScript = document.createElement("script");
+    userScript.src = "script.js";
+    document.body.appendChild(userScript);
+  } else {
+    console.error("updateDataFull.js が読み込まれていません");
   }
 };
 document.head.appendChild(s);
 </script>
 
-<script src="script.js"></script>
 </body>
 </html>
