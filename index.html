@@ -5,17 +5,20 @@
   <title>update.js 読み込みテスト</title>
 </head>
 <body>
-  <button id="checkUpdate">update.js をチェック</button>
+  <h1>update.js 読み込みテスト</h1>
+  <button id="checkUpdate">update.js 読み込み確認</button>
   <div id="result"></div>
 
-  <!-- update.js を読み込む -->
+  <!-- update.js は var update でグローバル定義しておく -->
   <script src="update.js"></script>
+  <script src="script.js"></script>
+
   <script>
-    document.getElementById("checkUpdate").addEventListener("click", () => {
+    document.getElementById("checkUpdate").addEventListener("click",()=>{
       const result = document.getElementById("result");
-      if (typeof update !== "undefined") {
+      if(typeof update !== "undefined"){
         result.textContent = "✅ update.js 読み込み成功！";
-        console.log("✅ 読み込まれたデータ:", update);
+        console.log("読み込まれた update:", update);
       } else {
         result.textContent = "❌ update.js が読み込まれていません！";
       }
