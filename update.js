@@ -19,5 +19,10 @@ var update = {
       "enabled": true
     }
   ],
-  "updates": []
+  "updates": [
+    {
+      "date": "2025/8/27 18:13:31",
+      "msg": "更新テスト"
+    }
+  ]
 };
