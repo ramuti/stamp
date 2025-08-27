@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
+/* --- CSSは省略せずにそのまま --- */
 body { font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif; background: #fff0f5; padding: 20px; color: #c44a7b; }
 h1 { margin: 8px 0; }
 input[type=text], input[type=color], textarea { padding:6px 10px; border-radius:8px; border:1px solid #ffa6c9; margin-right:6px; background:#fff; color:#000; font-size:16px; }
@@ -51,7 +52,7 @@ ul { padding-left:20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- update.js 読み込み（キャッシュ回避） -->
+<!-- --- update.js 読み込み --- -->
 <script>
 (function(){
   const ts = new Date().getTime();
@@ -60,10 +61,20 @@ ul { padding-left:20px; }
   s.onload = () => console.log("update.js 読み込み成功");
   s.onerror = () => alert("update.js 読み込まれてません！");
   document.head.appendChild(s);
+
+  // 読み込み確認ボタン
+  const btn = document.createElement("button");
+  btn.textContent = "update.js 読み込まれてる？";
+  btn.style.marginTop = "16px";
+  btn.onclick = () => {
+    if(typeof update !== "undefined") alert("読み込まれてます！");
+    else alert("読み込まれてません！");
+  };
+  document.body.prepend(btn);
 })();
 </script>
 
-<!-- メインスクリプト -->
+<!-- script.js は update.js の後 -->
 <script src="script.js"></script>
 
 </body>
