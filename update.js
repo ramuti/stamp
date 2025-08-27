@@ -2,5 +2,10 @@
 var update = {
   "cards": [],
   "keywords": [],
-  "updates": []
+  "updates": [
+    {
+      "date": "2025/8/27 18:53:49",
+      "msg": "あ"
+    }
+  ]
 };
