@@ -470,42 +470,26 @@ function initAdmin(){
 // --------------------
 function addCopyButton(){
   if(document.getElementById("copyUpdateDataBtn")) return;
-  const container=document.createElement("div");
-  container.style.margin="16px 0"; container.style.textAlign="center";
 
-  const btn=document.createElement("button");
-  btn.id="copyUpdateDataBtn";
-  btn.textContent="カード・合言葉データをコピー (update.js形式)";
-  btn.style.padding="8px 16px";
-  btn.style.fontSize="14px";
+  const container = document.createElement("div");
+  container.style.margin = "16px 0";
+  container.style.textAlign = "center";
 
-  btn.addEventListener("click",()=>{
-    // update.js形式に変換
-    const updateObj = {
-      cards: cards.map(c => ({
-        id: c.id,
-        name: c.name,
-        slots: c.slots,
-        addPass: c.addPass,
-        bg: c.bg,
-        stampIcon: c.stampIcon || "",
-        notifyMsg: c.notifyMsg || "",
-        maxNotifyMsg: c.maxNotifyMsg || ""
-      })),
-      keywords: keywords.map(k => ({
-        cardId: k.cardId,
-        word: k.word,
-        enabled: k.enabled
-      })),
-      updates: updates.map(u => ({
-        date: u.date,
-        msg: u.msg
-      }))
-    };
+  const btn = document.createElement("button");
+  btn.id = "copyUpdateDataBtn";
+  btn.textContent = "カード・合言葉データをコピー";
 
-    const jsText = "// update.js\nvar update = " + JSON.stringify(updateObj, null, 2) + ";";
-    navigator.clipboard.writeText(jsText).then(()=>{
-      alert("update.js形式でコピーしました！そのまま上書き可能です。");
+  btn.style.padding = "8px 16px";
+  btn.style.fontSize = "14px";
+
+  btn.addEventListener("click", () => {
+    // update.js形式のテキストを作成
+    const dataText = `// update.js
+var update = ${JSON.stringify({ cards, keywords, updates }, null, 2)};`;
+
+    // クリップボードにコピー
+    navigator.clipboard.writeText(dataText).then(() => {
+      alert("update.js形式でコピーしました");
     });
   });
 
