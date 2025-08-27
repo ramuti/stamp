@@ -90,18 +90,21 @@ function saveAll(){
     saveJSON(LS_KEYS.userUIColors,userUIColors);
   }catch(e){ alert("データ保存に失敗"); console.error(e); }
 }
-
 // --------------------
 // 初期データロード
 // --------------------
-let userName=localStorage.getItem(LS_KEYS.userName)||"";
-let cards=loadJSON(LS_KEYS.cards,[]);
-let keywords=loadJSON(LS_KEYS.keywords,[]);
-let updates=loadJSON(LS_KEYS.updates,[]);
-let userAddedCards=loadJSON(LS_KEYS.userAddedCards,[]);
-let userStampHistory=loadJSON(LS_KEYS.userStampHistory,[]);
-let userUIColors=loadJSON(LS_KEYS.userUIColors,{text:"#c44a7b",bg:"#fff0f5",btn:"#ff99cc"});
-let userCardSerials=loadJSON(LS_KEYS.userCardSerials,{});
+let userName = localStorage.getItem(LS_KEYS.userName) || "";
+
+// updateDataFull.js があれば優先して読み込む
+let cards = (typeof updateDataFull !== "undefined" && updateDataFull.cards) ? updateDataFull.cards : loadJSON(LS_KEYS.cards, []);
+let keywords = (typeof updateDataFull !== "undefined" && updateDataFull.keywords) ? updateDataFull.keywords : loadJSON(LS_KEYS.keywords, []);
+let updates = (typeof updateDataFull !== "undefined" && updateDataFull.updates) ? updateDataFull.updates : loadJSON(LS_KEYS.updates, []);
+
+// ユーザー固有データは常に localStorage 優先
+let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []);
+let userStampHistory = loadJSON(LS_KEYS.userStampHistory, []);
+let userUIColors = loadJSON(LS_KEYS.userUIColors, { text:"#c44a7b", bg:"#fff0f5", btn:"#ff99cc" });
+let userCardSerials = loadJSON(LS_KEYS.userCardSerials, {});
 
 // --------------------
 // DOMContentLoaded
