@@ -118,192 +118,185 @@ document.addEventListener("DOMContentLoaded",()=>{
 // --------------------
 // ユーザー画面初期化
 // --------------------
-function initUser(){
-  const userNameInput=document.getElementById("userNameInput");
-  const setNameBtn=document.getElementById("setNameBtn");
-  const addCardPassInput=document.getElementById("addCardPass");
-  const addCardBtn=document.getElementById("addCardBtn");
-  const userCardsDiv=document.getElementById("userCards");
-  const stampHistoryList=document.getElementById("stampHistory");
+function initUser() {
+  const userNameInput   = document.getElementById("userNameInput");
+  const setNameBtn      = document.getElementById("setNameBtn");
+  const addCardPassInput= document.getElementById("addCardPass");
+  const addCardBtn      = document.getElementById("addCardBtn");
+  const userCardsDiv    = document.getElementById("userCards");
+  const stampHistoryList= document.getElementById("stampHistory");
+  const textColorPicker = document.getElementById("textColor");
+  const bgColorPicker   = document.getElementById("bgColor");
+  const btnColorPicker  = document.getElementById("btnColor");
 
-  const textColorPicker=document.getElementById("textColor");
-  const bgColorPicker=document.getElementById("bgColor");
-  const btnColorPicker=document.getElementById("btnColor");
-
-  // ユーザー色適用
-  function applyUserColors(){
-    document.body.style.background=userUIColors.bg;
-    document.body.style.color=userUIColors.text;
-    document.querySelectorAll("button").forEach(btn=>{
-      btn.style.background=userUIColors.btn;
-      btn.style.color=userUIColors.text;
+  // --------------------
+  // ユーザー色の適用
+  // --------------------
+  function applyUserColors() {
+    document.body.style.background = userUIColors.bg;
+    document.body.style.color      = userUIColors.text;
+    document.querySelectorAll("button").forEach(btn => {
+      btn.style.background = userUIColors.btn;
+      btn.style.color      = userUIColors.text;
     });
-    userNameInput.style.color=userUIColors.text;
-    addCardPassInput.style.color=userUIColors.text;
+    userNameInput.style.color    = userUIColors.text;
+    addCardPassInput.style.color = userUIColors.text;
   }
 
-  textColorPicker?.addEventListener("input",()=>{ userUIColors.text=textColorPicker.value; saveAll(); applyUserColors(); });
-  bgColorPicker?.addEventListener("input",()=>{ userUIColors.bg=bgColorPicker.value; saveAll(); applyUserColors(); });
-  btnColorPicker?.addEventListener("input",()=>{ userUIColors.btn=btnColorPicker.value; saveAll(); applyUserColors(); });
+  textColorPicker?.addEventListener("input", () => { 
+    userUIColors.text = textColorPicker.value; saveAll(); applyUserColors(); 
+  });
+  bgColorPicker?.addEventListener("input", () => { 
+    userUIColors.bg = bgColorPicker.value; saveAll(); applyUserColors(); 
+  });
+  btnColorPicker?.addEventListener("input", () => { 
+    userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors(); 
+  });
   applyUserColors();
 
-  userNameInput.value=userName||"";
+  userNameInput.value = userName || "";
 
-  const userCardsTitle=document.createElement("h2");
-  userCardsTitle.id="userCardsTitle";
-  userCardsTitle.style.marginBottom="16px";
-  userCardsDiv.parentNode.insertBefore(userCardsTitle,userCardsDiv);
-  function updateUserCardsTitle(){ userCardsTitle.textContent=userName?`${userName}のスタンプカード`:"スタンプカード"; }
+  const userCardsTitle = document.createElement("h2");
+  userCardsTitle.id = "userCardsTitle";
+  userCardsTitle.style.marginBottom = "16px";
+  userCardsDiv.parentNode.insertBefore(userCardsTitle, userCardsDiv);
+
+  function updateUserCardsTitle() {
+    userCardsTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
+  }
   updateUserCardsTitle();
 
-  // ユーザー名変更
-  setNameBtn.addEventListener("click",()=>{
-    const val=userNameInput.value.trim();
-    if(!val) return alert("名前を入力してください");
-    userName=val;
+  setNameBtn.addEventListener("click", () => {
+    const val = userNameInput.value.trim();
+    if (!val) return alert("名前を入力してください");
+    userName = val;
     saveAll();
     renderUserID();
     updateUserCardsTitle();
   });
 
-  // ユーザーID表示
-  function renderUserID(){
-    let el=document.getElementById("userIDDisplay");
-    if(!el){
-      el=document.createElement("div"); el.id="userIDDisplay";
-      el.style.position="fixed"; el.style.right="8px"; el.style.bottom="8px"; el.style.fontSize="0.75em"; el.style.color="#999";
+  function renderUserID() {
+    let el = document.getElementById("userIDDisplay");
+    if (!el) {
+      el = document.createElement("div"); 
+      el.id = "userIDDisplay";
+      el.style.position = "fixed";
+      el.style.right    = "8px";
+      el.style.bottom   = "8px";
+      el.style.fontSize = "0.75em";
+      el.style.color    = "#999";
       document.body.appendChild(el);
     }
-    el.textContent=`ユーザー: ${userName}`;
+    el.textContent = `ユーザー: ${userName}`;
   }
   renderUserID();
 
-  // カード追加
-  addCardBtn.addEventListener("click",()=>{
-    const pass=addCardPassInput.value.trim();
-    if(!pass) return alert("追加パスを入力してください");
+  addCardBtn.addEventListener("click", () => {
+    const pass = addCardPassInput.value.trim();
+    if (!pass) return alert("追加パスを入力してください");
 
-    const matchedCard=cards.find(c=>c.addPass===pass);
-    if(!matchedCard) return alert("合言葉が違います");
-    if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+    const matchedCard = cards.find(c => c.addPass === pass);
+    if (!matchedCard) return alert("合言葉が違います");
+    if (userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
     userAddedCards.push(matchedCard.id);
 
-    if(!userCardSerials[userName]) userCardSerials[userName]={};
-    if(!userCardSerials[userName][matchedCard.id]){
-      userCardSerials[userName][matchedCard.id]=String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
+    if (!userCardSerials[userName]) userCardSerials[userName] = {};
+    if (!userCardSerials[userName][matchedCard.id]) {
+      userCardSerials[userName][matchedCard.id] = String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
     }
 
     saveAll();
-    addCardPassInput.value="";
+    addCardPassInput.value = "";
     renderUserCards();
     renderStampHistory();
-  });// --------------------
-// カード描画＆スタンプ押印
-// --------------------
-function renderUserCards(){
-  // カード表示エリアをクリア
-  userCardsDiv.innerHTML="";
+  });
 
   // --------------------
-  // 存在しないカード・不要な履歴を削除
+  // カード描画＆不要カード削除
   // --------------------
-  // ユーザーが持っているカードIDのうち、現在存在するカードのみ残す
-  userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
+  function renderUserCards() {
+    userCardsDiv.innerHTML = "";
 
-  // ユーザー別カードシリアルのうち、削除されたカードを削除
-  for(const uname in userCardSerials){
-      if(userCardSerials[uname]){
-          for(const cid in userCardSerials[uname]){
-              if(!cards.some(c => c.id === cid)){
-                  delete userCardSerials[uname][cid]; // 存在しないカードのシリアル削除
-              }
+    // 不要カードの削除（存在しないカードは削除）
+    userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
+
+    // シリアルも削除
+    for (const uname in userCardSerials) {
+      if (userCardSerials[uname]) {
+        for (const cid in userCardSerials[uname]) {
+          if (!cards.some(c => c.id === cid)) {
+            delete userCardSerials[uname][cid];
           }
+        }
       }
-  }
+    }
 
-  // スタンプ履歴から存在しないカードの履歴を削除
-  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
+    // スタンプ履歴も削除
+    userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
 
-  // 変更を保存
-  saveAll();
-  // --------------------
-  
-  // 各カードを描画
-  userAddedCards.forEach(cid=>{
+    saveAll();
+
+    userAddedCards.forEach(cid => {
       const c = cards.find(x => x.id === cid);
-      if(!c) return;
+      if (!c) return;
 
       const div = document.createElement("div");
       div.className = "card";
       div.style.background = c.bg || "#fff0f5";
 
-      // カード名表示
       const nameDiv = document.createElement("div");
       nameDiv.textContent = c.name;
       div.appendChild(nameDiv);
 
-      // スタンプスロット表示
       const slotsDiv = document.createElement("div");
-      for(let i = 0; i < c.slots; i++){
-          const span = document.createElement("span");
-          span.className = "stamp-slot";
-          const filled = userStampHistory.find(s => s.cardId === cid && s.slot === i);
-          if(filled) span.classList.add("stamp-filled");
-          slotsDiv.appendChild(span);
+      for (let i = 0; i < c.slots; i++) {
+        const span = document.createElement("span");
+        span.className = "stamp-slot";
+        if (userStampHistory.find(s => s.cardId === cid && s.slot === i)) span.classList.add("stamp-filled");
+        slotsDiv.appendChild(span);
       }
       div.appendChild(slotsDiv);
 
-      // …以下略（ボタンやシリアル表示）
-  });
-}
-      // スタンプボタン＋シリアル横並び
-      const btnContainer=document.createElement("div");
-      btnContainer.style.display="flex";
-      btnContainer.style.justifyContent="space-between";
-      btnContainer.style.alignItems="center";
-      btnContainer.style.marginTop="8px";
+      // スタンプボタン＋シリアル
+      const btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex";
+      btnContainer.style.justifyContent = "space-between";
+      btnContainer.style.alignItems = "center";
+      btnContainer.style.marginTop = "8px";
 
-      const stampBtn=document.createElement("button");
-      stampBtn.textContent="スタンプ押す";
-      stampBtn.addEventListener("click",()=>{
-        const inputPass=prompt("スタンプ合言葉を入力してください");
-        if(!inputPass) return;
+      const stampBtn = document.createElement("button");
+      stampBtn.textContent = "スタンプ押す";
+      stampBtn.addEventListener("click", () => {
+        const inputPass = prompt("スタンプ合言葉を入力してください");
+        if (!inputPass) return;
 
-        let matched=keywords.find(k=>k.cardId===cid && k.word===inputPass && k.enabled);
-        if(!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
-        if(!matched) return alert("合言葉が違います");
+        let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
+        if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
+        if (!matched) return alert("合言葉が違います");
 
-        if(userStampHistory.some(s=>s.cardId===cid && s.word===inputPass)){
+        if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
           return alert("この合言葉では既に押しています");
         }
 
-        const stampedCount=userStampHistory.filter(s=>s.cardId===cid).length;
-        if(stampedCount>=c.slots){
-          if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
+        const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
+        if (stampedCount >= c.slots) {
+          if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
           return alert("もう押せません");
         }
 
-        // スタンプ履歴追加
-        userStampHistory.push({
-          cardId:cid,
-          slot:stampedCount,
-          word:inputPass,
-          datetime:new Date().toISOString()
-        });
-
-        userStampHistory=userStampHistory.filter(s=>cards.some(c=>c.id===s.cardId));
+        userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
+        userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
         saveAll();
         renderUserCards();
         renderStampHistory();
-
         alert(c.notifyMsg||"スタンプを押しました！");
       });
 
-      const serialSpan=document.createElement("span");
-      serialSpan.textContent=`シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
-      serialSpan.style.fontSize="0.85em";
-      serialSpan.style.color="#666";
+      const serialSpan = document.createElement("span");
+      serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
+      serialSpan.style.fontSize = "0.85em";
+      serialSpan.style.color = "#666";
 
       btnContainer.appendChild(stampBtn);
       btnContainer.appendChild(serialSpan);
@@ -313,15 +306,13 @@ function renderUserCards(){
     });
   }
 
-  function renderStampHistory(){
-    stampHistoryList.innerHTML="";
-    userStampHistory.slice().reverse().forEach(s=>{
-      const cardExists=cards.find(c=>c.id===s.cardId);
-      if(!cardExists) return;
-      const li=document.createElement("li");
-      const cName=cardExists.name||s.cardId;
-      const dt=new Date(s.datetime).toLocaleString();
-      li.textContent=`${cName} スロット${s.slot+1} ${dt}`;
+  function renderStampHistory() {
+    stampHistoryList.innerHTML = "";
+    userStampHistory.slice().reverse().forEach(s => {
+      const cardExists = cards.find(c => c.id === s.cardId);
+      if (!cardExists) return;
+      const li = document.createElement("li");
+      li.textContent = `${cardExists.name} スロット${s.slot+1} ${new Date(s.datetime).toLocaleString()}`;
       stampHistoryList.appendChild(li);
     });
   }
@@ -329,12 +320,12 @@ function renderUserCards(){
   renderUserCards();
   renderStampHistory();
 
-  const updateLogsList=document.getElementById("updateLogs");
-  function renderUpdates(){
-    updateLogsList.innerHTML="";
-    updates.forEach(u=>{
-      const li=document.createElement("li");
-      li.textContent=`${u.date} ${u.msg}`;
+  const updateLogsList = document.getElementById("updateLogs");
+  function renderUpdates() {
+    updateLogsList.innerHTML = "";
+    updates.forEach(u => {
+      const li = document.createElement("li");
+      li.textContent = `${u.date} ${u.msg}`;
       updateLogsList.appendChild(li);
     });
   }
