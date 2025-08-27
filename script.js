@@ -2,7 +2,7 @@
    script.js — ユーザー＋管理者 共通（修正版）
    ・管理者でカード作成やキーワード追加が即反映
    ・コピー用ボタンで JSON コピー
-   ・ユーザーは updateDataFull.js を基準に読み込み
+   ・ユーザーは update.js を基準に読み込み
 ============================ */
 
 // --------------------
@@ -95,10 +95,10 @@ function saveAll(){
 // --------------------
 let userName = localStorage.getItem(LS_KEYS.userName) || "";
 
-// updateDataFull.js があれば優先して読み込む
-let cards = (typeof updateDataFull !== "undefined" && updateDataFull.cards) ? updateDataFull.cards : loadJSON(LS_KEYS.cards, []);
-let keywords = (typeof updateDataFull !== "undefined" && updateDataFull.keywords) ? updateDataFull.keywords : loadJSON(LS_KEYS.keywords, []);
-let updates = (typeof updateDataFull !== "undefined" && updateDataFull.updates) ? updateDataFull.updates : loadJSON(LS_KEYS.updates, []);
+// update.js があれば優先して読み込む
+let cards = (typeof update !== "undefined" && update.cards) ? update.cards : loadJSON(LS_KEYS.cards, []);
+let keywords = (typeof update !== "undefined" && update.keywords) ? update.keywords : loadJSON(LS_KEYS.keywords, []);
+let updates = (typeof update !== "undefined" && update.updates) ? update.updates : loadJSON(LS_KEYS.updates, []);
 
 // ユーザー固有データは常に localStorage 優先
 let userAddedCards = loadJSON(LS_KEYS.userAddedCards, []);
