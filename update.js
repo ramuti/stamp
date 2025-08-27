@@ -12,6 +12,12 @@ var update = {
       "maxNotifyMsg": ""
     }
   ],
-  "keywords": [],
+  "keywords": [
+    {
+      "cardId": "card_1756271165181",
+      "word": "あほ",
+      "enabled": true
+    }
+  ],
   "updates": []
 };
