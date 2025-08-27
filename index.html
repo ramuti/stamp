@@ -5,13 +5,13 @@
   <title>update.js 読み込みテスト</title>
 </head>
 <body>
-  <button id="checkUpdateData">update.js をチェック</button>
+  <button id="checkUpdate">update.js をチェック</button>
   <div id="result"></div>
 
   <!-- update.js を読み込む -->
   <script src="update.js"></script>
   <script>
-    document.getElementById("checkUpdateData").addEventListener("click", () => {
+    document.getElementById("checkUpdate").addEventListener("click", () => {
       const result = document.getElementById("result");
       if (typeof update !== "undefined") {
         result.textContent = "✅ update.js 読み込み成功！";
