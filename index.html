@@ -18,6 +18,8 @@ button:hover { background:#ff66b3; }
 #colorSettings { margin-top:16px; border:1px solid #ffa6c9; padding:8px; border-radius:8px; background:#ffe6f0; }
 #colorSettings label { margin-right:8px; font-size:0.9rem; }
 ul { padding-left:20px; }
+#checkUpdateBtn { margin-top:12px; padding:6px 12px; background:#ff99cc; color:#fff; border-radius:8px; cursor:pointer; }
+#checkUpdateBtn:hover { background:#ff66b3; }
 </style>
 </head>
 <body class="user">
@@ -51,31 +53,25 @@ ul { padding-left:20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- 読み込み確認ボタン -->
-<button id="checkUpdateBtn" style="margin-top:16px;">update.js 読み込まれてる？</button>
+<!-- update.js 読み込み -->
+<script src="update.js"></script>
 
+<!-- update.js 読み込み確認ボタン -->
+<div>
+  <button id="checkUpdateBtn">update.js 読み込まれたか確認</button>
+</div>
 <script>
-// 読み込み確認
-const checkBtn = document.getElementById("checkUpdateBtn");
-checkBtn.onclick = () => {
-  if(typeof update !== "undefined") alert("読み込まれてます！");
-  else alert("読み込まれてません！");
-};
-
-// update.js を非同期で読み込む + 完了後に script.js を読み込む
-const updateScript = document.createElement("script");
-updateScript.src = "update.js";
-updateScript.onload = () => {
-  console.log("update.js 読み込み完了");
-  const mainScript = document.createElement("script");
-  mainScript.src = "script.js";
-  document.body.appendChild(mainScript);
-};
-updateScript.onerror = () => {
-  alert("update.js の読み込みに失敗しました！");
-};
-document.head.appendChild(updateScript);
+document.getElementById("checkUpdateBtn").addEventListener("click",()=>{
+  if(typeof update !== "undefined") {
+    alert("update.js 読み込み成功!");
+    console.log("update内容:", update);
+  } else {
+    alert("update.js が読み込まれていません");
+  }
+});
 </script>
 
+<!-- スクリプト本体 -->
+<script src="script.js"></script>
 </body>
 </html>
