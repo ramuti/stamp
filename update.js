@@ -1,4 +1,4 @@
-{
+var update = {
   "cards": [
     {
       "id": "card_1756201790352",
@@ -13,4 +13,4 @@
   ],
   "keywords": [],
   "updates": []
-}
+};
