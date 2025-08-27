@@ -1,5 +1,5 @@
+// update.js
 var update = {
- {
   "cards": [
     {
       "id": "card_1756201790352",
@@ -14,4 +14,4 @@ var update = {
   ],
   "keywords": [],
   "updates": []
-}
+};
