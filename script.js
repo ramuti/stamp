@@ -198,39 +198,65 @@ function initUser(){
     addCardPassInput.value="";
     renderUserCards();
     renderStampHistory();
-  });
+  });// --------------------
+// カード描画＆スタンプ押印
+// --------------------
+function renderUserCards(){
+  // カード表示エリアをクリア
+  userCardsDiv.innerHTML="";
 
   // --------------------
-  // カード描画＆スタンプ押印
+  // 存在しないカード・不要な履歴を削除
   // --------------------
-  function renderUserCards(){
-    userCardsDiv.innerHTML="";
-    userAddedCards=userAddedCards.filter(cid=>cards.some(c=>c.id===cid));
+  // ユーザーが持っているカードIDのうち、現在存在するカードのみ残す
+  userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
-    userAddedCards.forEach(cid=>{
-      const c=cards.find(x=>x.id===cid);
+  // ユーザー別カードシリアルのうち、削除されたカードを削除
+  for(const uname in userCardSerials){
+      if(userCardSerials[uname]){
+          for(const cid in userCardSerials[uname]){
+              if(!cards.some(c => c.id === cid)){
+                  delete userCardSerials[uname][cid]; // 存在しないカードのシリアル削除
+              }
+          }
+      }
+  }
+
+  // スタンプ履歴から存在しないカードの履歴を削除
+  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
+
+  // 変更を保存
+  saveAll();
+  // --------------------
+  
+  // 各カードを描画
+  userAddedCards.forEach(cid=>{
+      const c = cards.find(x => x.id === cid);
       if(!c) return;
 
-      const div=document.createElement("div");
-      div.className="card";
-      div.style.background=c.bg||"#fff0f5";
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = c.bg || "#fff0f5";
 
-      // カード名
-      const nameDiv=document.createElement("div");
-      nameDiv.textContent=c.name;
+      // カード名表示
+      const nameDiv = document.createElement("div");
+      nameDiv.textContent = c.name;
       div.appendChild(nameDiv);
 
-      // スタンプスロット
-      const slotsDiv=document.createElement("div");
-      for(let i=0;i<c.slots;i++){
-        const span=document.createElement("span");
-        span.className="stamp-slot";
-        const filled=userStampHistory.find(s=>s.cardId===cid && s.slot===i);
-        if(filled) span.classList.add("stamp-filled");
-        slotsDiv.appendChild(span);
+      // スタンプスロット表示
+      const slotsDiv = document.createElement("div");
+      for(let i = 0; i < c.slots; i++){
+          const span = document.createElement("span");
+          span.className = "stamp-slot";
+          const filled = userStampHistory.find(s => s.cardId === cid && s.slot === i);
+          if(filled) span.classList.add("stamp-filled");
+          slotsDiv.appendChild(span);
       }
       div.appendChild(slotsDiv);
 
+      // …以下略（ボタンやシリアル表示）
+  });
+}
       // スタンプボタン＋シリアル横並び
       const btnContainer=document.createElement("div");
       btnContainer.style.display="flex";
