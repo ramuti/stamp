@@ -58,7 +58,20 @@ ul { padding-left:20px; }
   s.src = `update.js?ts=${ts}`;
   document.head.appendChild(s);
 </script>
+<!-- 確認ボタン（後で消せます） -->
+<div style="margin-top:16px;">
+  <button id="checkUpdateBtn">update.js 読み込み確認</button>
+</div>
 
+<script>
+document.getElementById("checkUpdateBtn").addEventListener("click", ()=>{
+  if(typeof update !== "undefined"){
+    alert("update.js 読み込み成功!\ncards: " + update.cards.length + " 件");
+  } else {
+    alert("update.js が読み込まれていません");
+  }
+});
+</script>
 <!-- メインスクリプト -->
 <script src="script.js"></script>
 </body>
