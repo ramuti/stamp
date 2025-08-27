@@ -2,10 +2,10 @@
 var update = {
   "cards": [
     {
-      "id": "card_1756201790352",
-      "name": "かす",
+      "id": "card_1756271165181",
+      "name": "あいう",
       "slots": 5,
-      "addPass": "なす",
+      "addPass": "うお",
       "bg": "#fff0f5",
       "stampIcon": "",
       "notifyMsg": "",
