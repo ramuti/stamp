@@ -503,9 +503,9 @@ function addCopyButton(){
       }))
     };
 
-    const jsText = "var update = " + JSON.stringify(updateObj, null, 2) + ";";
+    const jsText = "// update.js\nvar update = " + JSON.stringify(updateObj, null, 2) + ";";
     navigator.clipboard.writeText(jsText).then(()=>{
-      alert("update.js形式でコピーしました！そのまま上書きできます。");
+      alert("update.js形式でコピーしました！そのまま上書き可能です。");
     });
   });
 
