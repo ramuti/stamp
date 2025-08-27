@@ -51,23 +51,31 @@ ul { padding-left:20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- 先に update.js を同期読み込み -->
-<script src="update.js"></script>
-
 <!-- 読み込み確認ボタン -->
+<button id="checkUpdateBtn" style="margin-top:16px;">update.js 読み込まれてる？</button>
+
 <script>
-const checkBtn = document.createElement("button");
-checkBtn.textContent = "update.js 読み込まれてる？";
-checkBtn.style.marginTop = "16px";
+// 読み込み確認
+const checkBtn = document.getElementById("checkUpdateBtn");
 checkBtn.onclick = () => {
   if(typeof update !== "undefined") alert("読み込まれてます！");
   else alert("読み込まれてません！");
 };
-document.body.prepend(checkBtn);
-</script>
 
-<!-- script.js を最後に読み込む -->
-<script src="script.js"></script>
+// update.js を非同期で読み込む + 完了後に script.js を読み込む
+const updateScript = document.createElement("script");
+updateScript.src = "update.js";
+updateScript.onload = () => {
+  console.log("update.js 読み込み完了");
+  const mainScript = document.createElement("script");
+  mainScript.src = "script.js";
+  document.body.appendChild(mainScript);
+};
+updateScript.onerror = () => {
+  alert("update.js の読み込みに失敗しました！");
+};
+document.head.appendChild(updateScript);
+</script>
 
 </body>
 </html>
