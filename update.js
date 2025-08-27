@@ -1,28 +1,6 @@
 // update.js
 var update = {
-  "cards": [
-    {
-      "id": "card_1756271165181",
-      "name": "あいう",
-      "slots": 5,
-      "addPass": "うお",
-      "bg": "#fff0f5",
-      "stampIcon": "",
-      "notifyMsg": "",
-      "maxNotifyMsg": ""
-    }
-  ],
-  "keywords": [
-    {
-      "cardId": "card_1756271165181",
-      "word": "あほ",
-      "enabled": true
-    }
-  ],
-  "updates": [
-    {
-      "date": "2025/8/27 18:13:31",
-      "msg": "更新テスト"
-    }
-  ]
+  "cards": [],
+  "keywords": [],
+  "updates": []
 };
