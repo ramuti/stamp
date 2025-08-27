@@ -18,6 +18,8 @@ button:hover { background:#ff66b3; }
 #colorSettings { margin-top:16px; border:1px solid #ffa6c9; padding:8px; border-radius:8px; background:#ffe6f0; }
 #colorSettings label { margin-right:8px; font-size:0.9rem; }
 ul { padding-left:20px; }
+#checkUpdateBtn { margin-top:12px; padding:6px 12px; background:#ff99cc; color:#fff; border-radius:8px; cursor:pointer; }
+#checkUpdateBtn:hover { background:#ff66b3; }
 </style>
 </head>
 <body class="user">
@@ -52,27 +54,24 @@ ul { padding-left:20px; }
 </div>
 
 <!-- update.js 読み込み -->
-<script>
-  const ts = new Date().getTime();
-  const s = document.createElement("script");
-  s.src = `update.js?ts=${ts}`;
-  document.head.appendChild(s);
-</script>
-<!-- 確認ボタン（後で消せます） -->
-<div style="margin-top:16px;">
-  <button id="checkUpdateBtn">update.js 読み込み確認</button>
-</div>
+<script src="update.js"></script>
 
+<!-- update.js 読み込み確認ボタン -->
+<div>
+  <button id="checkUpdateBtn">update.js 読み込まれたか確認</button>
+</div>
 <script>
-document.getElementById("checkUpdateBtn").addEventListener("click", ()=>{
-  if(typeof update !== "undefined"){
-    alert("update.js 読み込み成功!\ncards: " + update.cards.length + " 件");
+document.getElementById("checkUpdateBtn").addEventListener("click",()=>{
+  if(typeof update !== "undefined") {
+    alert("update.js 読み込み成功!");
+    console.log("update内容:", update);
   } else {
     alert("update.js が読み込まれていません");
   }
 });
 </script>
-<!-- メインスクリプト -->
+
+<!-- スクリプト本体 -->
 <script src="script.js"></script>
 </body>
 </html>
