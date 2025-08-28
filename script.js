@@ -211,32 +211,40 @@ function initUser() {
     renderUserCards();
     renderStampHistory();
   });
+/*
+=========================
+ユーザー画面描画
+=========================
+function renderStampHistory() {
+  const stampHistoryList = document.getElementById("stampHistory");
+  if (!stampHistoryList) return;
+  stampHistoryList.innerHTML = "";
+  userStampHistory.slice().reverse().forEach(s => {
+    const cardExists = cards.find(c => c.id === s.cardId);
+    if (!cardExists) return;
+    const li = document.createElement("li");
+    li.textContent = `${cardExists.name} スロット${s.slot+1} ${new Date(s.datetime).toLocaleString()}`;
+    stampHistoryList.appendChild(li);
+  });
+}
 
-// --------------------
-// カード描画＆不要カード削除（上書き版）
-// --------------------
 function renderUserCards() {
   const userCardsDiv = document.getElementById("userCards");
-  const stampHistoryList = document.getElementById("stampHistory");
+  if (!userCardsDiv) return;
 
   userCardsDiv.innerHTML = "";
 
-  // 不要カードの削除（存在しないカードは削除）
+  // 不要カード削除
   userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
+  userStampHistory = userStampHistory.filter(s => cards.some(c => c.cardId === s.cardId));
 
-  // シリアルも削除
+  // シリアルも不要なもの削除
   for (const uname in userCardSerials) {
-    if (userCardSerials[uname]) {
-      for (const cid in userCardSerials[uname]) {
-        if (!cards.some(c => c.id === cid)) {
-          delete userCardSerials[uname][cid];
-        }
-      }
+    if (!userCardSerials[uname]) continue;
+    for (const cid in userCardSerials[uname]) {
+      if (!cards.some(c => c.id === cid)) delete userCardSerials[uname][cid];
     }
   }
-
-  // スタンプ履歴も削除（存在しないカードの履歴）
-  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
 
   saveAll();
 
@@ -261,7 +269,6 @@ function renderUserCards() {
     }
     div.appendChild(slotsDiv);
 
-    // ボタンコンテナ
     const btnContainer = document.createElement("div");
     btnContainer.style.display = "flex";
     btnContainer.style.justifyContent = "space-between";
@@ -279,9 +286,7 @@ function renderUserCards() {
       if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
       if (!matched) return alert("合言葉が違います");
 
-      if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
-        return alert("この合言葉では既に押しています");
-      }
+      if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) return alert("既に押しています");
 
       const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
       if (stampedCount >= c.slots) {
@@ -290,7 +295,6 @@ function renderUserCards() {
       }
 
       userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
-      userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
       saveAll();
       renderUserCards();
       renderStampHistory();
@@ -303,7 +307,7 @@ function renderUserCards() {
     serialSpan.style.fontSize = "0.85em";
     serialSpan.style.color = "#666";
 
-    // カード削除ボタン（追加部分）
+    // カード削除ボタン
     const delBtn = document.createElement("button");
     delBtn.textContent = "カード削除";
     delBtn.addEventListener("click", () => {
@@ -323,23 +327,11 @@ function renderUserCards() {
     userCardsDiv.appendChild(div);
   });
 
-  // スタンプ履歴描画
-  function renderStampHistory() {
-    stampHistoryList.innerHTML = "";
-    userStampHistory.slice().reverse().forEach(s => {
-      const cardExists = cards.find(c => c.id === s.cardId);
-      if (!cardExists) return;
-      const li = document.createElement("li");
-      li.textContent = `${cardExists.name} スロット${s.slot+1} ${new Date(s.datetime).toLocaleString()}`;
-      stampHistoryList.appendChild(li);
-    });
-  }
-
   renderStampHistory();
 
-  // 更新履歴表示
+  // 更新履歴
   const updateLogsList = document.getElementById("updateLogs");
-  function renderUpdates() {
+  if (updateLogsList) {
     updateLogsList.innerHTML = "";
     updates.forEach(u => {
       const li = document.createElement("li");
@@ -347,8 +339,8 @@ function renderUserCards() {
       updateLogsList.appendChild(li);
     });
   }
-  renderUpdates();
 }
+
 
 // --------------------
 // 管理者画面初期化
