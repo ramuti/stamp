@@ -211,127 +211,117 @@ function initUser() {
     renderUserCards();
     renderStampHistory();
   });
-/*
-=========================
-ユーザー画面描画
-=========================
-function renderStampHistory() {
-  const stampHistoryList = document.getElementById("stampHistory");
-  if (!stampHistoryList) return;
-  stampHistoryList.innerHTML = "";
-  userStampHistory.slice().reverse().forEach(s => {
-    const cardExists = cards.find(c => c.id === s.cardId);
-    if (!cardExists) return;
-    const li = document.createElement("li");
-    li.textContent = `${cardExists.name} スロット${s.slot+1} ${new Date(s.datetime).toLocaleString()}`;
-    stampHistoryList.appendChild(li);
-  });
-}
 
-function renderUserCards() {
-  const userCardsDiv = document.getElementById("userCards");
-  if (!userCardsDiv) return;
+  // --------------------
+  // カード描画＆不要カード削除
+  // --------------------
+  function renderUserCards() {
+    userCardsDiv.innerHTML = "";
 
-  userCardsDiv.innerHTML = "";
+    // 不要カードの削除（存在しないカードは削除）
+    userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
-  // 不要カード削除
-  userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
-  userStampHistory = userStampHistory.filter(s => cards.some(c => c.cardId === s.cardId));
-
-  // シリアルも不要なもの削除
-  for (const uname in userCardSerials) {
-    if (!userCardSerials[uname]) continue;
-    for (const cid in userCardSerials[uname]) {
-      if (!cards.some(c => c.id === cid)) delete userCardSerials[uname][cid];
+    // シリアルも削除
+    for (const uname in userCardSerials) {
+      if (userCardSerials[uname]) {
+        for (const cid in userCardSerials[uname]) {
+          if (!cards.some(c => c.id === cid)) {
+            delete userCardSerials[uname][cid];
+          }
+        }
+      }
     }
+
+    // スタンプ履歴も削除
+    userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
+
+    saveAll();
+
+    userAddedCards.forEach(cid => {
+      const c = cards.find(x => x.id === cid);
+      if (!c) return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = c.bg || "#fff0f5";
+
+      const nameDiv = document.createElement("div");
+      nameDiv.textContent = c.name;
+      div.appendChild(nameDiv);
+
+      const slotsDiv = document.createElement("div");
+      for (let i = 0; i < c.slots; i++) {
+        const span = document.createElement("span");
+        span.className = "stamp-slot";
+        if (userStampHistory.find(s => s.cardId === cid && s.slot === i)) span.classList.add("stamp-filled");
+        slotsDiv.appendChild(span);
+      }
+      div.appendChild(slotsDiv);
+
+      // スタンプボタン＋シリアル
+      const btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex";
+      btnContainer.style.justifyContent = "space-between";
+      btnContainer.style.alignItems = "center";
+      btnContainer.style.marginTop = "8px";
+
+      const stampBtn = document.createElement("button");
+      stampBtn.textContent = "スタンプ押す";
+      stampBtn.addEventListener("click", () => {
+        const inputPass = prompt("スタンプ合言葉を入力してください");
+        if (!inputPass) return;
+
+        let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
+        if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
+        if (!matched) return alert("合言葉が違います");
+
+        if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
+          return alert("この合言葉では既に押しています");
+        }
+
+        const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
+        if (stampedCount >= c.slots) {
+          if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
+          return alert("もう押せません");
+        }
+
+        userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
+        userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
+        saveAll();
+        renderUserCards();
+        renderStampHistory();
+        alert(c.notifyMsg||"スタンプを押しました！");
+      });
+
+      const serialSpan = document.createElement("span");
+      serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
+      serialSpan.style.fontSize = "0.85em";
+      serialSpan.style.color = "#666";
+
+      btnContainer.appendChild(stampBtn);
+      btnContainer.appendChild(serialSpan);
+      div.appendChild(btnContainer);
+
+      userCardsDiv.appendChild(div);
+    });
   }
 
-  saveAll();
-
-  userAddedCards.forEach(cid => {
-    const c = cards.find(x => x.id === cid);
-    if (!c) return;
-
-    const div = document.createElement("div");
-    div.className = "card";
-    div.style.background = c.bg || "#fff0f5";
-
-    const nameDiv = document.createElement("div");
-    nameDiv.textContent = c.name;
-    div.appendChild(nameDiv);
-
-    const slotsDiv = document.createElement("div");
-    for (let i = 0; i < c.slots; i++) {
-      const span = document.createElement("span");
-      span.className = "stamp-slot";
-      if (userStampHistory.find(s => s.cardId === cid && s.slot === i)) span.classList.add("stamp-filled");
-      slotsDiv.appendChild(span);
-    }
-    div.appendChild(slotsDiv);
-
-    const btnContainer = document.createElement("div");
-    btnContainer.style.display = "flex";
-    btnContainer.style.justifyContent = "space-between";
-    btnContainer.style.alignItems = "center";
-    btnContainer.style.marginTop = "8px";
-
-    // スタンプボタン
-    const stampBtn = document.createElement("button");
-    stampBtn.textContent = "スタンプ押す";
-    stampBtn.addEventListener("click", () => {
-      const inputPass = prompt("スタンプ合言葉を入力してください");
-      if (!inputPass) return;
-
-      let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
-      if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
-      if (!matched) return alert("合言葉が違います");
-
-      if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) return alert("既に押しています");
-
-      const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
-      if (stampedCount >= c.slots) {
-        if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
-        return alert("もう押せません");
-      }
-
-      userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
-      saveAll();
-      renderUserCards();
-      renderStampHistory();
-      alert(c.notifyMsg||"スタンプを押しました！");
+  function renderStampHistory() {
+    stampHistoryList.innerHTML = "";
+    userStampHistory.slice().reverse().forEach(s => {
+      const cardExists = cards.find(c => c.id === s.cardId);
+      if (!cardExists) return;
+      const li = document.createElement("li");
+      li.textContent = `${cardExists.name} スロット${s.slot+1} ${new Date(s.datetime).toLocaleString()}`;
+      stampHistoryList.appendChild(li);
     });
+  }
 
-    // シリアル表示
-    const serialSpan = document.createElement("span");
-    serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
-    serialSpan.style.fontSize = "0.85em";
-    serialSpan.style.color = "#666";
-
-    // カード削除ボタン
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "カード削除";
-    delBtn.addEventListener("click", () => {
-      if (!confirm("本当にこのカードを削除しますか？\nスタンプ履歴も削除されます。")) return;
-      userAddedCards = userAddedCards.filter(id => id !== cid);
-      userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
-      saveAll();
-      renderUserCards();
-      renderStampHistory();
-    });
-
-    btnContainer.appendChild(stampBtn);
-    btnContainer.appendChild(serialSpan);
-    btnContainer.appendChild(delBtn);
-
-    div.appendChild(btnContainer);
-    userCardsDiv.appendChild(div);
-  });
-
+  renderUserCards();
   renderStampHistory();
 
-  // 更新履歴
   const updateLogsList = document.getElementById("updateLogs");
-  if (updateLogsList) {
+  function renderUpdates() {
     updateLogsList.innerHTML = "";
     updates.forEach(u => {
       const li = document.createElement("li");
@@ -339,8 +329,8 @@ function renderUserCards() {
       updateLogsList.appendChild(li);
     });
   }
+  renderUpdates();
 }
-
 
 // --------------------
 // 管理者画面初期化
