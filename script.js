@@ -197,26 +197,28 @@ function initUser() {
   }
   renderUserID();
 
-  addCardBtn.addEventListener("click", () => {
-    const pass = addCardPassInput.value.trim();
-    if (!pass) return alert("追加パスを入力してください");
+addCardBtn.addEventListener("click", () => {
+  const pass = addCardPassInput.value.trim();
+  if (!pass) return alert("追加パスを入力してください");
 
-    const matchedCard = cards.find(c => c.addPass === pass);
-    if (!matchedCard) return alert("合言葉が違います");
-    if (userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
+  // パスが設定されていないカードは追加不可
+  const matchedCard = cards.find(c => c.addPass && c.addPass === pass);
+  if (!matchedCard) return alert("合言葉が違います");
+  if (userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
-    userAddedCards.push(matchedCard.id);
+  userAddedCards.push(matchedCard.id);
 
-    if (!userCardSerials[userName]) userCardSerials[userName] = {};
-    if (!userCardSerials[userName][matchedCard.id]) {
-      userCardSerials[userName][matchedCard.id] = String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
-    }
+  if (!userCardSerials[userName]) userCardSerials[userName] = {};
+  if (!userCardSerials[userName][matchedCard.id]) {
+    userCardSerials[userName][matchedCard.id] = String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
+  }
 
-    saveAll();
-    addCardPassInput.value = "";
-    renderUserCards();
-    renderStampHistory();
-  });
+  saveAll();
+  addCardPassInput.value = "";
+  renderUserCards();
+  renderStampHistory();
+});
+
 
   // --------------------
   // カード描画＆不要カード削除
