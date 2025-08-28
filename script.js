@@ -144,13 +144,19 @@ function initUser() {
   }
 
   textColorPicker?.addEventListener("input", () => { 
-    userUIColors.text = textColorPicker.value; saveAll(); applyUserColors(); 
+    userUIColors.text = textColorPicker.value; 
+    saveAll(); 
+    applyUserColors(); 
   });
   bgColorPicker?.addEventListener("input", () => { 
-    userUIColors.bg = bgColorPicker.value; saveAll(); applyUserColors(); 
+    userUIColors.bg = bgColorPicker.value; 
+    saveAll(); 
+    applyUserColors(); 
   });
   btnColorPicker?.addEventListener("input", () => { 
-    userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors(); 
+    userUIColors.btn = btnColorPicker.value; 
+    saveAll(); 
+    applyUserColors(); 
   });
   applyUserColors();
 
@@ -213,142 +219,146 @@ function initUser() {
   });
 
   // --------------------
-// カード描画＆不要カード削除
-// --------------------
-function renderUserCards() {
-  userCardsDiv.innerHTML = "";
+  // カード描画＆不要カード削除
+  // --------------------
+  function renderUserCards() {
+    userCardsDiv.innerHTML = "";
 
-  // 不要カードの削除（存在しないカードは削除）
-  userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
+    // 不要カードの削除（存在しないカードは削除）
+    userAddedCards = userAddedCards.filter(cid => cards.some(c => c.id === cid));
 
-  // シリアルも削除
-  for (const uname in userCardSerials) {
-    if (userCardSerials[uname]) {
-      for (const cid in userCardSerials[uname]) {
-        if (!cards.some(c => c.id === cid)) {
-          delete userCardSerials[uname][cid];
+    // シリアルも削除
+    for (const uname in userCardSerials) {
+      if (userCardSerials[uname]) {
+        for (const cid in userCardSerials[uname]) {
+          if (!cards.some(c => c.id === cid)) {
+            delete userCardSerials[uname][cid];
+          }
         }
       }
     }
+
+    // スタンプ履歴も削除
+    userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
+
+    saveAll();
+
+    userAddedCards.forEach(cid => {
+      const c = cards.find(x => x.id === cid);
+      if (!c) return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.background = c.bg || "#fff0f5";
+
+      const nameDiv = document.createElement("div");
+      nameDiv.textContent = c.name;
+      div.appendChild(nameDiv);
+
+      const slotsDiv = document.createElement("div");
+      for (let i = 0; i < c.slots; i++) {
+        const span = document.createElement("span");
+        span.className = "stamp-slot";
+        if (userStampHistory.find(s => s.cardId === cid && s.slot === i)) {
+          span.classList.add("stamp-filled");
+        }
+        slotsDiv.appendChild(span);
+      }
+      div.appendChild(slotsDiv);
+
+      // スタンプボタン＋シリアル＋消去
+      const btnContainer = document.createElement("div");
+      btnContainer.style.display = "flex";
+      btnContainer.style.justifyContent = "space-between";
+      btnContainer.style.alignItems = "center";
+      btnContainer.style.marginTop = "8px";
+
+      // スタンプ押すボタン
+      const stampBtn = document.createElement("button");
+      stampBtn.textContent = "スタンプ押す";
+      stampBtn.addEventListener("click", () => {
+        const inputPass = prompt("スタンプ合言葉を入力してください");
+        if (!inputPass) return;
+
+        let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
+        if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
+        if (!matched) return alert("合言葉が違います");
+
+        if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
+          return alert("この合言葉では既に押しています");
+        }
+
+        const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
+        if (stampedCount >= c.slots) {
+          if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
+          return alert("もう押せません");
+        }
+
+        userStampHistory.push({ 
+          cardId:cid, 
+          slot:stampedCount, 
+          word:inputPass, 
+          datetime:new Date().toISOString() 
+        });
+        userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
+        saveAll();
+        renderUserCards();
+        renderStampHistory();
+        alert(c.notifyMsg||"スタンプを押しました！");
+      });
+
+      // シリアル番号
+      const serialSpan = document.createElement("span");
+      serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
+      serialSpan.style.fontSize = "0.85em";
+      serialSpan.style.color = "#666";
+
+      // ✅ ユーザー用「消去」ボタン（修正版：直接保存）
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "消去";
+      deleteBtn.addEventListener("click", () => {
+        if (!confirm("このカードを消去しますか？\n関連するスタンプ履歴も削除されます。")) return;
+
+        // userAddedCards から削除
+        userAddedCards = userAddedCards.filter(x => x !== cid);
+
+        // スタンプ履歴から削除
+        userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
+
+        // シリアル削除
+        if (userCardSerials[userName] && userCardSerials[userName][cid]) {
+          delete userCardSerials[userName][cid];
+        }
+
+        // 🔹 直接保存
+        saveJSON(LS_KEYS.userAddedCards, userAddedCards);
+        saveJSON(LS_KEYS.userStampHistory, userStampHistory);
+        saveJSON(LS_KEYS.userCardSerials, userCardSerials);
+
+        renderUserCards();
+        renderStampHistory();
+      });
+
+      // ボタンを並べて配置
+      btnContainer.appendChild(stampBtn);
+      btnContainer.appendChild(serialSpan);
+      btnContainer.appendChild(deleteBtn);
+
+      div.appendChild(btnContainer);
+      userCardsDiv.appendChild(div);
+    });
   }
 
-  // スタンプ履歴も削除
-  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id === s.cardId));
-
-  saveAll();
-
-  userAddedCards.forEach(cid => {
-    const c = cards.find(x => x.id === cid);
-    if (!c) return;
-
-    const div = document.createElement("div");
-    div.className = "card";
-    div.style.background = c.bg || "#fff0f5";
-
-    const nameDiv = document.createElement("div");
-    nameDiv.textContent = c.name;
-    div.appendChild(nameDiv);
-
-    const slotsDiv = document.createElement("div");
-    for (let i = 0; i < c.slots; i++) {
-      const span = document.createElement("span");
-      span.className = "stamp-slot";
-      if (userStampHistory.find(s => s.cardId === cid && s.slot === i)) {
-        span.classList.add("stamp-filled");
-      }
-      slotsDiv.appendChild(span);
-    }
-    div.appendChild(slotsDiv);
-
-    // スタンプボタン＋シリアル＋消去
-    const btnContainer = document.createElement("div");
-    btnContainer.style.display = "flex";
-    btnContainer.style.justifyContent = "space-between";
-    btnContainer.style.alignItems = "center";
-    btnContainer.style.marginTop = "8px";
-
-    // スタンプ押すボタン
-    const stampBtn = document.createElement("button");
-    stampBtn.textContent = "スタンプ押す";
-    stampBtn.addEventListener("click", () => {
-      const inputPass = prompt("スタンプ合言葉を入力してください");
-      if (!inputPass) return;
-
-      let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
-      if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
-      if (!matched) return alert("合言葉が違います");
-
-      if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
-        return alert("この合言葉では既に押しています");
-      }
-
-      const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
-      if (stampedCount >= c.slots) {
-        if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
-        return alert("もう押せません");
-      }
-
-      userStampHistory.push({ 
-        cardId:cid, 
-        slot:stampedCount, 
-        word:inputPass, 
-        datetime:new Date().toISOString() 
-      });
-      userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
-      saveAll();
-      renderUserCards();
-      renderStampHistory();
-      alert(c.notifyMsg||"スタンプを押しました！");
-    });
-
-    // シリアル番号
-    const serialSpan = document.createElement("span");
-    serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
-    serialSpan.style.fontSize = "0.85em";
-    serialSpan.style.color = "#666";
-
-    // ✅ ユーザー用「消去」ボタン
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "消去";
-    deleteBtn.addEventListener("click", () => {
-      if (!confirm("このカードを消去しますか？\n関連するスタンプ履歴も削除されます。")) return;
-
-      // userAddedCards から削除
-      userAddedCards = userAddedCards.filter(x => x !== cid);
-
-      // スタンプ履歴から削除
-      userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
-
-      // シリアル削除
-      if (userCardSerials[userName] && userCardSerials[userName][cid]) {
-        delete userCardSerials[userName][cid];
-      }
-
-      saveAll();
-      renderUserCards();
-      renderStampHistory();
-    });
-
-    // ボタンを並べて配置
-    btnContainer.appendChild(stampBtn);
-    btnContainer.appendChild(serialSpan);
-    btnContainer.appendChild(deleteBtn); // ← 追加！
-
-    div.appendChild(btnContainer);
-    userCardsDiv.appendChild(div);
-  });
-}
-
   function renderStampHistory() {
-  stampHistoryList.innerHTML = "";
-  userStampHistory.slice().reverse().forEach(s => {
-    const cardExists = cards.find(c => c.id === s.cardId);
-    if (!cardExists) return;
-    const li = document.createElement("li");
-    li.textContent = `${cardExists.name} 【合言葉:${s.word}】 ${new Date(s.datetime).toLocaleString()}`;
-    stampHistoryList.appendChild(li);
-  });
-}
+    stampHistoryList.innerHTML = "";
+    userStampHistory.slice().reverse().forEach(s => {
+      const cardExists = cards.find(c => c.id === s.cardId);
+      if (!cardExists) return;
+      const li = document.createElement("li");
+      li.textContent = `${cardExists.name} 【合言葉:${s.word}】 ${new Date(s.datetime).toLocaleString()}`;
+      stampHistoryList.appendChild(li);
+    });
+  }
 
   renderUserCards();
   renderStampHistory();
