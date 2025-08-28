@@ -1,7 +1,44 @@
 // update.js
 var update = {
-  "cards": [],
-  "keywords": [],
+  "cards": [
+    {
+      "id": "c1756425285508",
+      "name": "スタンプ1",
+      "slots": 5,
+      "bg": "#fff0f5",
+      "stampIcon": "",
+      "addPass": "る",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
+    }
+  ],
+  "keywords": [
+    {
+      "cardId": "c1756425285508",
+      "word": "あああ",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756425285508",
+      "word": "あ",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756425285508",
+      "word": "ああ",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756425285508",
+      "word": "ああああ",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756425285508",
+      "word": "あああああ",
+      "enabled": true
+    }
+  ],
   "updates": [
     {
       "date": "2025/8/29 0:43:54",
