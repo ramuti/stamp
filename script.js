@@ -307,15 +307,15 @@ function initUser() {
   }
 
   function renderStampHistory() {
-    stampHistoryList.innerHTML = "";
-    userStampHistory.slice().reverse().forEach(s => {
-      const cardExists = cards.find(c => c.id === s.cardId);
-      if (!cardExists) return;
-      const li = document.createElement("li");
-      li.textContent = `${cardExists.name} スロット${s.slot+1} ${new Date(s.datetime).toLocaleString()}`;
-      stampHistoryList.appendChild(li);
-    });
-  }
+  stampHistoryList.innerHTML = "";
+  userStampHistory.slice().reverse().forEach(s => {
+    const cardExists = cards.find(c => c.id === s.cardId);
+    if (!cardExists) return;
+    const li = document.createElement("li");
+    li.textContent = `${cardExists.name} 【合言葉:${s.word}】 ${new Date(s.datetime).toLocaleString()}`;
+    stampHistoryList.appendChild(li);
+  });
+}
 
   renderUserCards();
   renderStampHistory();
