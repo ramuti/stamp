@@ -460,3 +460,38 @@ function initAdmin(){
   renderKeywords();
   renderUpdates();
 }
+
+
+
+// --------------------
+// コピー用ボタン生成（update.js形式でコピー）
+// --------------------
+function addCopyButton(){
+  if(document.getElementById("copyUpdateDataBtn")) return;
+
+  const container=document.createElement("div");
+  container.style.margin="16px 0";
+  container.style.textAlign="center";
+
+  const btn=document.createElement("button");
+  btn.id="copyUpdateDataBtn";
+  btn.textContent="update.js形式でコピー";
+  btn.style.padding="8px 16px";
+  btn.style.fontSize="14px";
+
+  btn.addEventListener("click", () => {
+    // JSONデータを文字列化（インデント付き）
+    const jsonText = JSON.stringify({ cards, keywords, updates }, null, 2);
+    // update.js形式に整形
+    const updateJsText = `// update.js
+var update = ${jsonText};`;
+
+    // クリップボードにコピー
+    navigator.clipboard.writeText(updateJsText)
+      .then(() => alert("update.js形式でコピーしました"))
+      .catch(() => alert("コピーに失敗しました"));
+  });
+
+  container.appendChild(btn);
+  document.body.prepend(container);
+}
