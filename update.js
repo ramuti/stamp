@@ -10,6 +10,36 @@ var update = {
       "stampIcon": "",
       "notifyMsg": "",
       "maxNotifyMsg": ""
+    },
+    {
+      "id": "card_1756396762813",
+      "name": "さしす",
+      "slots": 5,
+      "addPass": "すす",
+      "bg": "#fff0f5",
+      "stampIcon": "",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
+    },
+    {
+      "id": "card_1756396788158",
+      "name": "かきく",
+      "slots": 5,
+      "addPass": "ろろ",
+      "bg": "#fff0f5",
+      "stampIcon": "",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
+    },
+    {
+      "id": "card_1756396795322",
+      "name": "ままま",
+      "slots": 5,
+      "addPass": "しし",
+      "bg": "#fff0f5",
+      "stampIcon": "",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
     }
   ],
   "keywords": [
