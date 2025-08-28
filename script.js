@@ -455,11 +455,11 @@ function initAdmin(){
     updates.push({ date:new Date().toISOString(), msg:updateInput.value.trim() });
     updateInput.value=""; saveAll(); renderUpdates();
   });
-
+  addCopyButton();
   renderAdminCards();
   renderKeywords();
   renderUpdates();
-  addCopyButton();
+  
 }
 
 
