@@ -1,7 +1,8 @@
 /* ============================
-   script.js — ユーザー＋管理者手前まで（修正版）
-   ・管理者前まで
-   ・ユーザーは update.js 優先、色設定反映、カード追加・削除・スタンプ対応
+   script.js — ユーザー共通（修正版）
+   ・ユーザーはupdate.js優先で読み込み
+   ・カード追加・削除・スタンプ・シリアル管理
+   ・ユーザーUI色設定対応
 ============================ */
 
 // --------------------
@@ -28,20 +29,17 @@ const APP_VERSION = "v1.6.2";
 function loadJSON(key,fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback; }catch(e){ return fallback; } }
 function saveJSON(key,obj){ localStorage.setItem(key,JSON.stringify(obj)); }
 
-// 配列マージ（ユニーク）
-function mergeUniqueArray(existingArray,newArray){
-  const set = new Set(existingArray||[]);
-  (newArray||[]).forEach(v=>set.add(v));
+// 配列ユニークマージ
+function mergeUniqueArray(existing,newArr){
+  const set = new Set(existing||[]);
+  (newArr||[]).forEach(v=>set.add(v));
   return Array.from(set);
 }
 
 // スタンプ履歴マージ
 function mergeStampHistories(existing,current){
   const map=new Map();
-  (existing||[]).forEach(e=>{
-    const key=`${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`;
-    map.set(key,e);
-  });
+  (existing||[]).forEach(e=>map.set(`${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`,e));
   (current||[]).forEach(e=>{
     const key=`${e.cardId}||${e.slot}||${e.word||""}||${e.datetime||""}`;
     if(!map.has(key)) map.set(key,e);
@@ -94,7 +92,6 @@ function saveAll(){
 // 初期データロード
 // --------------------
 let userName = localStorage.getItem(LS_KEYS.userName) || "";
-
 let cards = (typeof update !== "undefined" && update.cards) ? update.cards : loadJSON(LS_KEYS.cards, []);
 let keywords = (typeof update !== "undefined" && update.keywords) ? update.keywords : loadJSON(LS_KEYS.keywords, []);
 let updates = (typeof update !== "undefined" && update.updates) ? update.updates : loadJSON(LS_KEYS.updates, []);
@@ -110,26 +107,28 @@ let userCardSerials = loadJSON(LS_KEYS.userCardSerials, {});
 document.addEventListener("DOMContentLoaded",()=>{
   const body=document.body;
   if(body.classList.contains("user")) initUser();
-  if(body.classList.contains("admin")) initAdmin(); // 管理者はこの行だけ残す
 });
 
 // --------------------
 // ユーザー画面初期化
 // --------------------
-function initUser(){
-  const userNameInput = document.getElementById("userNameInput");
-  const setNameBtn = document.getElementById("setNameBtn");
-  const addCardPassInput = document.getElementById("addCardPass");
-  const addCardBtn = document.getElementById("addCardBtn");
-  const userCardsDiv = document.getElementById("userCards");
-  const stampHistoryList = document.getElementById("stampHistory");
+function initUser() {
+  const userNameInput   = document.getElementById("userNameInput");
+  const setNameBtn      = document.getElementById("setNameBtn");
+  const addCardPassInput= document.getElementById("addCardPass");
+  const addCardBtn      = document.getElementById("addCardBtn");
+  const userCardsDiv    = document.getElementById("userCards");
+  const stampHistoryList= document.getElementById("stampHistory");
   const textColorPicker = document.getElementById("textColor");
-  const bgColorPicker = document.getElementById("bgColor");
-  const btnColorPicker = document.getElementById("btnColor");
+  const bgColorPicker   = document.getElementById("bgColor");
+  const btnColorPicker  = document.getElementById("btnColor");
 
+  // --------------------
+  // 色設定適用
+  // --------------------
   function applyUserColors(){
     document.body.style.background = userUIColors.bg;
-    document.body.style.color = userUIColors.text;
+    document.body.style.color      = userUIColors.text;
     document.querySelectorAll("button").forEach(btn=>{
       btn.style.background = userUIColors.btn;
       btn.style.color = userUIColors.text;
@@ -137,25 +136,25 @@ function initUser(){
     userNameInput.style.color = userUIColors.text;
     addCardPassInput.style.color = userUIColors.text;
   }
-
   textColorPicker?.addEventListener("input",()=>{
-    userUIColors.text = textColorPicker.value; saveAll(); applyUserColors();
+    userUIColors.text=textColorPicker.value; saveAll(); applyUserColors();
   });
   bgColorPicker?.addEventListener("input",()=>{
-    userUIColors.bg = bgColorPicker.value; saveAll(); applyUserColors();
+    userUIColors.bg=bgColorPicker.value; saveAll(); applyUserColors();
   });
   btnColorPicker?.addEventListener("input",()=>{
-    userUIColors.btn = btnColorPicker.value; saveAll(); applyUserColors();
+    userUIColors.btn=btnColorPicker.value; saveAll(); applyUserColors();
   });
   applyUserColors();
 
   userNameInput.value = userName || "";
 
+  // --------------------
+  // ユーザー名表示
+  // --------------------
   const userCardsTitle = document.createElement("h2");
   userCardsTitle.id = "userCardsTitle";
-  userCardsTitle.style.marginBottom = "16px";
   userCardsDiv.parentNode.insertBefore(userCardsTitle,userCardsDiv);
-
   function updateUserCardsTitle(){
     userCardsTitle.textContent = userName ? `${userName}のスタンプカード` : "スタンプカード";
   }
@@ -175,27 +174,31 @@ function initUser(){
     if(!el){
       el = document.createElement("div");
       el.id = "userIDDisplay";
-      el.style.position = "fixed";
-      el.style.right = "8px";
-      el.style.bottom = "8px";
-      el.style.fontSize = "0.75em";
-      el.style.color = "#999";
+      el.style.position="fixed";
+      el.style.right="8px";
+      el.style.bottom="8px";
+      el.style.fontSize="0.75em";
+      el.style.color="#999";
       document.body.appendChild(el);
     }
     el.textContent = `ユーザー: ${userName}`;
   }
   renderUserID();
 
+  // --------------------
+  // カード追加
+  // --------------------
   addCardBtn.addEventListener("click",()=>{
     const pass = addCardPassInput.value.trim();
     if(!pass) return alert("追加パスを入力してください");
-    const matchedCard = cards.find(c=>c.addPass===pass);
-    if(!matchedCard) return alert("合言葉が違います");
-    if(userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
-    userAddedCards.push(matchedCard.id);
+    const matched = cards.find(c=>c.addPass===pass);
+    if(!matched) return alert("合言葉が違います");
+    if(userAddedCards.includes(matched.id)) return alert("このカードは既に追加済みです");
+
+    userAddedCards.push(matched.id);
     if(!userCardSerials[userName]) userCardSerials[userName]={};
-    if(!userCardSerials[userName][matchedCard.id]) userCardSerials[userName][matchedCard.id]=String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
+    if(!userCardSerials[userName][matched.id]) userCardSerials[userName][matched.id]=String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
 
     saveAll();
     addCardPassInput.value="";
@@ -203,11 +206,14 @@ function initUser(){
     renderStampHistory();
   });
 
-  // -------------------- カード描画・スタンプ履歴 --------------------
+  // --------------------
+  // カード描画
+  // --------------------
   function renderUserCards(){
     userCardsDiv.innerHTML="";
 
-    userAddedCards = userAddedCards.filter(cid=>cards.some(c=>c.id===cid));
+    // 存在しないカードは削除
+    userAddedCards = userAddedCards.filter(cid => cards.some(c=>c.id===cid));
     for(const uname in userCardSerials){
       if(userCardSerials[uname]){
         for(const cid in userCardSerials[uname]){
@@ -215,7 +221,7 @@ function initUser(){
         }
       }
     }
-    userStampHistory=userStampHistory.filter(s=>cards.some(c=>c.id===s.cardId));
+    userStampHistory = userStampHistory.filter(s=>cards.some(c=>c.id===s.cardId));
 
     saveAll();
 
@@ -233,56 +239,70 @@ function initUser(){
 
       const slotsDiv = document.createElement("div");
       for(let i=0;i<c.slots;i++){
-        const span = document.createElement("span");
+        const span=document.createElement("span");
         span.className="stamp-slot";
         if(userStampHistory.find(s=>s.cardId===cid && s.slot===i)) span.classList.add("stamp-filled");
         slotsDiv.appendChild(span);
       }
       div.appendChild(slotsDiv);
 
+      // スタンプ・シリアル・削除ボタン
       const btnContainer = document.createElement("div");
       btnContainer.style.display="flex";
       btnContainer.style.justifyContent="space-between";
       btnContainer.style.alignItems="center";
       btnContainer.style.marginTop="8px";
 
+      // スタンプボタン
       const stampBtn = document.createElement("button");
       stampBtn.textContent="スタンプ押す";
       stampBtn.addEventListener("click",()=>{
-        const inputPass=prompt("スタンプ合言葉を入力してください");
+        const inputPass = prompt("スタンプ合言葉を入力してください");
         if(!inputPass) return;
+
         let matched = keywords.find(k=>k.cardId===cid && k.word===inputPass && k.enabled);
         if(!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
         if(!matched) return alert("合言葉が違います");
+
         if(userStampHistory.some(s=>s.cardId===cid && s.word===inputPass)) return alert("この合言葉では既に押しています");
 
         const stampedCount = userStampHistory.filter(s=>s.cardId===cid).length;
-        if(stampedCount>=c.slots){ if(c.maxNotifyMsg) alert(c.maxNotifyMsg); return alert("もう押せません"); }
+        if(stampedCount>=c.slots){
+          if(c.maxNotifyMsg) alert(c.maxNotifyMsg);
+          return alert("もう押せません");
+        }
 
-        userStampHistory.push({cardId:cid,slot:stampedCount,word:inputPass,datetime:new Date().toISOString()});
-        userStampHistory=userStampHistory.filter(s=>cards.some(c=>c.id===s.cardId));
+        userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
         saveAll();
         renderUserCards();
         renderStampHistory();
         alert(c.notifyMsg||"スタンプを押しました！");
       });
 
-      const serialSpan=document.createElement("span");
+      // シリアル
+      const serialSpan = document.createElement("span");
       serialSpan.textContent=`シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
       serialSpan.style.fontSize="0.85em";
       serialSpan.style.color="#666";
 
-      const deleteBtn=document.createElement("button");
+      // 削除ボタン
+      const deleteBtn = document.createElement("button");
       deleteBtn.textContent="カード削除";
       deleteBtn.style.background="#ff6666";
       deleteBtn.addEventListener("click",()=>{
         if(!confirm("このカードを削除しますか？")) return;
-        userAddedCards=userAddedCards.filter(id=>id!==cid);
-        userStampHistory=userStampHistory.filter(s=>s.cardId!==cid);
+
+        // 1. 追加カードリストから削除
+        userAddedCards = userAddedCards.filter(id=>id!==cid);
+        // 2. スタンプ履歴から該当カードのみ削除
+        userStampHistory = userStampHistory.filter(s=>s.cardId!==cid);
+        // 3. シリアル削除
         if(userCardSerials[userName]) delete userCardSerials[userName][cid];
+
         saveJSON(LS_KEYS.userAddedCards,userAddedCards);
         saveJSON(LS_KEYS.userStampHistory,userStampHistory);
         saveJSON(LS_KEYS.userCardSerials,userCardSerials);
+
         renderUserCards();
         renderStampHistory();
       });
@@ -291,6 +311,7 @@ function initUser(){
       btnContainer.appendChild(serialSpan);
       btnContainer.appendChild(deleteBtn);
       div.appendChild(btnContainer);
+
       userCardsDiv.appendChild(div);
     });
   }
@@ -298,7 +319,7 @@ function initUser(){
   function renderStampHistory(){
     stampHistoryList.innerHTML="";
     userStampHistory.slice().reverse().forEach(s=>{
-      const cardExists=cards.find(c=>c.id===s.cardId);
+      const cardExists = cards.find(c=>c.id===s.cardId);
       if(!cardExists) return;
       const li=document.createElement("li");
       li.textContent=`${cardExists.name} 【合言葉:${s.word}】 ${new Date(s.datetime).toLocaleString()}`;
@@ -308,17 +329,6 @@ function initUser(){
 
   renderUserCards();
   renderStampHistory();
-
-  const updateLogsList=document.getElementById("updateLogs");
-  function renderUpdates(){
-    updateLogsList.innerHTML="";
-    updates.forEach(u=>{
-      const li=document.createElement("li");
-      li.textContent=`${u.date} ${u.msg}`;
-      updateLogsList.appendChild(li);
-    });
-  }
-  renderUpdates();
 }
 // --------------------
 // 管理者画面初期化
