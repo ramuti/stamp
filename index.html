@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>スタンプカード</title>
 <style>
-body { font-family:'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif; background:#fff0f5; padding:20px; color:#c44a7b; }
-input, textarea { padding:6px 10px; border-radius:8px; border:1px solid #ffa6c9; margin-right:6px; background:#fff; color:#000; font-size:16px; }
+body { font-family: 'Yu Gothic','Hiragino Kaku Gothic ProN',sans-serif; background: #fff0f5; padding: 20px; color: #c44a7b; }
+h1 { margin: 8px 0; }
+input[type=text], input[type=color], textarea { padding:6px 10px; border-radius:8px; border:1px solid #ffa6c9; margin-right:6px; background:#fff; color:#000; font-size:16px; }
 button { padding:6px 10px; border-radius:8px; border:none; background:#ff99cc; color:#fff; cursor:pointer; transition:0.2s; }
 button:hover { background:#ff66b3; }
 .card { border:2px dashed #ffb6c1; border-radius:12px; padding:12px; margin:12px 0; background:#fff0f5; }
@@ -21,12 +22,14 @@ ul { padding-left:20px; }
 </head>
 <body class="user">
 
-<h1>スタンプカード</h1>
+<h1 id="cardTitle">スタンプカード</h1>
 
-<div>
+<div style="margin-top:16px;">
   <input type="text" id="userNameInput" placeholder="名前を入力">
   <button id="setNameBtn">変更</button>
 </div>
+
+<hr>
 
 <div style="margin-top:16px;">
   <input type="text" id="addCardPass" placeholder="追加パス">
@@ -48,28 +51,14 @@ ul { padding-left:20px; }
   <label>ボタン色: <input type="color" id="btnColor" value="#ff99cc"></label>
 </div>
 
-<!-- update.js 読み込み（キャッシュ回避） -->
+<!-- updateDataFull.js 読み込み -->
 <script>
 const ts = new Date().getTime();
 const s = document.createElement("script");
-s.src = `update.js?ts=${ts}`;
-s.onload = ()=>console.log("update.js 読み込み完了");
+s.src = `updateDataFull.js?ts=${ts}`;
 document.head.appendChild(s);
 </script>
-
-<!-- 読み込み確認ボタン -->
-<div style="margin-top:16px;">
-  <button id="checkUpdateBtn">update.js 読み込まれてる？</button>
-  <span id="updateStatus" style="margin-left:8px; font-weight:bold;"></span>
-</div>
-<script>
-document.getElementById("checkUpdateBtn").addEventListener("click",()=>{
-  const status = (typeof update !== "undefined") ? "読み込まれています ✅" : "読み込まれていません ❌";
-  document.getElementById("updateStatus").textContent = status;
-});
-</script>
-
-<!-- script.js -->
+<script src="updataDataFull.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
