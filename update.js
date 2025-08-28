@@ -10,6 +10,26 @@ var update = {
       "addPass": "る",
       "notifyMsg": "",
       "maxNotifyMsg": ""
+    },
+    {
+      "id": "c1756425494809",
+      "name": "まみむ",
+      "slots": 5,
+      "bg": "#fff0f5",
+      "stampIcon": "",
+      "addPass": "るる",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
+    },
+    {
+      "id": "c1756425530948",
+      "name": "カード1",
+      "slots": 5,
+      "bg": "#fff0f5",
+      "stampIcon": "",
+      "addPass": "かきくけこ",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
     }
   ],
   "keywords": [
@@ -36,6 +56,11 @@ var update = {
     {
       "cardId": "c1756425285508",
       "word": "あああああ",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756425285508",
+      "word": "かきく",
       "enabled": true
     }
   ],
