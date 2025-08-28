@@ -115,10 +115,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(body.classList.contains("admin")) initAdmin();
 });
 
-/* =============================================
-   ▲ ここまで置き換え ▲
-   元コードはここまで削除して修正版に差し替え
-============================================= */});
+
 
 // --------------------
 // ユーザー画面初期化
@@ -305,16 +302,28 @@ serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"---
 serialSpan.style.fontSize = "0.85em";
 serialSpan.style.color = "#666";
 
-// カード削除ボタン
+// カード削除ボタン（修正版）
 const deleteBtn = document.createElement("button");
 deleteBtn.textContent = "カード削除";
 deleteBtn.style.background = "#ff6666";
 deleteBtn.addEventListener("click", () => {
   if (!confirm("このカードを削除しますか？")) return;
+
+  // 1. 追加カードリストから削除
   userAddedCards = userAddedCards.filter(id => id !== cid);
+
+  // 2. スタンプ履歴から該当カードを削除
   userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
+
+  // 3. シリアルも削除
   if (userCardSerials[userName]) delete userCardSerials[userName][cid];
-  saveAll();
+
+  // 4. 保存
+  saveJSON(LS_KEYS.userAddedCards, userAddedCards);
+  saveJSON(LS_KEYS.userStampHistory, userStampHistory);
+  saveJSON(LS_KEYS.userCardSerials, userCardSerials);
+
+  // 5. 画面更新
   renderUserCards();
   renderStampHistory();
 });
