@@ -459,6 +459,7 @@ function initAdmin(){
   renderAdminCards();
   renderKeywords();
   renderUpdates();
+  addCopyButton();
 }
 
 
