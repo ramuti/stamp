@@ -258,50 +258,66 @@ function initUser() {
       }
       div.appendChild(slotsDiv);
 
-      // スタンプボタン＋シリアル
-      const btnContainer = document.createElement("div");
-      btnContainer.style.display = "flex";
-      btnContainer.style.justifyContent = "space-between";
-      btnContainer.style.alignItems = "center";
-      btnContainer.style.marginTop = "8px";
+      // スタンプボタン＋シリアル＋削除ボタン
+const btnContainer = document.createElement("div");
+btnContainer.style.display = "flex";
+btnContainer.style.justifyContent = "space-between";
+btnContainer.style.alignItems = "center";
+btnContainer.style.marginTop = "8px";
 
-      const stampBtn = document.createElement("button");
-      stampBtn.textContent = "スタンプ押す";
-      stampBtn.addEventListener("click", () => {
-        const inputPass = prompt("スタンプ合言葉を入力してください");
-        if (!inputPass) return;
+// スタンプボタン
+const stampBtn = document.createElement("button");
+stampBtn.textContent = "スタンプ押す";
+stampBtn.addEventListener("click", () => {
+  const inputPass = prompt("スタンプ合言葉を入力してください");
+  if (!inputPass) return;
 
-        let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
-        if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
-        if (!matched) return alert("合言葉が違います");
+  let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
+  if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
+  if (!matched) return alert("合言葉が違います");
 
-        if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
-          return alert("この合言葉では既に押しています");
-        }
+  if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) {
+    return alert("この合言葉では既に押しています");
+  }
 
-        const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
-        if (stampedCount >= c.slots) {
-          if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
-          return alert("もう押せません");
-        }
+  const stampedCount = userStampHistory.filter(s => s.cardId===cid).length;
+  if (stampedCount >= c.slots) {
+    if (c.maxNotifyMsg) alert(c.maxNotifyMsg);
+    return alert("もう押せません");
+  }
 
-        userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
-        userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
-        saveAll();
-        renderUserCards();
-        renderStampHistory();
-        alert(c.notifyMsg||"スタンプを押しました！");
-      });
+  userStampHistory.push({ cardId:cid, slot:stampedCount, word:inputPass, datetime:new Date().toISOString() });
+  userStampHistory = userStampHistory.filter(s => cards.some(c => c.id===s.cardId));
+  saveAll();
+  renderUserCards();
+  renderStampHistory();
+  alert(c.notifyMsg||"スタンプを押しました！");
+});
 
-      const serialSpan = document.createElement("span");
-      serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
-      serialSpan.style.fontSize = "0.85em";
-      serialSpan.style.color = "#666";
+// シリアル表示
+const serialSpan = document.createElement("span");
+serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid]||"------"}`;
+serialSpan.style.fontSize = "0.85em";
+serialSpan.style.color = "#666";
 
-      btnContainer.appendChild(stampBtn);
-      btnContainer.appendChild(serialSpan);
-      div.appendChild(btnContainer);
+// カード削除ボタン
+const deleteBtn = document.createElement("button");
+deleteBtn.textContent = "カード削除";
+deleteBtn.style.background = "#ff6666";
+deleteBtn.addEventListener("click", () => {
+  if (!confirm("このカードを削除しますか？")) return;
+  userAddedCards = userAddedCards.filter(id => id !== cid);
+  userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
+  if (userCardSerials[userName]) delete userCardSerials[userName][cid];
+  saveAll();
+  renderUserCards();
+  renderStampHistory();
+});
 
+btnContainer.appendChild(stampBtn);
+btnContainer.appendChild(serialSpan);
+btnContainer.appendChild(deleteBtn);
+div.appendChild(btnContainer);
       userCardsDiv.appendChild(div);
     });
   }
