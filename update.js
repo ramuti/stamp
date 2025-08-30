@@ -20,6 +20,16 @@ var update = {
       "addPass": "らちむちゃん",
       "notifyMsg": "",
       "maxNotifyMsg": ""
+    },
+    {
+      "id": "c1756525476993",
+      "name": "らちむちゃーんカード",
+      "slots": 5,
+      "bg": "#dfd8ff",
+      "stampIcon": "",
+      "addPass": "あいう",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
     }
   ],
   "keywords": [
@@ -62,6 +72,11 @@ var update = {
       "cardId": "c1756444449479",
       "word": "3",
       "enabled": false
+    },
+    {
+      "cardId": "c1756525476993",
+      "word": "らちむさん",
+      "enabled": true
     }
   ],
   "updates": [
@@ -72,6 +87,10 @@ var update = {
     {
       "date": "2025-08-29T05:13:32.598Z",
       "msg": "見えてるかな"
+    },
+    {
+      "date": "2025-08-30T03:45:04.764Z",
+      "msg": "らちむちゃんカードを追加しました"
     }
   ]
 };
