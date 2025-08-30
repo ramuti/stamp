@@ -30,6 +30,16 @@ var update = {
       "addPass": "あいう",
       "notifyMsg": "",
       "maxNotifyMsg": ""
+    },
+    {
+      "id": "c1756554997061",
+      "name": "目指せ！景品ゲット！",
+      "slots": 5,
+      "bg": "#dfd8ff",
+      "stampIcon": "",
+      "addPass": "paypay",
+      "notifyMsg": "",
+      "maxNotifyMsg": ""
     }
   ],
   "keywords": [
@@ -76,6 +86,31 @@ var update = {
     {
       "cardId": "c1756525476993",
       "word": "らちむさん",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756554997061",
+      "word": "あいうえお",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756554997061",
+      "word": "ちーたら",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756554997061",
+      "word": "ぽてとちっぷす",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756554997061",
+      "word": "へあおいる",
+      "enabled": true
+    },
+    {
+      "cardId": "c1756554997061",
+      "word": "なす",
       "enabled": true
     }
   ],
