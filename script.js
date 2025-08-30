@@ -260,10 +260,10 @@ function initUser() {
       stampBtn.addEventListener("click", () => {
         const inputPass = prompt("スタンプ合言葉を入力してください");
         if (!inputPass) return;
-
+        //しゅーせいした、合言葉のみ
         let matched = keywords.find(k => k.cardId===cid && k.word===inputPass && k.enabled);
-        if (!matched && c.addPass===inputPass) matched={cardId:cid, word:inputPass};
         if (!matched) return alert("合言葉が違います");
+
 
         if (userStampHistory.some(s => s.cardId===cid && s.word===inputPass)) return alert("既に押しています");
 
