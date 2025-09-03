@@ -192,20 +192,17 @@ function initUser() {
     const matchedCard = cards.find(c => c.addPass && c.addPass === pass);
     if (!matchedCard) return alert("合言葉が違います");
     if (userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
-    // カード追加
-    userAddedCards.push(matchedCard.id);
-    
-    // シリアルがなければ生成
-    if (!userCardSerials[matchedCard.id]) {
-      userCardSerials[matchedCard.id] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
+   // 既存カードにシリアルがなければ生成
+  userAddedCards.forEach(cid => {
+    if (!userCardSerials[cid]) {
+      userCardSerials[cid] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
     }
-    
-    // 保存
-    saveAll();
-    addCardPassInput.value = "";
-    renderUserCards();
-    renderStampHistory();
   });
+  saveAll();
+      addCardPassInput.value = "";
+      renderUserCards();
+      renderStampHistory();
+    });
 
   // --------------------
   // カード描画
