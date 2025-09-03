@@ -192,12 +192,15 @@ function initUser() {
     const matchedCard = cards.find(c => c.addPass && c.addPass === pass);
     if (!matchedCard) return alert("合言葉が違います");
     if (userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
-
+    // カード追加
     userAddedCards.push(matchedCard.id);
-   if (!userCardSerials[matchedCard.id]) {
-  userCardSerials[matchedCard.id] = String(Math.floor(Math.random()*1_000_000)).padStart(6,"0");
-  }
-
+    
+    // シリアルがなければ生成
+    if (!userCardSerials[matchedCard.id]) {
+      userCardSerials[matchedCard.id] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
+    }
+    
+    // 保存
     saveAll();
     addCardPassInput.value = "";
     renderUserCards();
