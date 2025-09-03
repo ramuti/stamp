@@ -193,13 +193,16 @@ function initUser() {
   if (!matchedCard) return alert("合言葉が違います");
   if (userAddedCards.includes(matchedCard.id)) return alert("このカードは既に追加済みです");
 
-  // 新しいカードを追加
-  userAddedCards.push(matchedCard.id);
+ // 新しいカードを追加
+userAddedCards.push(matchedCard.id);
 
-  // 追加したカードにシリアルがなければ生成
-  if (!userCardSerials[matchedCard.id]) {
-    userCardSerials[matchedCard.id] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
-  }
+// ユーザー別シリアル初期化
+if (!userCardSerials[userName]) userCardSerials[userName] = {};
+
+// 追加したカードにシリアルがなければ生成
+if (!userCardSerials[userName][matchedCard.id]) {
+  userCardSerials[userName][matchedCard.id] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
+}
 
   saveAll();
   addCardPassInput.value = "";
@@ -284,7 +287,7 @@ function initUser() {
       });
 
       const serialSpan = document.createElement("span");
-      serialSpan.textContent = `シリアル: ${userCardSerials[cid] || "------"}`;
+      serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid] || "------"}`;
       serialSpan.style.fontSize = "0.85em";
       serialSpan.style.color = "#666";
 
@@ -296,7 +299,7 @@ function initUser() {
 
         userAddedCards = userAddedCards.filter(x => x !== cid);
         userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
-        delete userCardSerials[cid];
+        delete userCardSerials[userName][cid];
 
         saveJSON(LS_KEYS.userAddedCards, userAddedCards);
         saveJSON(LS_KEYS.userStampHistory, userStampHistory);
