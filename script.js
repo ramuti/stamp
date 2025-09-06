@@ -196,14 +196,15 @@ function initUser() {
  // 新しいカードを追加
 userAddedCards.push(matchedCard.id);
 
-// ユーザー別シリアル初期化
-if (!userCardSerials[userName]) userCardSerials[userName] = {};
-
-// 追加したカードにシリアルがなければ生成
-if (!userCardSerials[userName][matchedCard.id]) {
-  userCardSerials[userName][matchedCard.id] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
-}
-
+  // --------------------
+  // 過去カードのシリアル補完
+  // --------------------
+  if (!userCardSerials[userName]) userCardSerials[userName] = {};
+  userAddedCards.forEach(cid => {
+    if (!userCardSerials[userName][cid]) {
+      userCardSerials[userName][cid] = String(Math.floor(Math.random() * 1_000_000)).padStart(6, "0");
+    }
+  });
   saveAll();
   addCardPassInput.value = "";
   renderUserCards();
@@ -290,25 +291,30 @@ if (!userCardSerials[userName][matchedCard.id]) {
       serialSpan.textContent = `シリアル: ${userCardSerials[userName]?.[cid] || "------"}`;
       serialSpan.style.fontSize = "0.85em";
       serialSpan.style.color = "#666";
+// ✅ 消去ボタン
+const deleteBtn = document.createElement("button");
+deleteBtn.textContent = "消去";
+deleteBtn.addEventListener("click", () => {
+  if (!confirm("このカードを消去しますか？\n関連するスタンプ履歴も削除されます。")) return;
 
-      // ✅ 消去ボタン
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "消去";
-      deleteBtn.addEventListener("click", () => {
-        if (!confirm("このカードを消去しますか？\n関連するスタンプ履歴も削除されます。")) return;
+  // ユーザーが持っているカード一覧から削除
+  userAddedCards = userAddedCards.filter(x => x !== cid);
 
-        userAddedCards = userAddedCards.filter(x => x !== cid);
-        userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
-        delete userCardSerials[userName][cid];
+  // そのカードのスタンプ履歴も削除
+  userStampHistory = userStampHistory.filter(s => s.cardId !== cid);
 
-        saveJSON(LS_KEYS.userAddedCards, userAddedCards);
-        saveJSON(LS_KEYS.userStampHistory, userStampHistory);
-        saveJSON(LS_KEYS.userCardSerials, userCardSerials);
+  // そのカードのシリアルも削除（存在チェック付き）
+  if (userCardSerials[userName] && userCardSerials[userName][cid]) {
+    delete userCardSerials[userName][cid];
+  }
 
-        renderUserCards();
-        renderStampHistory();
-      });
+  // ✅ 全体を保存
+  saveAll();
 
+  // 再描画
+  renderUserCards();
+  renderStampHistory();
+});
       btnContainer.appendChild(stampBtn);
       btnContainer.appendChild(serialSpan);
       btnContainer.appendChild(deleteBtn);
